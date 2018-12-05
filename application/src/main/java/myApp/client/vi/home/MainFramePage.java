@@ -31,16 +31,6 @@ public class MainFramePage extends BorderLayoutContainer {
 		this.setNorthWidget(mainNorthArea, northLayoutData);
 		northLayoutData.setSplit(true);
 		
-//		BorderLayoutData westLayoutData = new BorderLayoutData(250);
-//		westLayoutData.setMargins(new Margins(0, 0, 3, 0)); // 앞쪽에 보이는 가로 줄을 없애준다
-//		this.setWestWidget(new LabelToolItem(""), westLayoutData);
-////		westLayoutData.setSplit(true);
-//
-//		BorderLayoutData eastLayoutData = new BorderLayoutData(250);
-//		eastLayoutData.setMargins(new Margins(0, 0, 3, 0)); // 앞쪽에 보이는 가로 줄을 없애준다
-//		this.setEastWidget(new LabelToolItem(""), eastLayoutData);
-////		eastLayoutData.setSplit(true);
-		
 		BorderLayoutData southLayoutData = new BorderLayoutData(70);
 		southLayoutData.setMargins(new Margins(0, 0, 0, 0)); // 앞쪽에 보이는 가로 줄을 없애준다
 		this.setSouthWidget(mainSouthArea, southLayoutData);
