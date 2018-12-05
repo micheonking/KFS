@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="dcr04_doc">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dcr.model.Dcr04_DocModel" >
+	<id  	column="dcr04_doc_id"       property="docId"/>
+	<result column="dcr04_doc_type_id"  property="docTypeId"/>
+	<result column="dcr04_doc_type_nm"  property="docTypeName"/>
+	<result column="dcr04_doc_nm"       property="docName"/>
+	<result column="dcr04_reg_emp_id"   property="regEmpId"/>
+	<result column="dcr04_reg_emp_nm"   property="regEmpName"/>
+	<result column="dcr04_org_nm"       property="orgName"/>
+	<result column="dcr04_reg_date"     property="regDate"/>
+	<result column="dcr04_appr_id"      property="apprId"/>
+	<result column="dcr04_note"         property="note"/>
+	<result column="dcr04_type_nm"      property="typeName"/>
+
+	<association property="fileModel" 
+		javaType="myApp.client.vi.sys.model.Sys10_FileModel"
+		resultMap="sys10_file.mapper"
+	/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+select dcr04_doc_id
+     , dcr04_doc_type_id
+     , dcr04_doc_nm
+     , dcr04_reg_emp_id
+     , dcr04_reg_date
+     , dcr04_appr_id
+     , dcr04_note
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+     , dcr01_class_tree_nm as dcr04_doc_type_nm
+  from dcr04_doc
+     , dcr01_class_tree
+ where dcr04_doc_type_id = dcr01_class_tree_id 
+   and dcr04_doc_id = #{docId}
+</select>
+
+<select id="selectByDocTypeId" resultMap="mapper" parameterType="Long" > 
+select dcr04_doc_id
+     , dcr04_doc_type_id
+     , dcr04_doc_nm
+     , dcr04_reg_emp_id
+     , dcr04_reg_date
+     , dcr04_appr_id
+     , dcr04_note
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+  from dcr04_doc 
+ where dcr04_doc_type_id = #{docTypeId}
+   and dcr04_appr_id is null
+union all
+select dcr04_doc_id
+     , dcr04_doc_type_id
+     , dcr04_doc_nm
+     , dcr04_reg_emp_id
+     , dcr04_reg_date
+     , dcr04_appr_id
+     , dcr04_note
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+  from dcr04_doc a 
+     , apr01_appr b
+ where a.dcr04_doc_type_id = #{docTypeId}
+   and a.dcr04_appr_id = b.apr01_appr_id
+   and b.apr01_status_cd = 30
+union all
+select b.apr01_appr_id
+     , a.dcr04_doc_type_id
+     , b.apr01_title
+     , b.apr01_reg_emp_id
+     , b.apr01_reg_date
+     , a.dcr04_appr_id
+     , a.dcr04_note
+     , f_emp_kor_nm(apr01_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(apr01_reg_emp_id, apr01_reg_date) as dcr04_org_nm
+     , '결재' as dcr04_type_nm
+  from dcr04_doc a
+     , apr01_appr b
+ where a.dcr04_doc_type_id = #{docTypeId}
+   and a.dcr04_appr_id = b.apr01_appr_id
+   and b.apr01_status_cd = 30
+</select>
+
+<select id="selectBySearchText" resultMap="mapper" parameterType="HashMap" >
+select rownum as seqId
+     , a.*
+from
+(
+select a.*
+     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+     , f_cdnm('SealCode', dcr01_seal_cd, dcr01_company_id, sysdate) as dcr01_seal_nm
+     , b.*
+     , c.*
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date)) as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+     , d.*
+     , e.*
+     , f.*
+from   dcr01_class_tree a
+     , dcr03_org_auth b
+     , dcr04_doc c
+     , apr03_relate_item d
+     , apr05_relate_doc e
+     , fnd01_fund_info f
+where  a.dcr01_class_tree_id = b.dcr03_class_tree_id
+and    a.dcr01_company_id = #{companyId}
+and    b.dcr03_org_code_id = #{orgCode}
+and    ( b.dcr03_retrieve_yn = 'true' or
+         b.dcr03_update_yn   = 'true' )
+and    a.dcr01_class_tree_id = c.dcr04_doc_type_id
+and    c.dcr04_reg_date between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+and    c.dcr04_appr_id is null
+and    c.dcr04_doc_id = e.apr05_doc_id
+and    d.apr03_doc_id = e.apr05_doc_id
+and    d.apr03_fund_id = f.fnd01_fund_info_id
+) a
+where dcr04_reg_emp_nm like #{searchText}
+or    dcr04_org_nm like #{searchText}
+
+<!-- 
+union all
+select *
+from
+(
+select a.*
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date)) as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+from   dcr04_doc a, apr01_appr b
+where  a.dcr04_reg_date between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+and    a.dcr04_appr_id = b.apr01_appr_id
+and    b.apr01_status_cd = 30
+)
+where dcr04_reg_emp_nm like #{searchText}
+or    dcr04_org_nm like #{searchText}
+
+order  by dcr01_seq
+ -->
+</select>
+
+
+<select id="selectByApprId" resultMap="mapper" parameterType="Long" >
+<!-- 
+select a.*
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_nm
+     , b.*
+     , b.sys10_file_nm || '.' || sys10_file_ext as sys10_full_file_nm
+from   dcr04_doc a, SYS10_FILE b
+where  a.dcr04_appr_id = #{apprId}
+and    a.dcr04_doc_id = b.sys10_parent_id
+ -->
+ <!-- 
+select a.*
+     , b.*
+     , b.sys10_file_nm || '.' || sys10_file_ext as sys10_full_file_nm
+from (
+       select a.*
+            , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+            , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_nm
+            
+       from   dcr04_doc a
+       where  a.dcr04_appr_id = #{apprId}
+     ) a, sys10_file b
+where a.dcr04_doc_id = b.sys10_parent_id(+)
+  --> 
+select a.*
+     , b.*
+     , b.sys10_file_nm || '.' || sys10_file_ext as sys10_full_file_nm
+from (
+       select a.*
+            , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+            , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_nm
+            , b.*
+            , b.dcr01_class_tree_nm as dcr04_doc_type_nm
+       from   dcr04_doc a
+            , dcr01_class_tree b
+       where  a.dcr04_doc_type_id = b.dcr01_class_tree_id
+          and a.dcr04_appr_id = #{apprId}
+     ) a, sys10_file b
+where a.dcr04_doc_id = b.sys10_parent_id(+)
+</select>
+
+<select id="selectByFundId" resultMap="mapper" parameterType="HashMap" >
+select a.*
+     , b.*
+     , c.*
+from   apr01_appr a
+     , dcr04_doc b
+     , apr03_relate_item c
+where a.apr01_appr_id = b.dcr04_appr_id
+and   b.dcr04_doc_id = c.apr03_doc_id
+and   c.apr03_fund_id = #{fundId}
+and   a.apr01_status_cd = 30
+</select>
+
+<select id="selectByClassTreeId" resultMap="mapper" parameterType="HashMap" >
+select a.dcr04_doc_id
+     , a.dcr04_doc_type_id
+     , a.dcr04_doc_nm
+     , a.dcr04_reg_emp_id
+     , a.dcr04_reg_date
+     , a.dcr04_appr_id
+     , a.dcr04_note
+     , b.emp00_kor_nm as dcr04_reg_emp_nm
+     , b.emp00_org_nm as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+  from dcr04_doc a
+     , emp00_info b
+ where a.dcr04_reg_emp_id = b.emp00_emp_id
+   and a.dcr04_doc_type_id = #{docTypeId}
+   and a.dcr04_appr_id is null
+   and trunc(a.dcr04_reg_date) between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+   and trunc(a.dcr04_reg_date) between b.emp00_trans_date and b.emp00_close_date
+   and b.emp00_kor_nm like #{regEmpName}
+   and b.emp00_org_nm like #{orgName}
+		   and b.emp00_all_title = 0
+union all
+select b.apr01_appr_id
+     , a.dcr04_doc_type_id
+     , b.apr01_title
+     , b.apr01_reg_emp_id
+     , b.apr01_reg_date
+     , a.dcr04_appr_id
+     , a.dcr04_note
+     , c.emp00_kor_nm as dcr04_reg_emp_nm
+     , c.emp00_org_nm as dcr04_org_nm
+     , '결재' as dcr04_type_nm
+  from dcr04_doc a
+     , apr01_appr b
+     , emp00_info c
+ where a.dcr04_reg_emp_id = c.emp00_emp_id
+   and a.dcr04_appr_id = b.apr01_appr_id
+   and a.dcr04_doc_type_id = #{docTypeId}
+   and a.dcr04_appr_id = b.apr01_appr_id
+   and b.apr01_status_cd = 30
+   and trunc(a.dcr04_reg_date) between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+   and trunc(a.dcr04_reg_date) between c.emp00_trans_date and c.emp00_close_date
+   and c.emp00_kor_nm like #{regEmpName} 
+   and c.emp00_org_nm like #{orgName}
+		   and c.emp00_all_title = 0
+ order by dcr04_reg_date desc
+</select>
+
+<select id="selectChild" resultMap="mapper" parameterType="HashMap" >
+select dcr04_doc_id
+     , dcr04_doc_type_id
+     , dcr04_doc_nm
+     , dcr04_reg_emp_id
+     , dcr04_reg_date
+     , dcr04_appr_id
+     , dcr04_note
+     , emp00_kor_nm as dcr04_reg_emp_nm
+     , emp00_org_nm as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+  from dcr04_doc a
+     , apr01_appr b
+     , emp00_info c
+ where dcr04_reg_emp_id = emp00_emp_id
+   and dcr04_appr_id = apr01_appr_id
+   and dcr04_doc_type_id = #{docTypeId}
+   and dcr04_appr_id = #{apprId}
+   and apr01_status_cd = 30
+   and trunc(dcr04_reg_date) between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+   and trunc(dcr04_reg_date) between emp00_trans_date and emp00_close_date
+   and emp00_kor_nm like #{regEmpName}
+   and emp00_org_nm like #{orgName}
+		   and emp00_all_title = 0
+   
+	<!-- 
+select dcr04_doc_id
+     , dcr04_doc_type_id
+     , dcr04_doc_nm
+     , dcr04_reg_emp_id
+     , dcr04_reg_date
+     , dcr04_appr_id
+     , dcr04_note
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+     , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_nm
+     , '파일' as dcr04_type_nm
+  from dcr04_doc a 
+     , apr01_appr b
+ where a.dcr04_doc_type_id = #{docTypeId}
+   and a.dcr04_appr_id = b.apr01_appr_id
+   and a.dcr04_appr_id = #{apprId}
+   and b.apr01_status_cd = 30
+	 -->
+</select>
+
+<!-- <select id="selectOneFileData" resultMap="mapper" parameterType="Long" > -->
+<!-- 	select	distinct  -->
+<!-- 	  from	sys10_file -->
+<!-- 	 where	sys10_parent_id = #{parentId} -->
+<!-- 	   and	sys10_file_id   = ( select min(sys10_file_id) from sys10_file where sys10_parent_id = #{parentId}) -->
+
+<!-- </select> -->
+
+<insert id="insert"  parameterType="myApp.client.vi.dcr.model.Dcr04_DocModel">
+    merge into dcr04_doc a
+    using dual
+    on
+    (
+        a.dcr04_doc_id = #{docId}
+    )
+    when matched then
+    update set
+    	a.dcr04_doc_type_id   = #{docTypeId}
+     ,  a.dcr04_doc_nm        = #{docName}
+     ,  a.dcr04_reg_emp_id    = #{regEmpId}
+     ,  a.dcr04_reg_date      = #{regDate}
+     ,  a.dcr04_note          = #{note}
+     ,  a.dcr04_appr_id       = #{apprId}
+    
+    when not matched then
+	insert
+	 (	a.dcr04_doc_id
+	 ,	a.dcr04_doc_type_id
+	 , 	a.dcr04_doc_nm
+	 , 	a.dcr04_reg_emp_id
+	 , 	a.dcr04_reg_date
+	 , 	a.dcr04_note
+	 , 	a.dcr04_appr_id
+	 )
+	 values
+	 (	#{docId}
+	 , 	#{docTypeId}
+	 , 	#{docName}
+	 , 	#{regEmpId}
+	 , 	#{regDate}
+	 , 	#{note}
+	 , 	#{apprId}
+	 )
+</insert>
+
+<delete id="deleteByApprId"  parameterType="Long">
+	delete
+	  from	dcr04_doc
+	 where 	dcr04_appr_id = #{apprId}
+</delete>
+
+</mapper>

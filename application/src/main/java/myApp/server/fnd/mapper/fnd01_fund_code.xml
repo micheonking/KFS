@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd01_fund_code">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd01_FundCodeModel" >
+	<id		column="fnd01_fund_code_id"	property="fundCodeId"/>
+	<result	column="fnd01_fund_cd"		property="fundCode"/>
+	<result	column="fnd01_start_date"	property="startDate"/>
+	<result	column="fnd01_end_date"		property="endDate"/>
+	<result	column="fnd01_close_yn"		property="closeYn"/>
+	<result	column="fnd01_plan_yn"		property="planYn"/>
+	<result	column="fnd01_real_fund_id"	property="realFundId"/>
+	<result	column="fnd01_company_id"	property="companyId"/>
+
+	<result	column="fnd01_close_nm"		property="closeName"/>
+	<result column="fnd01_real_fund_cd" property="realFundCode"/>
+	<result	column="fnd01_real_fund_nm"	property="realFundName"/>
+
+    <association property="fundInfoModel" 
+		javaType="myApp.client.vi.fnd.model.Fnd02_FundInfoModel" 
+		resultMap="fnd02_fund_info.mapper"
+	/>
+
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	t1.*
+		,	t2.*
+		,	case when fnd01_plan_yn = 'true' then f_cdnm('PlnClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate)
+		         else f_cdnm('ClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) end as fnd01_close_nm
+<!-- 		,	f_org_nm(t2.fnd02_org_code_id, trunc(sysdate)) as fnd02_org_code_nm -->
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp1_id
+		   and emp00_all_title = 0
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp1_nm
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp2_id
+		   and emp00_all_title = 0
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp2_nm
+		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm
+		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm
+		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm
+		,	t3.fnd00_fund_cd as fnd01_real_fund_cd
+		,	t3.fnd00_fund_nm as fnd01_real_fund_nm
+		,	(	select fnd03_consignment_nm
+		          from fnd03_consignment
+		         where fnd03_consignment_cd = t2.fnd02_consignment_cd ) as fnd02_consignment_nm
+		,	(	select fnd06_office_work_nm
+		          from fnd06_office_work
+		         where fnd06_office_work_cd = t2.fnd02_office_work_cd ) as fnd02_office_work_nm
+	from	fnd01_fund_code		t1
+		,	fnd02_fund_info		t2
+		,	fnd00_fund          t3
+	where	t1.fnd01_fund_code_id	=	t2.fnd02_fund_code_id
+	and		t2.fnd02_work_date		=	f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate))
+	and 	t1.fnd01_real_fund_id	=	t3.fnd00_fund_id(+)
+	and		t3.fnd00_work_date(+)	=	f_max_workdate(t1.fnd01_real_fund_id,trunc(sysdate))
+	and		t1.fnd01_fund_code_id	=	#{fundCodeId}
+</select>
+
+<select id="selectByCd" resultMap="mapper" parameterType="String" >
+	select	*
+	  from	fnd01_fund_code
+	 where	fnd01_fund_cd = #{fundCode}
+<!-- 	select	t1.* -->
+<!-- 		,	t2.* -->
+<!-- 		,	case when fnd01_plan_yn = 'true' then f_cdnm('PlnClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) -->
+<!-- 		         else f_cdnm('ClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) end as fnd01_close_nm -->
+<!-- 		,	f_org_nm(t2.fnd02_org_code_id, trunc(sysdate)) as fnd02_org_code_nm -->
+<!-- 		,	(	select	emp00_kor_nm -->
+<!-- 				from	emp00_info -->
+<!-- 				where	emp00_emp_id	=	t2.fnd02_emp1_id -->
+<!-- 				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date -->
+<!-- 			)	as	fnd02_emp1_nm -->
+<!-- 		,	(	select	emp00_kor_nm -->
+<!-- 				from	emp00_info -->
+<!-- 				where	emp00_emp_id	=	t2.fnd02_emp2_id -->
+<!-- 				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date -->
+<!-- 			)	as	fnd02_emp2_nm -->
+<!-- 		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm -->
+<!-- 		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm -->
+<!-- 		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm -->
+<!-- 		,	t3.fnd00_fund_nm as fnd01_real_fund_nm -->
+<!-- 	from	fnd01_fund_code		t1 -->
+<!-- 		,	fnd02_fund_info		t2 -->
+<!-- 		,	fnd00_fund          t3 -->
+<!-- 	where	t1.fnd01_fund_code_id	=	t2.fnd02_fund_code_id -->
+<!-- 	and		t2.fnd02_work_date		=	f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate)) -->
+<!-- 	and 	t1.fnd01_real_fund_id	=	t3.fnd00_fund_id(+) -->
+<!-- 	and		t3.fnd00_work_date(+)	=	f_max_workdate(t1.fnd01_real_fund_id,trunc(sysdate)) -->
+<!-- 	and		t1.fnd01_fund_cd		=	#{fundCode} -->
+</select>
+
+<select id="selectByFundName" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	f_cdnm('ClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) as fnd01_close_nm
+<!-- 		,	f_org_nm(t2.fnd02_org_code_id, trunc(sysdate)) as fnd02_org_code_nm -->
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp1_id
+		   and emp00_all_title = 0
+				and		decode(fnd01_close_yn,'true',fnd01_end_date, trunc(sysdate)) between emp00_trans_date and emp00_close_date ) as fnd02_emp1_nm
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp2_id
+		   and emp00_all_title = 0
+				and		decode(fnd01_close_yn,'true',fnd01_end_date, trunc(sysdate)) between emp00_trans_date and emp00_close_date ) as fnd02_emp2_nm
+		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm
+		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm
+		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm
+		,	t3.fnd00_fund_cd as fnd01_real_fund_cd
+		,	t3.fnd00_fund_nm as fnd01_real_fund_nm
+		,	(	select fnd03_consignment_nm
+		          from fnd03_consignment
+		         where fnd03_consignment_cd = t2.fnd02_consignment_cd ) as fnd02_consignment_nm
+		,	(	select fnd06_office_work_nm
+		          from fnd06_office_work
+		         where fnd06_office_work_cd = t2.fnd02_office_work_cd ) as fnd02_office_work_nm
+	from	fnd01_fund_code		t1
+		,	fnd02_fund_info		t2
+		,	fnd00_fund          t3
+	where	t1.fnd01_fund_code_id	=		t2.fnd02_fund_code_id
+	and		t2.fnd02_work_date		=		f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate))
+	and 	t1.fnd01_real_fund_id	=		t3.fnd00_fund_id(+)
+	and		t3.fnd00_work_date(+)	=		f_max_workdate(t1.fnd01_real_fund_id,trunc(sysdate))
+	and		t1.fnd01_company_id		=		#{companyId}
+	and		t1.fnd01_close_yn		in		('false', #{closeYn})
+	and		t1.fnd01_fund_cd||t2.fnd02_fund_nm like	#{fundName}
+	and		t2.fnd02_fund_type_cd	like	#{fundTypeCode}
+	and		t1.fnd01_plan_yn		=		'false'
+  order by fnd01_fund_cd
+</select>
+
+<select id="selectByFundOrgAuth" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	f_cdnm('ClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) as fnd01_close_nm
+<!-- 		,	f_org_nm(t2.fnd02_org_code_id, trunc(sysdate)) as fnd02_org_code_nm -->
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp1_id
+		   and emp00_all_title = 0
+				and		decode(fnd01_close_yn,'true',fnd01_end_date, trunc(sysdate)) between emp00_trans_date and emp00_close_date ) as fnd02_emp1_nm
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp2_id
+		   and emp00_all_title = 0
+				and		decode(fnd01_close_yn,'true',fnd01_end_date, trunc(sysdate)) between emp00_trans_date and emp00_close_date ) as fnd02_emp2_nm
+		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm
+		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm
+		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm
+		,	t3.fnd00_fund_cd as fnd01_real_fund_cd
+		,	t3.fnd00_fund_nm as fnd01_real_fund_nm
+		,	(	select fnd03_consignment_nm
+		          from fnd03_consignment
+		         where fnd03_consignment_cd = t2.fnd02_consignment_cd ) as fnd02_consignment_nm
+		,	(	select fnd06_office_work_nm
+		          from fnd06_office_work
+		         where fnd06_office_work_cd = t2.fnd02_office_work_cd ) as fnd02_office_work_nm
+	from	fnd01_fund_code		t1
+		,	fnd02_fund_info		t2
+		,	fnd00_fund          t3
+		,	fnd08_org_auth		t4
+	where	t1.fnd01_fund_code_id	=		t2.fnd02_fund_code_id
+	and		t2.fnd02_work_date		=		f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate))
+	and 	t1.fnd01_real_fund_id	=		t3.fnd00_fund_id(+)
+	and		t3.fnd00_work_date(+)	=		f_max_workdate(t1.fnd01_real_fund_id,trunc(sysdate))
+	and		t1.fnd01_fund_code_id	=		t4.fnd08_fund_code_id
+	and		t4.fnd08_auth_yn		=		'true'
+	and		t4.fnd08_org_code_id	=		#{orgId}
+	and		t1.fnd01_company_id		=		#{companyId}
+	and		t1.fnd01_close_yn		in		('false', #{closeYn})
+	and		t1.fnd01_fund_cd||t2.fnd02_fund_nm like	#{fundName}
+	and		t2.fnd02_fund_type_cd	like	#{fundTypeCode}
+	and		t1.fnd01_plan_yn		=		'false'
+  order by fnd01_fund_cd
+</select>
+
+<select id="selectByWorkDate" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	f_cdnm('ClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) as fnd01_close_nm
+<!-- 		,	f_org_nm(t2.fnd02_org_code_id, trunc(sysdate)) as fnd02_org_code_nm -->
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp1_id
+		   and emp00_all_title = 0
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp1_nm
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+		   and emp00_all_title = 0
+				where	emp00_emp_id	=	t2.fnd02_emp2_id
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp2_nm
+		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm
+		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm
+		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm
+		,	(	select fnd03_consignment_nm
+		          from fnd03_consignment
+		         where fnd03_consignment_cd = t2.fnd02_consignment_cd ) as fnd02_consignment_nm
+		,	(	select fnd06_office_work_nm
+		          from fnd06_office_work
+		         where fnd06_office_work_cd = t2.fnd02_office_work_cd ) as fnd02_office_work_nm
+	from	fnd01_fund_code		t1
+		,	fnd02_fund_info		t2
+	where	t1.fnd01_fund_code_id	=		t2.fnd02_fund_code_id
+	and		t2.fnd02_work_date		=		#{workDate}
+	and		t1.fnd01_company_id		=		#{companyId}
+	and		t1.fnd01_close_yn		in		('false', #{closeYn})
+	and		t1.fnd01_fund_cd||t2.fnd02_fund_nm	like	#{fundName}
+	and		t2.fnd02_fund_type_cd	like	#{fundTypeCode}
+	and		t1.fnd01_plan_yn		=		'false'
+  order by fnd01_fund_cd
+</select>
+
+<select id="selectByFundPlan" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	f_cdnm('PlnClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) as fnd01_close_nm
+<!-- 		,	f_org_nm(t2.fnd02_org_code_id, trunc(sysdate)) as fnd02_org_code_nm -->
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp1_id
+		   and emp00_all_title = 0
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp1_nm
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp2_id
+		   and emp00_all_title = 0
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp2_nm
+		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm
+		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm
+		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm
+		,	t3.fnd00_fund_cd as fnd01_real_fund_cd
+		,	t3.fnd00_fund_nm as fnd01_real_fund_nm
+		,	(	select fnd03_consignment_nm
+		          from fnd03_consignment
+		         where fnd03_consignment_cd = t2.fnd02_consignment_cd ) as fnd02_consignment_nm
+		,	(	select fnd06_office_work_nm
+		          from fnd06_office_work
+		         where fnd06_office_work_cd = t2.fnd02_office_work_cd ) as fnd02_office_work_nm
+	from	fnd01_fund_code		t1
+		,	fnd02_fund_info		t2
+		,	fnd00_fund          t3
+	where	t1.fnd01_fund_code_id	=		t2.fnd02_fund_code_id
+	and		t2.fnd02_work_date		=		f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate))
+	and 	t1.fnd01_real_fund_id	=		t3.fnd00_fund_id(+)
+	and		t3.fnd00_work_date(+)	=		f_max_workdate(t1.fnd01_real_fund_id,trunc(sysdate))
+	and		t1.fnd01_company_id		=		#{companyId}
+	and		t1.fnd01_close_yn		in		('false', #{closeYn})
+<!-- 	and		t1.fnd01_start_date		between #{startDate} and #{endDate} -->
+	and		t1.fnd01_fund_cd||t2.fnd02_fund_nm like	#{fundName}
+	and		t2.fnd02_fund_type_cd	like	#{fundTypeCode}
+	and		t1.fnd01_plan_yn		=		'true'
+  order by fnd01_fund_cd
+</select>
+
+<select id="selectByFundPlanEmp" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	f_cdnm('PlnClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) as fnd01_close_nm
+<!-- 		,	f_org_nm(t2.fnd02_org_code_id, trunc(sysdate)) as fnd02_org_code_nm -->
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp1_id
+		   and emp00_all_title = 0
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp1_nm
+		,	(	select	emp00_kor_nm
+				from	emp00_info
+				where	emp00_emp_id	=	t2.fnd02_emp2_id
+		   and emp00_all_title = 0
+				and		t1.fnd01_start_date between emp00_trans_date and emp00_close_date
+			)	as	fnd02_emp2_nm
+		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm
+		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm
+		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm
+		,	t3.fnd00_fund_cd as fnd01_real_fund_cd
+		,	t3.fnd00_fund_nm as fnd01_real_fund_nm
+		,	(	select fnd03_consignment_nm
+		          from fnd03_consignment
+		         where fnd03_consignment_cd = t2.fnd02_consignment_cd ) as fnd02_consignment_nm
+		,	(	select fnd06_office_work_nm
+		          from fnd06_office_work
+		         where fnd06_office_work_cd = t2.fnd02_office_work_cd ) as fnd02_office_work_nm
+	from	fnd01_fund_code		t1
+		,	fnd02_fund_info		t2
+		,	fnd00_fund          t3
+		,	( select distinct pln02_fund_id
+		        from pln02_plan a
+		           , dcr03_org_auth
+<!-- 		           , emp00_info -->
+		       where pln02_class_tree_id = dcr03_class_tree_id
+<!-- 		         and pln02_emp_id = emp00_emp_id -->
+<!-- 		         and pln02_start_date between emp00_trans_date and emp00_close_date -->
+<!-- 		         and emp00_company_id = #{companyId} -->
+		         and dcr03_org_code_id = #{orgId}
+		         and ( dcr03_retrieve_yn = 'true' or
+		               dcr03_update_yn   = 'true' )
+		    ) t4
+	where	t1.fnd01_fund_code_id	=		t2.fnd02_fund_code_id
+	and		t2.fnd02_work_date		=		f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate))
+	and 	t1.fnd01_real_fund_id	=		t3.fnd00_fund_id(+)
+	and		t3.fnd00_work_date(+)	=		f_max_workdate(t1.fnd01_real_fund_id,trunc(sysdate))
+	and		t1.fnd01_fund_code_id	=		t4.pln02_fund_id
+	and		t1.fnd01_company_id		=		#{companyId}
+	and		t1.fnd01_close_yn		in		('false', #{closeYn})
+<!-- 	and		t1.fnd01_start_date		between #{startDate} and nvl(#{endDate},to_date('99991231','yyyymmdd')) -->
+	and		t1.fnd01_fund_cd||t2.fnd02_fund_nm like #{fundName}
+	and		t2.fnd02_fund_type_cd	like	#{fundTypeCode}
+	and		t1.fnd01_plan_yn		=		'true'
+  order by fnd01_fund_cd
+</select>
+
+<select id="selectByLookupFundCode" resultMap="mapper" parameterType="HashMap" > 
+	select	t1.*
+		,	t2.*
+	from	fnd01_fund_code		t1
+		,	fnd02_fund_info		t2
+	where	t1.fnd01_fund_code_id	=		t2.fnd02_fund_code_id
+	and		t1.fnd01_company_id		=		#{companyId}
+	and		t1.fnd01_close_yn		in		('false', #{closeYn})
+	and		t2.fnd02_work_date		=		f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate))
+	and		t1.fnd01_fund_cd||t2.fnd02_fund_nm	like	#{fundName}
+	and		t2.fnd02_fund_type_cd	like	#{fundTypeCode}
+	and		t1.fnd01_plan_yn		=		'false'
+	order by fnd01_fund_cd
+</select>
+
+<select id="selectOneFundCodeCheck" resultType="Long" parameterType="HashMap" >
+	select count(*)
+	  from fnd01_fund_code
+	 where fnd01_fund_cd = #{fundCode}
+	   and fnd01_fund_code_id != #{fundCodeId}
+</select>
+
+<select id="selectLastUploadDate" resultType="String" parameterType="Long" >
+	select to_char(max(fnd02_upload_work_date),'yyyy-mm-dd')
+	  from fnd01_fund_code
+	     , fnd02_fund_info
+	 where fnd01_fund_code_id	= fnd02_fund_code_id
+       and fnd01_plan_yn 		= 'false'
+	   and fnd01_company_id   	= #{companyId}
+
+</select>
+
+<select id="selectByRealFundId" resultType="Long" parameterType="HashMap" >
+	select fnd01_fund_code_id
+	  from fnd01_fund_code
+	 where fnd01_company_id   = #{companyId}
+	   and fnd01_real_fund_id = #{fundCodeId}
+</select>
+
+<insert id="insertUpdate" parameterType="myApp.client.vi.fnd.model.Fnd01_FundCodeModel">
+merge into fnd01_fund_code a
+    using dual
+    on
+    (
+        a.fnd01_fund_code_id = #{fundCodeId}
+    )    
+    when matched then
+    update set
+        a.fnd01_fund_cd			= #{fundCode}
+      , a.fnd01_start_date		= #{startDate}
+      , a.fnd01_end_date		= #{endDate}
+      , a.fnd01_close_yn		= #{closeYn}
+      , a.fnd01_plan_yn			= #{planYn}
+      , a.fnd01_real_fund_id	= #{realFundId}
+      , a.fnd01_company_id		= #{companyId}
+    
+    when not matched then
+	insert
+	(	a.fnd01_fund_code_id
+	, 	a.fnd01_fund_cd
+	, 	a.fnd01_start_date
+	, 	a.fnd01_end_date
+	, 	a.fnd01_close_yn
+	, 	a.fnd01_plan_yn
+	, 	a.fnd01_real_fund_id
+	,   a.fnd01_company_id ) 
+	values 
+	(	#{fundCodeId}
+	,	#{fundCode}
+	, 	#{startDate}
+	, 	#{endDate}
+	, 	#{closeYn}
+	, 	#{planYn}
+	, 	#{realFundId}
+	,   #{companyId} )  	
+</insert>
+
+</mapper>

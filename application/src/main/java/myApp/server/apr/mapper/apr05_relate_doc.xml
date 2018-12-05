@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="apr05_relate_doc">
+
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr05_RelateDocModel" >
+	<id  	column="apr05_relate_doc_id" property="relateDocId"/>
+	<result column="apr05_appr_id"       property="apprId"/>
+	<result column="apr05_file_id"       property="fileId"/>
+	<result column="apr05_file_nm"       property="fileName"/>
+	<result column="apr05_doctype_nm"    property="docTypeName"/>
+	<result column="apr05_gubun"         property="gubun"/>
+
+	<association property="empModel" 
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel" 
+		resultMap="emp00_info.mapper"
+	/>
+	
+	<association property="aprModel" 
+		javaType="myApp.client.vi.apr.model.Apr01_ApprModel" 
+		resultMap="apr01_appr.mapper"
+	/>
+	
+	<association property="fileModel" 
+		javaType="myApp.client.vi.sys.model.Sys10_FileModel" 
+		resultMap="sys10_file.mapper"
+	/>
+	
+	<association property="fundModel" 
+		javaType="myApp.client.vi.fnd.model.Fnd00_FundModel" 
+		resultMap="fnd00_fund.mapper"
+	/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+select *
+from apr05_relate_doc
+where apr05_relate_doc_id = #{relateDocId}
+</select>
+
+<select id="selectByApprId" resultMap="mapper" parameterType="HashMap" >
+select apr05_relate_doc.*
+     , sys10_file.*
+     , apr01_appr.*
+     , emp00_info.*
+from   apr05_relate_doc
+     , sys10_file
+     , apr01_appr
+     , emp00_info
+where  apr05_file_id = sys10_file_id
+and    sys10_parent_id = apr01_appr_id
+and    apr01_reg_emp_id = emp00_emp_id
+and    apr05_appr_id = #{apprId}
+and    apr01_status_cd = '30'
+and    apr01_reg_date between emp00_trans_date and emp00_close_date
+	   and emp00_all_title = 0
+order  by sys10_reg_date desc
+</select>
+
+<select id="selectByClassTreeId" resultMap="mapper" parameterType="HashMap" >
+select sys10_file_id as apr05_relate_doc_id
+     , case when x.fnd00_plan_yn = 'true' then 
+            case when x.fnd00_real_fund_id is null then x.fnd00_fund_nm
+                 else (select fnd00_fund_nm from fnd00_fund where fnd00_fund_id = x.fnd00_real_fund_id and rownum = 1)
+            end
+            else x.fnd00_fund_nm
+       end as fnd00_fund_nm
+     , sys10_file_nm
+     , sys10_file_id
+     , apr01_appr.*
+     , emp00_info.*
+     , apr03_relate_fund.*
+     , x.*
+from   sys10_file
+     , apr01_appr
+     , apr03_relate_fund
+     , emp00_info
+     , fnd00_fund x
+where  sys10_parent_id = apr01_appr_id
+and    apr01_reg_emp_id = emp00_emp_id
+and    apr01_appr_id = apr03_appr_id(+)
+and    apr03_fund_id = fnd00_fund_id(+)
+and    apr01_class_tree_id = #{classTreeId}
+and    apr01_status_cd = '30'
+and    apr01_reg_date between emp00_trans_date and emp00_close_date
+	   and emp00_all_title = 0
+order  by sys10_reg_date desc
+
+</select>
+
+<delete id="deleteByApprId" parameterType="HashMap" >
+delete
+from   apr05_relate_doc
+where  apr05_appr_id = #{apprId}
+</delete>
+<select id="selectByApprId22222" resultMap="mapper" parameterType="HashMap" >
+select a.*
+     , b.dcr04_doc_id
+     , b.dcr04_doc_type_id
+     , b.dcr04_doc_nm
+     , b.dcr04_reg_emp_id
+     , b.dcr04_reg_date
+     , b.dcr04_note
+     , b.dcr04_appr_id
+     , null as apr01_appr_id
+     , null as apr01_title
+     , null as apr01_reg_date
+     , null as apr01_status_cd
+     , null as apr01_content
+     , null as apr01_note
+     , null as apr01_reg_emp_id
+     , b.dcr04_doc_nm as apr05_doc_nm
+     , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_name
+     , f_org_kor_nm(dcr04_reg_emp_id, dcr04_reg_date) as dcr04_org_name
+     , c.dcr01_class_tree_nm as apr05_doctype_nm
+from apr05_relate_doc a
+   , dcr04_doc b
+   , dcr01_class_tree c
+where a.apr05_doc_id = b.dcr04_doc_id
+and   b.dcr04_doc_type_id = c.dcr01_class_tree_id
+and   a.apr05_appr_id = #{apprId}
+union all
+select a.*
+     , null as dcr04_doc_id
+     , null as dcr04_doc_type_id
+     , null as dcr04_doc_nm
+     , null as dcr04_reg_emp_id
+     , null as dcr04_reg_date
+     , null as dcr04_note
+     , null as dcr04_appr_id
+     , b.apr01_appr_id
+     , b.apr01_title
+     , b.apr01_reg_date
+     , b.apr01_status_cd
+     , b.apr01_content
+     , b.apr01_note
+     , b.apr01_reg_emp_id
+     , b.apr01_title as apr05_doc_nm
+     , f_emp_kor_nm(b.apr01_reg_emp_id) as dcr04_reg_emp_name
+     , f_org_kor_nm(b.apr01_reg_emp_id, b.apr01_reg_date) as dcr04_org_name
+     , (
+        select c.dcr01_class_tree_nm
+          from apr01_appr a
+             , dcr04_doc b
+             , dcr01_class_tree c
+         where a.apr01_appr_id = b.dcr04_appr_id
+         and   b.dcr04_doc_type_id = c.dcr01_class_tree_id
+         and   a.apr01_appr_id = #{apprId}
+         and   rownum <![CDATA[<=]]> 1
+       ) as apr05_doctype_nm
+from apr05_relate_doc a
+   , apr01_appr b
+where a.apr05_doc_id = b.apr01_appr_id
+and   a.apr05_appr_id = #{apprId}
+</select>
+
+
+</mapper>

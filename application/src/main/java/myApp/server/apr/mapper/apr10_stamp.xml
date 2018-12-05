@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="apr10_stamp">
+
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr10_StampModel" >
+	<id		column="apr10_stamp_id"			property="stampId"/>
+	<result	column="apr10_org_id"			property="orgId"/>
+	<result	column="apr10_stamp_nm"			property="stampName"/>
+	<result	column="apr10_start_date"		property="startDate"/>
+	<result	column="apr10_close_date"		property="closeDate"/>
+	<result	column="apr10_use_nm"			property="useName"/>
+	<result	column="apr10_note"				property="note"/>
+	<result	column="apr10_emp_id"			property="empId"/>
+	<result	column="apr10_stamp_id_string"	property="stampId_string"/>
+	<result	column="apr10_stamp_file_id"	property="stampFileId"/>
+	<result	column="apr10_emp_id"			property="aprEmpId"/>
+	
+	<result	column="apr10_org_nm"			property="orgName"/>
+	<result	column="apr10_emp_nm"			property="aprEmpName"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+
+	select	a.*
+	     ,  to_char(apr10_stamp_id) as apr10_stamp_id_string
+	     ,  f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) as apr10_org_nm
+	     ,	f.emp00_kor_nm||' '||f.emp00_pos_nm as apr10_emp_nm
+	from	apr10_stamp a
+		 ,	emp00_info f
+	where	apr10_stamp_id	=	#{stampId}
+	and		emp00_emp_id(+) = apr10_emp_id
+		   and emp00_all_title(+) = 0
+	and 	trunc(sysdate) between emp00_trans_date(+) and emp00_close_date(+)
+</select>
+
+<select id="selectByCodeName" resultMap="mapper" parameterType="HashMap" >
+	select	a.*
+	     ,  to_char(apr10_stamp_id) as apr10_stamp_id_string
+	     ,  f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) as apr10_org_nm
+	     ,	f.emp00_kor_nm||' '||f.emp00_pos_nm as apr10_emp_nm
+	from	apr10_stamp a
+		 ,	emp00_info f
+	where	emp00_emp_id(+) = apr10_emp_id
+		   and emp00_all_title(+) = 0
+	and 	trunc(sysdate) between emp00_trans_date(+) and emp00_close_date(+)
+	
+</select>
+
+<select id="selectByOrgId" resultMap="mapper" parameterType="HashMap" >
+	select	apr10_stamp_id
+	     ,  apr10_org_id
+	     ,  apr10_stamp_nm
+	     ,  apr10_start_date
+	     ,  apr10_close_date
+	     ,  apr10_use_nm
+	     ,  apr10_note
+	     ,  apr10_emp_id
+	     ,  to_char(apr10_stamp_id) as apr10_stamp_id_string
+	     ,  f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) as apr10_org_nm
+	     ,  sys10_file_id as apr10_stamp_file_id
+	    
+	from	apr10_stamp a
+	     ,  sys10_file b
+	     ,	emp00_info f
+	where   apr10_stamp_id = sys10_parent_id
+	and     sys10_file_id = (select max(sys10_file_id) from sys10_file x where b.sys10_parent_id = x.sys10_parent_id)
+	and     emp00_emp_id(+) = apr10_emp_id
+		   and emp00_all_title(+) = 0
+	and     trunc(sysdate) between emp00_trans_date(+) and emp00_close_date(+)
+	and     apr10_org_id in
+	       (
+	       select org01_code_id
+           from 
+               (
+	           select org01_code.*
+	                , org02_info.*
+	           from   org01_code, 
+			          org02_info 
+	           where  org01_company_id = #{companyId}
+	           and    org01_code_id    = org02_code_id
+	           and    sysdate between org01_open_date and nvl(org01_close_date, to_date('99991231', 'yyyymmdd'))
+	           and    org02_mod_date 
+			       = ( select max(x.org02_mod_date) 
+				       from   org02_info x
+				       where  x.org02_code_id = org02_info.org02_code_id 
+				       and    x.org02_mod_date <![CDATA[<=]]> sysdate )
+               )
+           start with org01_code_id = #{orgId}
+           connect by prior org02_parent_code_id = org01_code_id
+	       )
+	and    (
+	          apr10_stamp_nm like #{searchText}
+	       or apr10_use_nm like   #{searchText}
+	       or apr10_note like     #{searchText}
+	       or f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) like #{searchText}
+	       )
+    order by apr10_stamp_nm
+    
+</select>
+
+<select id="getStampFileId" resultMap="mapper" parameterType="Long" >
+	select	a.*
+	     ,  to_char(apr10_stamp_id) as apr10_stamp_id_string
+	     ,  f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) as apr10_org_nm
+	     ,  sys10_file_id as apr10_stamp_file_id
+	from	apr10_stamp a
+         ,  sys10_file b
+	where   apr10_stamp_id = sys10_parent_id
+	and     apr10_stamp_id	=	#{stampId}
+</select>
+
+<select id="selectOneStampFileId" resultMap="mapper" parameterType="Long" >
+select *
+from (
+      select a.*
+           , to_char(apr10_stamp_id) as apr10_stamp_id_string
+           , f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) as apr10_org_nm
+           , sys10_file_id as apr10_stamp_file_id
+      from   apr10_stamp a
+           , sys10_file b
+      where  apr10_stamp_id = sys10_parent_id
+      and    apr10_stamp_id	= #{stampId}
+      order by sys10_reg_date desc
+     )
+where rownum = 1
+</select>
+
+<select id="getPDFId" resultMap="mapper" parameterType="Long" >
+<!-- 
+select sys10_file_id as apr10_stamp_id
+from   apr01_appr
+     , sys10_file
+where  apr01_appr_id = sys10_parent_id
+and    apr01_appr_id = #{keyId}
+and    apr01_title || '.pdf' = sys10_file_nm
+-->
+select sys10_file_id as apr10_stamp_id
+from   apr01_appr
+     , sys10_file
+where  apr01_appr_id = sys10_parent_id
+and    apr01_appr_id = #{keyId}
+and    sys10_title_yn = 'true'
+</select>
+
+<select id="selectBySearchText" resultMap="mapper" parameterType="HashMap" >
+	select	a.*
+	     ,  to_char(apr10_stamp_id) as apr10_stamp_id_string
+	     ,  f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) as apr10_org_nm
+	from	apr10_stamp a
+	where   apr10_company_id = #{companyId}
+	and     (
+			   apr10_stamp_nm like #{searchText}
+			or apr10_use_nm like #{searchText}
+			or apr10_note like #{searchText}
+			or f_org_nm(apr10_org_id, nvl(apr10_close_date,to_date('99991231','yyyymmdd'))) like #{searchText}
+			)
+	order by apr10_stamp_nm
+</select>
+ 
+</mapper>

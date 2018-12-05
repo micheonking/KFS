@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dcr10_mail_history">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dcr.model.Dcr10_MailHistoryModel" >
+	<id		column="dcr10_mail_history_id"	property="mailHistoryId"/>
+	<result	column="dcr10_doc_id"			property="docId"/>
+	<result	column="dcr10_apr_id"			property="aprId"/>
+	<result	column="dcr10_sender_email"		property="senderEmail"/>
+	<result	column="dcr10_send_time"		property="sendTime"/>
+	<result	column="dcr10_receiver_email"	property="receiverEmail"/>
+	<result	column="dcr10_referencer_email"	property="referencerEmail"/>
+	<result	column="dcr10_attached_file"	property="attachedFile"/>
+	<result	column="dcr10_pdf_file"			property="pdfFile"/>
+	<result	column="dcr10_seal_file"		property="sealFile"/>
+	<result	column="dcr10_title_text"		property="titleText"/>
+	<result	column="dcr10_body_text"		property="bodyText"/>
+	
+	<result	column="dcr10_send_time_str"	property="sendTimeString"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	dcr10_mail_history
+	where	dcr10_mail_history_id	=	#{mailHistoryId}
+</select>
+
+<select id="selectByTitleText" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+	     ,  to_char(dcr10_send_time,'yyyy-mm-dd hh24:mi:ss') as dcr10_send_time_str
+	from	dcr10_mail_history t1
+	where	t1.dcr10_send_time	between	#{startDate} and #{endDate}
+	and		t1.dcr10_title_text	like	#{titleText}
+	order by dcr10_send_time desc
+</select>
+
+<select id="selectBySenderEmail" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+	     ,  to_char(dcr10_send_time,'yyyy-mm-dd hh24:mi:ss') as dcr10_send_time_str
+	  from	dcr10_mail_history t1
+	     ,	emp00_info
+	 where	dcr10_sender_email = emp00_email_addr
+	   and  emp00_all_title    = 0
+	   and  emp00_emp_id       = #{empId}
+	   and	dcr10_send_time	   between	#{startDate} and #{endDate}
+	   and	dcr10_title_text   like	#{titleText}
+	  order by dcr10_send_time desc
+</select>
+
+<insert id="insertMailHistory"  parameterType="HashMap">
+    <selectKey keyProperty="mailHistoryId" resultType="Long" order="BEFORE">
+		select seq.nextval from dual
+	</selectKey>
+	
+	insert into dcr10_mail_history
+  	(	dcr10_mail_history_id
+  	, 	dcr10_doc_id
+  	, 	dcr10_apr_id 
+  	, 	dcr10_sender_email
+  	, 	dcr10_send_time
+  	,   dcr10_receiver_email
+  	,   dcr10_referencer_email
+  	,   dcr10_attached_file
+  	,   dcr10_pdf_file
+  	,   dcr10_seal_file
+  	,   dcr10_title_text
+  	,   dcr10_body_text
+  	)
+  	values 
+  	(	#{mailHistoryId}
+  	, 	#{docId}
+  	, 	#{apprId}
+  	, 	#{senderEmail}
+  	, 	sysdate
+  	,   #{receiverEmail}
+  	,   #{referencerEmail}
+  	,   #{attachedFile}
+  	,   #{pdfFile}
+  	,   #{sealFile}
+  	,   #{titleText}
+  	,   #{bodyText}
+  	)
+</insert>
+
+</mapper>

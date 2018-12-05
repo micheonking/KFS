@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="bbs02_board">
+
+<resultMap 	id="mapper" type="myApp.client.vi.bbs.model.Bbs02_BoardModel" >
+	<id		column="bbs02_board_id"			property="boardId"/>
+	<result	column="bbs02_type_cd"			property="typeCode"/>
+	<result	column="bbs02_title_nm"			property="titleName"/>
+	<result	column="bbs02_setdate"			property="setdate"/>
+	<result	column="bbs02_cnt"				property="cnt"/>
+	<result	column="bbs02_file_name"		property="fileName"/>
+	<result	column="bbs02_file_path"		property="filePath"/>
+	<result	column="bbs02_writer"			property="writer"/>
+	<result	column="bbs02_contents"			property="contents"/>
+
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	a.*
+	from 	bbs02_board
+	where	bbs02_board_id = #{boardId}
+</select>
+
+<select id="selectByTypeCode" resultMap="mapper" parameterType="HashMap">
+	select 	a.*
+	from 	bbs02_board a
+	where	bbs02_type_cd like #{typeCode}
+	and		rownum	<![CDATA[<=]]>	#{setCount}
+</select>
+
+</mapper>

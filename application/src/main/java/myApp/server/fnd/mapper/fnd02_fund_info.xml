@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd02_fund_info">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd02_FundInfoModel" >
+	<id		column="fnd02_fund_info_id"			property="fundInfoId"/>
+	<result	column="fnd02_fund_code_id"			property="fundCodeId"/>
+	<result	column="fnd02_work_date"			property="workDate"/>
+	<result	column="fnd02_fund_nm"				property="fundName"/>
+	<result	column="fnd02_fund_type_cd"			property="fundTypeCode"/>
+	<result	column="fnd02_sintak_gb"			property="sintakGb"/>
+	<result	column="fnd02_public_yn"			property="publicYn"/>
+	<result	column="fnd02_seolj_aek"			property="seoljAek"/>
+	<result	column="fnd02_sunjasan_aek"			property="sunjasanAek"/>
+	<result	column="fnd02_org_code_id"			property="orgCodeId"/>
+	<result	column="fnd02_emp1_id"				property="emp1Id"/>
+	<result	column="fnd02_emp2_id"				property="emp2Id"/>
+	<result	column="fnd02_management_rate"		property="managementRate"/>
+	<result	column="fnd02_sales_rate"			property="salesRate"/>
+	<result	column="fnd02_consignment_cd"		property="consignmentCd"/>
+	<result	column="fnd02_consignment_rate"		property="consignmentRate"/>
+	<result	column="fnd02_office_work_cd"		property="officeWorkCd"/>
+	<result	column="fnd02_office_work_rate"		property="officeWorkRate"/>
+	<result	column="fnd02_plan_date"			property="planDate"/>
+	<result	column="fnd02_plan_sales_dscr"		property="planSalesDscr"/>
+	<result	column="fnd02_plan_investor_dscr"	property="planInvestorDscr"/>
+	<result	column="fnd02_plan_note"			property="planNote"/>
+	<result	column="fnd02_org_code_cd"			property="orgCode"/>
+	<result	column="fnd02_org_code_nm"			property="orgCodeName"/>
+	<result	column="fnd02_emp1_nm"				property="emp1Name"/>
+	<result	column="fnd02_emp2_nm"				property="emp2Name"/>
+	<result	column="fnd02_fund_type_nm"			property="fundTypeName"/>
+	<result	column="fnd02_sintak_gb_nm"			property="sintakGbName"/>
+	<result	column="fnd02_public_nm"			property="publicName"/>
+	<result	column="fnd02_consignment_nm"		property="consignmentName"/>
+	<result	column="fnd02_office_work_nm"		property="officeWorkName"/>
+	<result	column="fnd02_upload_work_date"		property="uploadWorkDate"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	fnd02_fund_info	
+	where	fnd02_fund_info_id = #{fundInfoId}
+</select>
+
+<select id="selectByFundCodeId" resultMap="mapper" parameterType="HashMap" >
+	select	a.*
+	  from	fnd01_fund_code
+	     ,  fnd02_fund_info a
+	 where	fnd01_fund_code_id = fnd02_fund_code_id
+	   and	fnd01_fund_code_id = #{fundCodeId}
+	   and	fnd02_work_date    = #{workDate}
+</select>
+
+<insert id="insertUpdate" parameterType="myApp.client.vi.fnd.model.Fnd02_FundInfoModel">
+merge into fnd02_fund_info a
+    using dual
+    on
+    (
+        a.fnd02_fund_info_id = #{fundInfoId}
+    )    
+    when matched then
+    update set
+		  a.fnd02_fund_code_id		 = #{fundCodeId}
+		, a.fnd02_work_date			 = #{workDate}
+		, a.fnd02_fund_nm			 = #{fundName}
+		, a.fnd02_fund_type_cd		 = #{fundTypeCode}
+		, a.fnd02_sintak_gb			 = #{sintakGb}
+		, a.fnd02_public_yn			 = #{publicYn}
+		, a.fnd02_seolj_aek			 = #{seoljAek}
+		, a.fnd02_sunjasan_aek		 = #{sunjasanAek}
+		, a.fnd02_org_code_id		 = #{orgCodeId}
+		, a.fnd02_emp1_id			 = #{emp1Id}
+		, a.fnd02_emp2_id			 = #{emp2Id}
+		, a.fnd02_management_rate	 = #{managementRate}
+		, a.fnd02_sales_rate		 = #{salesRate}
+		, a.fnd02_consignment_cd	 = #{consignmentCd}
+		, a.fnd02_consignment_rate	 = #{consignmentRate}
+		, a.fnd02_office_work_cd	 = #{officeWorkCd}
+		, a.fnd02_office_work_rate	 = #{officeWorkRate}
+		, a.fnd02_plan_date			 = #{planDate}
+		, a.fnd02_plan_sales_dscr	 = #{planSalesDscr}
+		, a.fnd02_plan_investor_dscr = #{planInvestorDscr}
+		, a.fnd02_plan_note			 = #{planNote}
+		, a.fnd02_org_code_cd		 = #{orgCode}
+		, a.fnd02_org_code_nm		 = #{orgCodeName}
+		, a.fnd02_upload_work_date	 = #{uploadWorkDate}
+
+    when not matched then
+	insert
+	(	  a.fnd02_fund_info_id
+		, a.fnd02_fund_code_id
+		, a.fnd02_work_date
+		, a.fnd02_fund_nm
+		, a.fnd02_fund_type_cd
+		, a.fnd02_sintak_gb
+		, a.fnd02_public_yn
+		, a.fnd02_seolj_aek
+		, a.fnd02_sunjasan_aek
+		, a.fnd02_org_code_id
+		, a.fnd02_emp1_id
+		, a.fnd02_emp2_id
+		, a.fnd02_management_rate
+		, a.fnd02_sales_rate
+		, a.fnd02_consignment_cd
+		, a.fnd02_consignment_rate
+		, a.fnd02_office_work_cd
+		, a.fnd02_office_work_rate
+		, a.fnd02_plan_date
+		, a.fnd02_plan_sales_dscr
+		, a.fnd02_plan_investor_dscr
+		, a.fnd02_plan_note
+		, a.fnd02_org_code_cd
+		, a.fnd02_org_code_nm
+		, a.fnd02_upload_work_date ) 
+	values 
+	(	  #{fundInfoId}
+		, #{fundCodeId}
+		, #{workDate}
+		, #{fundName}
+		, #{fundTypeCode}
+		, #{sintakGb}
+		, #{publicYn}
+		, #{seoljAek}
+		, #{sunjasanAek}
+		, #{orgCodeId}
+		, #{emp1Id}
+		, #{emp2Id}
+		, #{managementRate}
+		, #{salesRate}
+		, #{consignmentCd}
+		, #{consignmentRate}
+		, #{officeWorkCd}
+		, #{officeWorkRate}
+		, #{planDate}
+		, #{planSalesDscr}
+		, #{planInvestorDscr}
+		, #{planNote}
+		, #{orgCode}
+		, #{orgCodeName}
+		, #{uploadWorkDate} ) 	
+</insert>
+
+<delete id="deleteByWorkDate" parameterType="Date">
+	delete
+	  from fnd02_fund_info
+	 where fnd02_work_date = #{workDate}
+	   and fnd02_fund_code_id in ( select fnd01_fund_code_id
+	                                 from fnd01_fund_code
+	                                    , fnd02_fund_info
+	                                where fnd01_fund_code_id = fnd02_fund_code_id
+	                                  and fnd02_work_date = #{workDate}
+	                                  and fnd01_plan_yn = 'false' )
+</delete>
+
+<!-- <select id="selectByLookupFundCode" resultMap="mapper" parameterType="HashMap" >  -->
+<!-- 	select	t1.* -->
+<!-- 		,	t2.* -->
+<!-- 		,	f_cdnm('ClosedFundCode', fnd01_close_yn, fnd01_company_id, sysdate) as fnd01_close_nm -->
+<!-- 		,	(	select	org02_kor_nm -->
+<!-- 				from	org02_info -->
+<!-- 				where	org02_code_id	=	t2.fnd02_org_code_id -->
+<!-- 			)	as	fnd02_org_code_nm -->
+<!-- 		,	(	select	emp00_kor_nm -->
+<!-- 				from	emp00_info -->
+<!-- 				where	emp00_emp_id	=	t2.fnd02_emp1_id -->
+<!-- 			)	as	fnd02_emp1_nm -->
+<!-- 		,	(	select	emp00_kor_nm -->
+<!-- 				from	emp00_info -->
+<!-- 				where	emp00_emp_id	=	t2.fnd02_emp2_id -->
+<!-- 			)	as	fnd02_emp2_nm -->
+<!-- 		,	f_cdnm('FundTypeCode', fnd02_fund_type_cd, fnd01_company_id, fnd02_work_date) as fnd02_fund_type_nm -->
+<!-- 		,   f_cdnm('SintakCode', fnd02_sintak_gb, fnd01_company_id, sysdate ) as fnd02_sintak_gb_nm -->
+<!-- 		,	f_cdnm('PublicCode', fnd02_public_yn, fnd01_company_id, sysdate) as fnd02_public_nm -->
+<!-- 	from	fnd01_fund_code	t1 -->
+<!-- 		,	fnd02_fund_info	t2 -->
+<!-- 	where	t1.fnd01_fund_code_id	=	t2.fnd02_fund_code_id -->
+<!-- 	and		t1.fnd01_company_id		=	#{companyId} -->
+<!-- 	and		t1.fnd01_close_yn		in	('false',#{closeYn}) -->
+<!-- 	and		t2.fnd02_work_date		=	f_max_workdate(t2.fnd02_fund_code_id,trunc(sysdate)) -->
+<!-- 	and		t2.fnd02_fund_nm		like	#{fundName} -->
+<!-- 	and		t2.fnd02_fund_type_cd	like	#{fundTypeCode} -->
+<!-- </select> -->
+
+<!-- <select id="selectById" resultMap="mapper" parameterType="Long"> -->
+<!-- 	select	t1.* -->
+<!--            ,   f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate)  as fnd01_fund_type_nm -->
+<!--            ,   f_cdnm('HeajiCode', FND01_HEAJI_GB, fnd01_company_id, sysdate) as fnd01_heaji_gb_nm -->
+<!--            ,   f_cdnm('SintakCode',FND01_SINTAK_GB, fnd01_company_id, sysdate ) as fnd01_sintak_gb_nm -->
+<!--            ,   f_cdnm('UyBuseoCode', FND01_UY_BUSEO_CD,fnd01_company_id,sysdate) as fnd01_uy_buseo_nm -->
+<!--            ,   (select fnd03_sutaksa_nm -->
+<!--                from    fnd03_sutaksa   t2 -->
+<!--                where   t2.fnd03_sutaksa_cd =   t1.fnd01_sutak_cd -->
+<!--                and     rownum  =   1 -->
+<!--                )   as  fnd01_sutaksa_nm -->
+            
+<!-- 	  from	fnd01_fund_info t1 -->
+<!-- 	 where	fnd01_fund_info_id	=	#{id} -->
+<!-- </select> -->
+
+<!-- <select id="selectByCodeName" resultMap="mapper" parameterType="HashMap"> -->
+<!-- select  t1.* -->
+<!-- 	,   f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate)  as fnd01_fund_type_nm -->
+<!-- 	,   f_cdnm('HeajiCode', FND01_HEAJI_GB, fnd01_company_id, sysdate) as fnd01_heaji_gb_nm -->
+<!-- 	,   f_cdnm('SintakCode',FND01_SINTAK_GB, fnd01_company_id, sysdate ) as fnd01_sintak_gb_nm -->
+<!-- 	,   f_cdnm('UyBuseoCode', FND01_UY_BUSEO_CD,fnd01_company_id,sysdate) as fnd01_uy_buseo_nm -->
+<!-- 	,   (select fnd03_sutaksa_nm -->
+<!-- 	    from    fnd03_sutaksa   t2 -->
+<!-- 	    where   t2.fnd03_sutaksa_cd =   t1.fnd01_sutak_cd -->
+<!-- 	    and     rownum  =   1 -->
+<!-- 	    )   as  fnd01_sutaksa_nm -->
+<!-- from    fnd01_fund_info t1 -->
+<!-- where   t1.fnd01_fund_info_nm like #{codeName} -->
+<!--   and	fnd01_fund_type like  #{fundType} -->
+<!--         and	(	( #{heagiGb} = 'true' and	fnd01_heaji_gb = '1' ) or -->
+<!--               	( #{heagiGb} = 'false'	)	); -->
+<!-- </select> -->
+
+<!-- <select id="selectByLookupFundInfo" resultMap="mapper" parameterType="HashMap"> -->
+<!--        select  t1.* -->
+<!--            ,   f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate)  as fnd01_fund_type_nm -->
+<!--            ,   f_cdnm('HeajiCode', FND01_HEAJI_GB, fnd01_company_id, sysdate) as fnd01_heaji_gb_nm -->
+<!--            ,   f_cdnm('SintakCode',FND01_SINTAK_GB, fnd01_company_id, sysdate ) as fnd01_sintak_gb_nm -->
+<!--            ,   f_cdnm('UyBuseoCode', FND01_UY_BUSEO_CD,fnd01_company_id,sysdate) as fnd01_uy_buseo_nm -->
+<!--            ,   (select fnd03_sutaksa_nm -->
+<!--                from    fnd03_sutaksa   t2 -->
+<!--                where   t2.fnd03_sutaksa_cd =   t1.fnd01_sutak_cd -->
+<!--                and     rownum  =   1 -->
+<!--                )   as  fnd01_sutaksa_nm -->
+<!-- 	from    fnd01_fund_info t1 -->
+<!-- 	where   t1.fnd01_company_id		=		#{companyId} -->
+<!-- 	and		t1.fnd01_fund_info_nm	like	#{fundName} -->
+<!-- 	and		t1.fnd01_fund_type		like	#{fundTypeCode} -->
+<!-- 	and		t1.fnd01_heaji_gb		=		'1' -->
+<!-- </select> -->
+
+<!-- <select id="selectByfund" resultMap="mapper" parameterType="String"> -->
+<!--        select  t1.* -->
+<!--            ,   f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate)  as fnd01_fund_type_nm -->
+<!--            ,   f_cdnm('HeajiCode', FND01_HEAJI_GB, fnd01_company_id, sysdate) as fnd01_heaji_gb_nm -->
+<!--            ,   f_cdnm('SintakCode',FND01_SINTAK_GB, fnd01_company_id, sysdate ) as fnd01_sintak_gb_nm -->
+<!--            ,   f_cdnm('UyBuseoCode', FND01_UY_BUSEO_CD,fnd01_company_id,sysdate) as fnd01_uy_buseo_nm -->
+<!--            ,   (select fnd03_sutaksa_nm -->
+<!--                from    fnd03_sutaksa   t2 -->
+<!--                where   t2.fnd03_sutaksa_cd =   t1.fnd01_sutak_cd -->
+<!--                and     rownum  =   1 -->
+<!--                )   as  fnd01_sutaksa_nm -->
+<!-- 	from    fnd01_fund_info t1 -->
+<!-- 	where   t1.fnd01_fund_info_nm like #{codeName}; -->
+<!-- </select> -->
+
+<!-- <select id="selectBySearchText" resultMap="mapper" parameterType="HashMap" >  -->
+<!-- 	select	a.* -->
+<!-- 	     ,  f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate) as fnd01_fund_type_nm -->
+<!-- 	  from	fnd01_fund_info a -->
+<!-- 	 where	fnd01_company_id = #{companyId} -->
+<!-- 	   and	fnd01_fund_info_id not in ( select opr02_reg_fund_id -->
+<!-- 	 								 	  from opr02_fund -->
+<!-- 	 							      	 where opr02_create_id = #{createId} ) -->
+<!-- 	   and  fnd01_fund_type like #{fundType} -->
+<!-- 	   and	( UPPER(fnd01_fund_info_cd||fnd01_fund_info_nm||fnd01_unyong1) like UPPER(#{searchText}) or -->
+<!-- 	          f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate) like #{searchText} ) -->
+<!--  		   and  fnd01_heaji_gb = '1'	1:생펀드 -->
+<!-- </select> -->
+
+<!-- <select id="selectByDocIdText" resultMap="mapper" parameterType="HashMap" >  -->
+<!-- 	select	a.* -->
+<!--     		 ,  f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate) as fnd01_fund_type_nm -->
+<!--  	      from	fnd01_fund_info a -->
+<!--  		 where	fnd01_company_id = #{companyId} -->
+<!--  		   and	fnd01_fund_info_id not in ( select apr03_relate_item_id -->
+<!-- 	 								 	  from apr03_relate_item -->
+<!-- 	 							      	 where apr03_doc_id = #{docId} ) -->
+<!--   		   and  fnd01_fund_type like #{fundType} -->
+<!--   		   and	( UPPER(fnd01_fund_info_cd||fnd01_fund_info_nm||fnd01_unyong1) like UPPER(#{searchText}) or -->
+<!--                  f_cdnm('FundTypeCode', fnd01_fund_type, fnd01_company_id, sysdate) like #{searchText} ) -->
+<!--           and  fnd01_heaji_gb = '1'	1:생펀드 -->
+<!-- </select> -->
+	
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="emp10_addr_book">
+
+<resultMap 	id="mapper" type="myApp.client.vi.emp.model.Emp10_AddrBookModel" >
+
+	<id		column="emp10_addr_book_id"	property="addrBookId"/>
+	<result	column="emp10_person_nm"	property="personName"/>
+	<result	column="emp10_email"		property="email"/>
+	<result	column="emp10_mobile"		property="mobile"/>
+	<result	column="emp10_office_tel1"	property="officeTel1"/>
+	<result	column="emp10_company_nm"	property="companyName"/>
+	<result	column="emp10_pos_nm"		property="posName"/>
+	<result	column="emp10_title_nm"		property="titleName"/>
+	<result	column="emp10_emp_id"		property="empId"/>
+	<result	column="emp10_org_nm"		property="orgName"/>
+	<result	column="emp10_note"		    property="note"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	emp10_addr_book
+	where	emp10_addr_book_id	=	#{addrBookId}
+</select>
+
+
+<select id="selectByEmpId" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	emp10_addr_book
+	where	emp10_emp_id =   #{empId}
+<!-- 	order by emp10_manager_company_nm ; -->
+</select>
+
+<select id="selectByText" resultMap="mapper" parameterType="HashMap"> 
+	select	*
+	from	emp10_addr_book
+	where	emp10_emp_id = #{empId}
+	and     
+	        (       
+	        upper(emp10_person_nm) like upper(#{searchText})
+	     or upper(emp10_email) like upper(#{searchText})
+	     or upper(emp10_company_nm) like upper(#{searchText})
+	        )
+</select>
+
+</mapper>

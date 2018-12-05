@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+</head>
+
+<script>
+function refresh() { 
+	
+	//document.location.reload(); 
+
+//	alert("aaa");
+	window.open(location.protocol + "//" + location.host + "/zipAddr/SearchAddr.jsp","abcd");
+	
+	//var fn = window.parent.myApp.client.test.JSCaller.action3();
+	//alert(fn(44)); // will return 42!
+	
+//	var rd = window.parent.myApp.client.test.Tab_RD.setCompanyName(); 
+//	rd("우리집이 최고야"); 
+	
+}
+
+function jusoCallBack(roadAddrPart1, roadAddrPart2, addrDetail, zipCode){
+	roadAddrPart1;//도로명주소
+	roadAddrPart2;//동명
+	addrDetail;//입력한 주소
+	zipCode;//우편번호
+	var fn = window.parent.myApp.client.test.JSCaller.action3();
+	fn(roadAddrPart1);
+}
+
+</script>
+
+<body>
+주소찾기를 부릅니다. 
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+<button onclick="refresh()">주소찾기</button>
+
+</body>
+</html>

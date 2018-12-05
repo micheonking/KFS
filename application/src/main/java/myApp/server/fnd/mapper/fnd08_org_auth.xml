@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd08_org_auth">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd08_OrgAuthModel" >
+	<id		column="fnd08_org_auth_id"	property="orgAuthId"/>
+	<result	column="fnd08_fund_code_id"	property="fundCodeId"/>
+    <result	column="fnd08_org_code_id"	property="orgCodeId"/>
+	<result	column="fnd08_auth_yn"		property="authYn"/>
+	<result	column="fnd08_note"			property="note"/> 
+</resultMap>
+	
+<select id="selectById" resultMap="mapper" parameterType="Long">
+	select	*
+	  from	fnd08_org_auth
+	 where	fnd08_org_auth_id = #{orgAuthId}
+</select>
+
+</mapper>

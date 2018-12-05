@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="apr07_alt_appr">
+
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr07_AltApprModel" >
+	<id  	column="apr07_alt_appr_id"        property="altApprId"/>
+	<result column="apr07_target_emp_id"      property="targetEmpId"/>
+	<result column="apr07_target_emp_no"      property="targetEmpNo"/>
+	<result column="apr07_target_emp_nm"      property="targetEmpName"/>
+	<result column="apr07_target_position_nm" property="targetPositionName"/>
+	<result column="apr07_target_title_nm"    property="targetTitleName"/>
+	<result column="apr07_target_org_nm"      property="targetOrgName"/>
+	<result column="apr07_start_date"         property="startDate"/>
+	<result column="apr07_close_date"         property="closeDate"/>
+	<result column="apr07_alt_emp_id"         property="altEmpId"/>
+	<result column="apr07_alt_emp_no"         property="altEmpNo"/>
+	<result column="apr07_alt_emp_nm"         property="altEmpName"/>
+	<result column="apr07_alt_position_nm"    property="altPositionName"/>
+	<result column="apr07_alt_title_nm"       property="altTitleName"/>
+	<result column="apr07_alt_org_nm"         property="altOrgName"/>
+	<result column="apr07_reason_cd"          property="reasonCd"/>
+	<result column="apr07_emgr_point"         property="emgrPoint"/>
+	<result column="apr07_note"               property="note"/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+select a.*
+     , b.emp00_emp_no as apr07_target_emp_no
+     , b.emp00_kor_nm as apr07_target_emp_nm
+     , b.emp00_pos_nm as apr07_target_position_nm
+     , b.emp00_title_nm as apr07_target_title_nm
+     , b.emp00_org_nm as apr07_target_org_nm
+     , c.emp00_emp_no as apr07_alt_emp_no
+     , c.emp00_kor_nm as apr07_alt_emp_nm
+     , c.emp00_pos_nm as apr07_alt_position_nm
+     , c.emp00_title_nm as apr07_alt_title_nm
+     , c.emp00_org_nm as apr07_alt_org_nm
+from   apr07_alt_appr a
+     , emp00_info b<!-- 대상자 정보 -->
+     , emp00_info c<!-- 원결재자 정보 -->
+where b.emp00_emp_id = a.apr07_target_emp_id
+and   c.emp00_emp_id = a.apr07_alt_emp_id
+	   and b.emp00_all_title = 0
+	   and c.emp00_all_title = 0
+and   a.apr07_alt_appr_id = #{altApprId}
+and   a.apr07_close_date between b.emp00_trans_date and b.emp00_close_date 
+and   a.apr07_close_date between c.emp00_trans_date and c.emp00_close_date 
+</select>
+
+<select id="selectByEmpId" resultMap="mapper" parameterType="HashMap" >
+select a.*
+     , b.emp00_emp_no as apr07_target_emp_no
+     , b.emp00_kor_nm as apr07_target_emp_nm
+     , b.emp00_pos_nm as apr07_target_position_nm
+     , b.emp00_title_nm as apr07_target_title_nm
+     , b.emp00_org_nm as apr07_target_org_nm
+     , c.emp00_emp_no as apr07_alt_emp_no
+     , c.emp00_kor_nm as apr07_alt_emp_nm
+     , c.emp00_pos_nm as apr07_alt_position_nm
+     , c.emp00_title_nm as apr07_alt_title_nm
+     , c.emp00_org_nm as apr07_alt_org_nm
+from   apr07_alt_appr a
+     , emp00_info b<!-- 대상자 정보 -->
+     , emp00_info c<!-- 원결재자 정보 -->
+where b.emp00_emp_id = a.apr07_target_emp_id
+and   c.emp00_emp_id = a.apr07_alt_emp_id
+	   and b.emp00_all_title = 0
+	   and c.emp00_all_title = 0
+and   a.apr07_target_emp_id = #{empId}
+and   a.apr07_start_date between b.emp00_trans_date and b.emp00_close_date
+and   a.apr07_start_date between c.emp00_trans_date and c.emp00_close_date
+</select>
+
+<select id="selectOneByEmpId" resultMap="mapper" parameterType="HashMap" >
+select a.*
+     , b.emp00_emp_no as apr07_target_emp_no
+     , b.emp00_kor_nm as apr07_target_emp_nm
+     , b.emp00_pos_nm as apr07_target_position_nm
+     , b.emp00_title_nm as apr07_target_title_nm
+     , b.emp00_org_nm as apr07_target_org_nm
+     , c.emp00_emp_no as apr07_alt_emp_no
+     , c.emp00_kor_nm as apr07_alt_emp_nm
+     , c.emp00_pos_nm as apr07_alt_position_nm
+     , c.emp00_title_nm as apr07_alt_title_nm
+     , c.emp00_org_nm as apr07_alt_org_nm
+from   apr07_alt_appr a
+     , emp00_info b<!-- 대상자 정보 -->
+     , emp00_info c<!-- 원결재자 정보 -->
+where b.emp00_emp_id = a.apr07_target_emp_id
+and   c.emp00_emp_id = a.apr07_alt_emp_id
+	   and b.emp00_all_title = 0
+	   and c.emp00_all_title = 0
+and   a.apr07_target_emp_id = #{empId}
+and   a.apr07_start_date between b.emp00_trans_date and b.emp00_close_date
+and   a.apr07_start_date between c.emp00_trans_date and c.emp00_close_date
+and   trunc(sysdate) between a.apr07_start_date and a.apr07_close_date
+and   rownum = 1
+</select>
+
+<select id="selectByText" resultMap="mapper" parameterType="HashMap" >
+select *
+from (
+select a.*
+     , b.emp00_company_id
+     , b.emp00_emp_no as apr07_target_emp_no
+     , b.emp00_kor_nm as apr07_target_emp_nm
+     , b.emp00_pos_nm as apr07_target_position_nm
+     , b.emp00_title_nm as apr07_target_title_nm
+     , b.emp00_org_nm as apr07_target_org_nm
+     , c.emp00_emp_no as apr07_alt_emp_no
+     , c.emp00_kor_nm as apr07_alt_emp_nm
+     , c.emp00_pos_nm as apr07_alt_position_nm
+     , c.emp00_title_nm as apr07_alt_title_nm
+     , c.emp00_org_nm as apr07_alt_org_nm
+from   apr07_alt_appr a
+     , emp00_info b
+     , emp00_info c
+where b.emp00_emp_id = a.apr07_target_emp_id
+and   c.emp00_emp_id = a.apr07_alt_emp_id
+	   and b.emp00_all_title = 0
+	   and c.emp00_all_title = 0
+and   b.emp00_company_id = #{companyId}
+and   a.apr07_start_date between b.emp00_trans_date and b.emp00_close_date
+and   a.apr07_start_date between c.emp00_trans_date and c.emp00_close_date
+and   (
+         a.apr07_start_date between trunc(#{startDate}) and trunc(#{endDate})
+      or a.apr07_close_date between trunc(#{startDate}) and trunc(#{endDate})
+      )
+)
+where apr07_target_emp_nm like #{searchText} 
+<!-- 
+or    apr07_target_org_nm like #{searchText}
+or    apr07_alt_emp_nm like #{searchText}
+or    apr07_alt_org_nm like #{searchText}
+ -->
+
+</select>
+
+<select id="selectByAltApprId" resultMap="mapper" parameterType="HashMap" >
+select *
+from apr07_alt_appr
+where apr07_alt_appr_id = #{altApprId}
+</select>
+
+
+</mapper>

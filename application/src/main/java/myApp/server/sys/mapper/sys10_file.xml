@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys10_file">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys10_FileModel" >
+	<id  	column="sys10_file_id"		property="fileId"/>
+	<result column="sys10_parent_id"	property="parentId"/>
+	<result column="sys10_file_nm"		property="fileName"/>
+	<result column="sys10_reg_date"		property="regDate"/>
+	<result column="sys10_server_path"	property="serverPath"/>
+	<result column="sys10_size"			property="size"/>
+	<result column="sys10_del_date"		property="delDate"/>
+	<result column="sys10_note"			property="note"/>
+	<result column="sys10_file_ext"		property="ext"/>
+	<result column="sys10_title_yn"		property="titleYn"/>
+
+	<association property="apprModel" 
+		javaType="myApp.client.vi.apr.model.Apr01_ApprModel"
+		resultMap="apr01_appr.mapper"
+	/>	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	a.*
+	from 	sys10_file a
+	where	sys10_file_id = #{fileId}
+</select>
+
+<select id="selectByFileId" resultMap="mapper" parameterType="HashMap" > 
+	select 	a.*
+	from 	sys10_file a
+	<choose>
+	<when test="fileList.size != 0">
+        where  sys10_file_id in 
+        <foreach collection="fileList" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </when>
+    <otherwise>
+    where 1 = 2
+    </otherwise>
+    </choose>
+</select>
+
+<select id="selectByParentId" resultMap="mapper" parameterType="Long" > 
+	select 	*
+	from 	sys10_file
+	where	sys10_parent_id = #{parentId}
+</select>
+
+<select id="selectOneByParentId" resultMap="mapper" parameterType="Long" > 
+select * from(
+	select 	sys10_file.*
+	from 	sys10_file
+	where	sys10_parent_id = #{parentId}
+    order by sys10_reg_date desc
+    )
+where rownum = 1
+</select>
+
+<select id="selectOneFileName" resultType="String" parameterType="Long" >
+	select	file_nm||decode(cnt - 1, 0, '', ' 외 '||(cnt - 1)) as sys10_file_nm
+  	  from	( select sys10_file_nm file_nm
+                from sys10_file
+               where sys10_parent_id = #{parentId}
+                 and sys10_file_id = ( select min(sys10_file_id) from sys10_file where sys10_parent_id = #{parentId}) )
+         ,	( select count(*) cnt
+           		from sys10_file
+          	   where sys10_parent_id = #{parentId} )
+</select>
+
+<select id="selectByApprId" resultMap="mapper" parameterType="Long" >
+select 	*
+from 	sys10_file
+where	sys10_parent_id in (
+                           select apr01_appr_id
+                           from   apr01_appr
+                                , apr03_relate_item
+                           where  apr01_appr_id = apr03_doc_id(+)
+                           and    apr01_appr_id = #{apprId}
+                           )
+</select>
+
+<select id="selectApprRelateDoc" resultMap="mapper" parameterType="Long" >
+select * 
+from   sys10_file where sys10_parent_id = #{apprId}
+union all
+select * 
+from   sys10_file where sys10_file_id in (
+                                         select apr05_file_id 
+                                         from   apr05_relate_doc
+                                         where  apr05_appr_id = #{apprId}
+                                         )
+</select>
+
+<insert id="insert" parameterType="myApp.client.vi.sys.model.Sys10_FileModel">
+insert into sys10_file 
+     ( sys10_file_id
+     , sys10_parent_id
+     , sys10_file_nm
+     , sys10_reg_date
+     , sys10_server_path
+     , sys10_size
+     , sys10_note
+     , sys10_file_ext ) 
+values 
+     ( #{fileId}
+     , #{parentId}
+     , #{fileName}
+     , sysdate
+     , #{serverPath}
+     , #{size}
+     , #{note}
+     , #{ext} )  	
+</insert>
+
+<insert id="insertUpdate" parameterType="myApp.client.vi.sys.model.Sys10_FileModel">
+merge into sys10_file a
+    using dual
+    on
+    (
+        a.sys10_file_id = #{fileId}
+    )    
+    when matched then
+    update set
+        a.sys10_parent_id = #{parentId}
+	  , a.sys10_file_nm = #{fileName}
+	  , a.sys10_reg_date = sysdate
+	  , a.sys10_server_path = #{serverPath}
+	  , a.sys10_size = #{size}
+	  , a.sys10_note = #{note}
+	  , a.sys10_file_ext = #{ext}
+	  , a.sys10_title_yn = #{titleYn}
+    
+    when not matched then
+	insert
+	(	a.sys10_file_id
+	, 	a.sys10_parent_id
+	, 	a.sys10_file_nm
+	, 	a.sys10_reg_date
+	, 	a.sys10_server_path
+	, 	a.sys10_size
+	, 	a.sys10_note
+	,   a.sys10_file_ext
+	,   a.sys10_title_yn ) 
+	values 
+	(	#{fileId}
+	,	#{parentId}
+	, 	#{fileName}
+	, 	sysdate
+	, 	#{serverPath}
+	, 	#{size}
+	, 	#{note}
+	,   #{ext}
+	,   #{titleYn} )  	
+</insert>
+
+<update id="update" parameterType="myApp.client.vi.sys.model.Sys10_FileModel">
+update sys10_file
+   set sys10_parent_id = #{parentId}
+     , sys10_file_nm = #{fileName}
+     , sys10_reg_date = sysdate
+     , sys10_server_path = #{serverPath}
+     , sys10_size = #{size}
+     , sys10_note = #{note}
+     , sys10_file_ext = #{ext}
+ where sys10_file_id = #{fileId}
+</update>
+
+<delete id="delete" parameterType="String">
+delete from sys10_file
+ where sys10_file_id = #{fileId}
+</delete>
+
+<delete id="deleteByParentId" parameterType="Long">
+delete
+  from	sys10_file
+ where  sys10_parent_id  = #{apprId}
+</delete>
+
+
+
+</mapper>

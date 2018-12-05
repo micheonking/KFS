@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys06_menu">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys06_MenuModel" >
+	<id  	column="sys06_menu_id"		property="menuId" />
+	<result column="sys06_parent_id"	property="parentId" />
+	<result column="sys06_menu_nm" 		property="menuName" />
+	<result column="sys06_class_nm"		property="className" />
+	<result column="sys06_seq" 			property="seq" />
+	<result column="sys06_use_yn"		property="useYn" />
+	<result column="sys06_note"			property="note" />
+	<result column="sys06_role_menu_yn"	property="roleMenuYn" />
+	
+	<association property="roleMenuModel" 
+		javaType="myApp.client.vi.sys.model.Sys07_RoleMenuModel" 
+		resultMap="sys07_role_menu.mapper"
+	/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long">
+	select 	* 
+	from 	sys06_menu 
+	where 	sys06_menu_id = #{menuId}
+	order 	by sys06_seq
+</select>
+
+<select id="selectByParentId" resultMap="mapper" parameterType="Long" > 
+	select 	*
+	from 	sys06_menu
+	where 	sys06_parent_id = #{parentId}
+	order 	by sys06_seq, sys06_menu_nm
+</select>
+
+<select id="selectByCompanyId" resultMap="mapper" parameterType="Long" > 
+select *
+  from sys06_menu, sys03_company_menu
+ where sys06_menu_id = sys03_menu_id
+   and sys03_use_yn= 'true'
+   and sys03_company_id = #{companyId} 
+   and sys06_parent_id = #{parentId}
+ order by sys06_seq, sys06_menu_nm
+</select>
+
+<select id="selectByRoleId" resultMap="mapper" parameterType="HashMap" > 
+	select 	sys06_menu.*, 
+            sys07_role_menu.*, 
+            decode(sys07_role_menu_id, null, 'false', 'true') sys06_role_menu_yn
+	from 	sys06_menu, 
+            sys07_role_menu, 
+            sys03_company_menu
+	where 	sys06_parent_id = #{parentId}
+    and     sys06_menu_id = sys07_menu_id(+)
+    and     sys07_role_id(+) = #{roleId}
+    and		sys06_menu_id = sys03_menu_id
+    and		sys03_company_id = #{companyId}
+	order 	by sys06_seq, sys06_menu_nm
+</select>
+
+<select id="selectByUserId" resultMap="mapper" parameterType="HashMap" >
+	select  *
+	from    sys06_menu, 
+	        sys07_role_menu, 
+            sys05_user_role, 
+            sys03_company_menu 
+	where   sys06_menu_id = sys07_menu_id
+	and     sys06_parent_id = #{parentId}
+	and     sys07_role_id = sys05_role_id
+    and     sys05_user_id = #{userId}
+    and     sys06_menu_id = sys03_menu_id
+    and     sys03_company_id = #{companyId}
+     
+	order by sys06_seq, sys06_menu_nm
+  </select>
+
+
+</mapper>

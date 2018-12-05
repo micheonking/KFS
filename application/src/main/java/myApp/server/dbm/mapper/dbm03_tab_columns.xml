@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="dbm03_tab_columns">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dbm.model.Dbm03_TabColumnsModel" >
+	<id		column="row_no"			property="rowNo"/>
+	<result	column="error_msg"		property="errorMsg"/>
+
+</resultMap>
+	
+<select id="selectByXML" parameterType="HashMap" statementType="CALLABLE"> 
+	CALL sp_JavaXML(
+		#{tableName},
+		#{result, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=dbm03_tab_columns.mapper}
+    )
+</select>
+
+<select id="selectByModel" parameterType="HashMap" statementType="CALLABLE"> 
+	CALL sp_JavaModel(
+		#{tableName},
+		#{result, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=dbm03_tab_columns.mapper}
+    )
+</select>
+
+<select id="selectByProperties" parameterType="HashMap" statementType="CALLABLE"> 
+	CALL sp_JavaProperties(
+		#{tableName},
+		#{result, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=dbm03_tab_columns.mapper}
+    )
+</select>
+
+<select id="selectByGridBuilder" parameterType="HashMap" statementType="CALLABLE"> 
+	CALL sp_JavaGridBuilder(
+		#{tableName},
+		#{inOut},
+		#{result, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=dbm03_tab_columns.mapper}
+    )
+</select>
+
+</mapper>

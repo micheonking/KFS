@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="dcr01_class_tree">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dcr.model.Dcr01_ClassTreeModel" >
+	<id  	column="dcr01_class_tree_id"	property="classTreeId"/>
+	<result column="dcr01_company_id"		property="companyId"/>
+	<result column="dcr01_class_tree_cd"	property="classTreeCode"/>
+	<result column="dcr01_class_tree_nm"	property="classTreeName"/>
+	<result column="dcr01_parent_tree_id"	property="parentTreeId"/>
+	<result column="dcr01_type_cd"			property="typeCode"/>
+	<result column="dcr01_approval_type_cd"	property="approvalTypeCode"/>
+	<result column="dcr01_approval_type_nm"	property="approvalTypeName"/>
+	<result column="dcr01_item_type_cd"		property="itemTypeCode"/>
+	<result column="dcr01_item_type_nm"		property="itemTypeName"/>
+	<result column="dcr01_seal_cd"			property="sealCode"/>
+	<result column="dcr01_seal_nm"			property="sealName"/>
+	<result column="dcr01_use_yn"			property="useYn"/>
+	<result column="dcr01_seq"				property="seq"/>
+	<result column="dcr01_resrch_use_yn"	property="researchYn"/>
+	<result column="dcr01_advert_yn"		property="advertYn"/>
+	<result column="dcr01_note"				property="note"/>
+	
+	<result column="dcr01_level"			property="level"/>
+	
+	<association property="orgAuthModel" 
+		javaType="myApp.client.vi.dcr.model.Dcr03_OrgAuthModel" 
+		resultMap="dcr03_org_auth.mapper"
+	/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select a.*
+	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm
+	  from dcr01_class_tree a
+	 where dcr01_class_tree_id = #{classTreeId}
+</select>
+
+<select id="selectByParentId" resultMap="mapper" parameterType="HashMap" >
+	select a.*
+	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm
+	  from dcr01_class_tree a
+	 where dcr01_company_id = #{companyId}
+	   and dcr01_parent_tree_id = #{parentId}
+	   and dcr01_type_cd like #{typeCode}
+	 order by dcr01_seq
+</select>
+
+<select id="selectByParentIdResrchYn" resultMap="mapper" parameterType="HashMap" >
+<!-- 	select a.* -->
+<!-- 	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm -->
+<!-- 	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm -->
+<!-- 	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm -->
+<!-- 	  from dcr01_class_tree a -->
+<!-- 	     , dcr03_org_auth -->
+<!-- 	 where dcr01_class_tree_id = dcr03_class_tree_id -->
+<!-- 	   and dcr03_org_code_id = #{orgId} -->
+<!-- 	   and dcr01_company_id = #{companyId} -->
+<!-- 	   and dcr01_parent_tree_id = #{parentId} -->
+<!-- 	   and dcr01_type_cd like #{typeCode} -->
+<!-- 	   and dcr03_update_yn = 'true' -->
+<!-- 	 order by dcr01_seq -->
+
+<!-- 
+	select a.*
+	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm
+	  from dcr01_class_tree a
+	     , dcr03_org_auth
+	 where dcr01_class_tree_id = dcr03_class_tree_id
+	   and dcr03_org_code_id = #{orgId}
+	   and dcr01_company_id = #{companyId}
+	   and dcr01_parent_tree_id = #{parentId}
+	   and dcr01_type_cd like #{typeCode}
+	   and dcr01_resrch_use_yn = 'true'
+	   and dcr03_update_yn = 'true'
+	 order by dcr01_seq
+ -->
+ select a.*
+	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm
+	     , b.*
+	  from dcr01_class_tree a
+	     , dcr03_org_auth b
+	 where a.dcr01_class_tree_id = b.dcr03_class_tree_id
+	   and a.dcr01_company_id = #{companyId}
+	   and a.dcr01_parent_tree_id = #{parentId}
+	   and b.dcr03_org_code_id = #{orgId}
+	   
+       and ( b.dcr03_retrieve_yn = 'true' or
+             b.dcr03_update_yn   = 'true' )
+	 order by dcr01_seq
+</select>
+
+<select id="selectByParentIdRole" resultMap="mapper" parameterType="HashMap" >
+	select a.*
+	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm
+	     , b.*
+	  from dcr01_class_tree a
+	     , dcr03_org_auth b
+	 where a.dcr01_class_tree_id = b.dcr03_class_tree_id
+	   and a.dcr01_company_id = #{companyId}
+	   and a.dcr01_parent_tree_id = #{parentId}
+	   and a.dcr01_type_cd like #{typeCode}
+	   and b.dcr03_org_code_id = #{orgId}
+       and ( b.dcr03_retrieve_yn = 'true' or
+             b.dcr03_update_yn   = 'true' )
+	 order by dcr01_seq
+</select>
+
+<select id="selectByFundIdRole" resultMap="mapper" parameterType="HashMap" >
+    select a.*
+	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm
+	     , b.*
+	  from dcr01_class_tree a
+	     , dcr03_org_auth b
+	 where a.dcr01_class_tree_id = b.dcr03_class_tree_id
+	   and a.dcr01_company_id = #{companyId}
+	   and a.dcr01_parent_tree_id = #{parentId}
+	   and b.dcr03_org_code_id = #{orgId}
+       and ( b.dcr03_retrieve_yn = 'true' or
+             b.dcr03_update_yn   = 'true' )
+	 order by dcr01_seq
+</select>
+
+<select id="selectByClassTreeId" resultMap="mapper" parameterType="HashMap" >
+	select a.*
+	     , f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	     , f_cdnm('DocItemTypeCode', dcr01_item_type_cd, dcr01_company_id, sysdate) as dcr01_item_type_nm
+	     , (select apr10_stamp_nm from apr10_stamp where apr10_stamp_id = dcr01_seal_cd and rownum = 1) as dcr01_seal_nm
+	  from dcr01_class_tree a
+	 where dcr01_parent_tree_id = #{parentId}
+	   and dcr01_type_cd = 'T' 
+	 order by dcr01_seq
+</select>
+
+<select id="selectByOrgCodeId" resultMap="mapper" parameterType="HashMap" >
+select *
+  from dcr01_class_tree
+     , dcr03_org_auth
+ where dcr01_company_id = #{companyId}
+   and dcr01_parent_tree_id = #{parentId}
+   and dcr01_class_tree_id = dcr03_class_tree_id(+)
+   and dcr03_org_code_id(+)  = #{orgCodeId}
+ order by dcr01_seq
+ </select>
+
+<select id="selectByFundCodeId" resultMap="mapper" parameterType="HashMap" >
+select *
+  from dcr01_class_tree
+     , dcr03_org_auth
+ where dcr01_company_id = #{companyId}
+   and dcr01_parent_tree_id = #{parentTreeId}
+   and dcr01_class_tree_id = dcr03_class_tree_id
+   and dcr03_org_code_id  = #{orgCodeId}
+   and ( dcr03_retrieve_yn = 'true' or
+         dcr03_update_yn   = 'true' )
+ order by dcr01_seq
+ </select>
+
+<select id="selectByFundCodeId2" resultMap="mapper" parameterType="HashMap" >
+select distinct
+       a.*
+     , level as dcr01_level
+  from dcr01_class_tree a
+ where dcr01_company_id = #{companyId}
+   and dcr01_parent_tree_id = #{parentTreeId}
+ start with dcr01_class_tree_id in (select apr01_class_tree_id
+                                      from apr01_appr
+                                         , apr03_relate_fund
+                                         , dcr03_org_auth
+                                     where apr01_appr_id = apr03_appr_id
+                                       and apr01_class_tree_id = dcr03_class_tree_id
+                                       and ( dcr03_retrieve_yn = 'true' or
+                                             dcr03_update_yn   = 'true' )
+                                       and dcr03_org_code_id = #{orgCodeId}
+                                       and apr01_status_cd = '30'
+                                       and apr03_fund_id in ( #{fundCodeId}
+                                                            , (select fnd01_fund_code_id from fnd01_fund_code where fnd01_real_fund_id = #{fundCodeId}) )
+                                   )
+ connect by prior dcr01_parent_tree_id = dcr01_class_tree_id
+ order by dcr01_seq
+ </select>
+
+
+</mapper>

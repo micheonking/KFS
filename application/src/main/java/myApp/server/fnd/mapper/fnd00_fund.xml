@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd00_fund">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd00_FundModel" >
+	
+		<id     column="fnd00_fund_id"              property="fundId"/>
+		<result column="fnd00_fund_cd"              property="fundCode"/>
+		<result column="fnd00_fund_nm"              property="fundName"/>
+		<result column="fnd00_fund_type_cd"         property="fundTypeCode"/>
+		<result column="fnd00_fund_type_nm"        	property="fundTypeName"/>
+		<result column="fnd00_start_date"           property="startDate"/>
+		<result column="fnd00_end_date"             property="endDate"/>
+		<result column="fnd00_close_yn"             property="closeYn"/>
+		<result column="fnd00_close_nm"             property="closeName"/>
+		<result column="fnd00_plan_yn"              property="planYn"/>
+		<result column="fnd00_plan_nm"              property="planName"/>
+		<result column="fnd00_real_fund_id"         property="realFundId"/>
+		<result column="fnd00_company_id"           property="companyId"/>
+		<result column="fnd00_fund_info_id"         property="fundInfoId"/>
+		<result column="fnd00_work_date"            property="workDate"/>
+		<result column="fnd00_sintak_gb"            property="sintakGb"/>
+		<result column="fnd00_sintak_gb_nm"        	property="sintakGbName"/>
+		<result column="fnd00_public_yn"            property="publicYn"/>
+		<result column="fnd00_public_nm"            property="publicName"/>
+		<result column="fnd00_seolj_aek"            property="seoljAek"/>
+		<result column="fnd00_sunjasan_aek"         property="sunjasanAek"/>
+		<result column="fnd00_org_code_id"          property="orgCodeId"/>
+		<result column="fnd00_org_code_nm"          property="orgCodeName"/>
+		<result column="fnd00_emp1_id"              property="emp1Id"/>
+		<result column="fnd00_emp1_nm"              property="empName1"/>
+		<result column="fnd00_emp2_id"              property="emp2Id"/>
+		<result column="fnd00_emp2_nm"              property="empName2"/>
+		<result column="fnd00_management_rate"      property="managementRate"/>
+		<result column="fnd00_sales_rate"           property="salesRate"/>
+		<result column="fnd00_consignment_cd"       property="consignmentCd"/>
+		<result column="fnd00_consignment_rate"     property="consignmentRate"/>
+		<result column="fnd00_office_work_cd"       property="officeWorkCd"/>
+		<result column="fnd00_office_work_rate"     property="officeWorkRate"/>
+		<result column="fnd00_plan_date"            property="planDate"/>
+		<result column="fnd00_plan_sales_dscr"      property="planSalesDscr"/>
+		<result column="fnd00_plan_investor_dscr"   property="planInvestorDscr"/>
+		<result column="fnd00_plan_note"            property="planNote"/>	    
+
+		<result column="fnd00_consignment_nm"       property="consignmentName"/>
+
+	</resultMap>
+	
+	<select id="selectById" resultMap="mapper" parameterType="Long">
+		select	a.*
+             ,	( select fnd03_consignment_nm
+                    from fnd03_consignment
+                   where fnd03_consignment_cd = a.fnd00_consignment_cd ) as fnd00_consignment_nm
+		  from	fnd00_fund a
+		 where	fnd00_work_date = f_max_workdate(fnd00_fund_id, trunc(sysdate))
+		   and	fnd00_fund_id 	= #{fundId}
+	</select>
+
+	<select id="selectByCodeName" resultMap="mapper" parameterType="HashMap">
+		select	a.*
+             ,	( select fnd03_consignment_nm
+                    from fnd03_consignment
+                   where fnd03_consignment_cd = a.fnd00_consignment_cd ) as fnd00_consignment_nm
+		  from	fnd00_fund a
+		 where	fnd00_work_date 	= f_max_workdate(fnd00_fund_id, trunc(sysdate))
+		   and	fnd00_company_id	= #{companyId}
+		   and	fnd00_fund_nm 		like #{codeName}
+		   and	fnd00_fund_type_cd 	like #{fundType}
+		   and	nvl(fnd00_plan_yn,'false') = 'false'
+		   and 	( ( #{heagiGb} = 'true' and fnd00_close_yn = 'false' ) or
+		          ( #{heagiGb} = 'false ) )
+		 order by fnd00_fund_cd
+	</select>
+
+	<select id="selectByLookupFundInfo" resultMap="mapper" parameterType="HashMap">
+		select	a.*
+             ,	( select fnd03_consignment_nm
+                    from fnd03_consignment
+                   where fnd03_consignment_cd = a.fnd00_consignment_cd ) as fnd00_consignment_nm
+		  from	fnd00_fund a
+		 where	fnd00_work_date 	= f_max_workdate(fnd00_fund_id, trunc(sysdate))
+		   and	fnd00_company_id	= #{companyId}
+		   and	fnd00_fund_nm 		like #{fundName}
+		   and	fnd00_fund_type_cd 	like #{fundTypeCode}
+		   and	fnd00_close_yn		= 'false'
+		   and	nvl(fnd00_plan_yn,'false') = 'false'
+		 order by fnd00_fund_cd
+	</select>
+
+	<select id="selectByfund" resultMap="mapper" parameterType="String">
+		select	a.*
+             ,	( select fnd03_consignment_nm
+                    from fnd03_consignment
+                   where fnd03_consignment_cd = a.fnd00_consignment_cd ) as fnd00_consignment_nm
+		  from	fnd00_fund a
+		 where	fnd00_work_date 	= f_max_workdate(fnd00_fund_id, trunc(sysdate))
+		   and	fnd00_company_id	= #{companyId}
+		   and	fnd00_fund_nm 		like #{codeName}
+		   and	fnd00_close_yn		= 'false'
+		   and	nvl(fnd00_plan_yn,'false') = 'false'
+		 order by fnd00_fund_cd
+	</select>
+
+	<select id="selectBySearchText" resultMap="mapper" parameterType="HashMap" > 
+		select	*
+		  from	fnd00_fund
+		     ,  fnd08_org_auth
+		 where	fnd00_fund_id		= fnd08_fund_code_id
+		   and	fnd08_auth_yn		= 'true'
+		   and	fnd08_org_code_id	= #{orgId}
+		   and	fnd00_work_date 	= f_max_workdate(fnd00_fund_id, trunc(sysdate))
+		   and  fnd00_company_id	= #{companyId}
+		   and	fnd00_close_yn		in ('false', #{closeYn})
+		   and	nvl(fnd00_plan_yn,'false') = 'false'
+		   and  fnd00_fund_type_cd	like #{fundType}
+		   and	( UPPER(fnd00_fund_cd||fnd00_fund_nm) like UPPER(#{searchText}) or
+		          f_cdnm('FundTypeCode', fnd00_fund_type_cd, fnd00_company_id, fnd00_work_date) like #{searchText} )
+		   <choose>
+           <when test="fundIdList.size != 0">
+           and  fnd00_fund_id not in 
+               <foreach collection="fundIdList" item="item" index="index" separator="," open="(" close=")">
+                   #{item}
+               </foreach>
+           </when>
+           </choose>
+		 order by fnd00_fund_cd
+	</select>
+
+    <select id="selectByDocIdText" resultMap="mapper" parameterType="HashMap" >
+    	select	*
+		  from	fnd00_fund
+		 where	fnd00_work_date 	= f_max_workdate(fnd00_fund_id, trunc(sysdate))
+		   and  fnd00_company_id	= #{companyId}
+		   and	fnd00_close_yn		= 'false'
+		   and	nvl(fnd00_plan_yn,'false') = 'false'
+		   and  fnd00_fund_type_cd	like #{fundType}
+		   and	( UPPER(fnd00_fund_cd||fnd00_fund_nm) like UPPER(#{searchText}) or
+		          f_cdnm('FundTypeCode', fnd00_fund_type_cd, fnd00_company_id, fnd00_work_date) like #{searchText} )
+		 order by fnd00_fund_cd
+    <!-- 
+		select	a.*
+             ,  f_cdnm('FundTypeCode', fnd00_fund_type_cd, fnd00_company_id, fnd00_work_date) as fnd00_fund_type_nm
+             ,	b.emp00_kor_nm as fnd00_emp1_nm
+		  from	fnd00_fund a
+		     ,	emp00_info b
+		 where	fnd00_work_date 	= f_max_workdate(fnd00_fund_id, trunc(sysdate))
+		   and	fnd00_emp1_id		= b.emp00_emp_id(+)
+		   and  fnd00_work_date 	between b.emp00_trans_date(+) and b.emp00_close_date(+)
+		   and	fnd00_company_id	= #{companyId}
+		   and	fnd00_close_yn		= 'false'
+		   and	nvl(fnd00_plan_yn,'false') = 'false'
+  		   and	fnd00_fund_id not in ( select apr03_relate_item_id
+		 								 from apr03_relate_item
+		 							    where apr03_doc_id = #{docId} )
+		   and  fnd00_fund_type_cd	like #{fundType}
+		   and	( UPPER(fnd00_fund_cd||fnd00_fund_nm) like UPPER(#{searchText}) or
+		          f_cdnm('FundTypeCode', fnd00_fund_type_cd, fnd00_company_id, fnd00_work_date) like #{searchText} )
+     --> 
+	</select>
+	
+<select id="selectByLookupFundCode" resultMap="mapper" parameterType="HashMap" > 
+	select	t1.*
+	from	fnd00_fund	t1
+	where	t1.fnd00_work_date		=		f_max_workdate(t1.fnd00_fund_id,#{workDate})
+	and		t1.fnd00_plan_yn		=		'false'
+	and		t1.fnd00_close_yn		in		('false',#{closeYn})
+	and		t1.fnd00_fund_cd||t1.fnd00_fund_nm	like #{fundName}
+	and		t1.fnd00_fund_type_cd	like	#{fundTypeCode}
+	and		t1.fnd00_company_id		=		#{companyId}
+    order by fnd00_fund_cd
+</select>
+
+<select id="selectByLookupFundPlan" resultMap="mapper" parameterType="HashMap" > 
+	select	t1.*
+	from	fnd00_fund	t1
+	where	t1.fnd00_work_date		=		f_max_workdate(t1.fnd00_fund_id,trunc(sysdate))
+	and		t1.fnd00_plan_yn		=		'true'
+	and		t1.fnd00_close_yn		in		('false',#{closeYn})
+	and		t1.fnd00_fund_nm		like	#{fundName}
+<!-- 	and		t1.fnd00_fund_type_cd	like	#{fundTypeCode} -->
+	and		t1.fnd00_company_id		=		#{companyId}
+    order by fnd00_fund_cd
+</select>
+
+</mapper>

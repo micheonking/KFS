@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd07_issuing_entity">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd07_IssuingEntityModel" >
+
+	<id		column="fnd07_issuing_entity_id"			property="issuingEntityId"/>
+	<result	column="fnd07_issuing_entity_cd"			property="issuingEntityCode"/>
+	<result	column="fnd07_issuing_entity_nm"			property="issuingEntityName"/>
+	<result	column="fnd07_issuing_entity_attach_cd"		property="issuingEntityAttachCode"/>
+	<result	column="fnd07_issuing_entity_face_value"	property="issuingEntityFaceValue"/>
+	<result	column="fnd07_issuing_entity_settle_month"	property="issuingEntitySettleMonth"/>
+	<result	column="fnd07_issuing_entity_nation_cd"		property="issuingEntityNationCode"/>
+	<result	column="fnd07_issuing_entity_use_yn"		property="issuingEntityUseYn"/>
+	<result	column="fnd07_issuing_entity_note"			property="issuingEntityNote"/>
+	<result	column="fnd07_company_id"					property="companyId"/>
+	
+	<result	column="fnd07_kuka_nm"		property="kukaName"/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long">
+	select	*
+	from	fnd07_issuing_entity
+	where	fnd07_issuing_entity_id = #{issuingEntityId}
+</select>
+
+	
+<select id="selectByCodeName" resultMap="mapper" parameterType="HashMap">
+	select	a.*
+			,f_cdnm('NationCode', fnd07_issuing_entity_nation_cd,  '0', sysdate)  as fnd07_kuka_nm
+	from	fnd07_issuing_entity a
+	where	fnd07_issuing_entity_nm	like	#{issuingEntityName}
+</select>
+
+<select id="selectBysearchText" resultMap="mapper" parameterType="String">
+	select	*
+	from	fnd07_issuing_entity
+	where	fnd07_issuing_entity_cd||fnd07_issuing_entity_nm like #{searchText}
+</select>
+
+<insert id="insertUpdate" parameterType="myApp.client.vi.fnd.model.Fnd07_IssuingEntityModel">
+
+merge into fnd07_issuing_entity a
+    using dual
+    on
+    (
+        a.fnd07_issuing_entity_id 		= #{issuingEntityId}
+    )    
+    when matched then
+    update set
+      	a.fnd07_issuing_entity_cd			= #{issuingEntityCode}
+      , a.fnd07_issuing_entity_nm			= #{issuingEntityName}
+      , a.fnd07_issuing_entity_face_value	= #{issuingEntityFaceValue}
+      , a.fnd07_issuing_entity_settle_month	= #{issuingEntitySettleMonth}
+      , a.fnd07_issuing_entity_nation_cd	= #{issuingEntityNationCode}
+      , a.fnd07_issuing_entity_use_yn		= #{issuingEntityUseYn}
+      , a.fnd07_issuing_entity_note			= #{issuingEntityNote}
+      , a.fnd07_issuing_entity_attach_cd	= #{issuingEntityAttachCode}
+      , a.fnd07_company_id					= #{companyId}
+   	
+    when not matched then
+	insert
+	(	a.fnd07_issuing_entity_id
+	,	a.fnd07_issuing_entity_cd
+	, 	a.fnd07_issuing_entity_nm
+	, 	a.fnd07_issuing_entity_attach_cd
+	, 	a.fnd07_issuing_entity_face_value
+	, 	a.fnd07_issuing_entity_settle_month
+	, 	a.fnd07_issuing_entity_nation_cd
+	, 	a.fnd07_issuing_entity_use_yn
+	, 	a.fnd07_issuing_entity_note
+	, 	a.fnd07_company_id
+	) 
+	values 
+	(	#{issuingEntityId}
+	,	#{issuingEntityCode}
+	,	#{issuingEntityName}
+	, 	#{issuingEntityAttachCode}
+	, 	#{issuingEntityFaceValue}
+	, 	#{issuingEntitySettleMonth}
+	, 	#{issuingEntityNationCode}
+	, 	#{issuingEntityUseYn}
+	, 	#{issuingEntityNote}
+	, 	#{companyId}
+	 )  
+	 
+</insert>
+
+
+
+</mapper>

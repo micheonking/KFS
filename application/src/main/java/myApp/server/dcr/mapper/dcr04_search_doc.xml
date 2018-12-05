@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="dcr04_search_doc">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dcr.model.Dcr04_SearchDocModel" >
+	<id  	column="SEQID"       property="seqId"/>
+	
+	<association property="classTreeModel" 
+		javaType="myApp.client.vi.dcr.model.Dcr01_ClassTreeModel"
+		resultMap="dcr01_class_tree.mapper"
+	/>
+	
+
+	<association property="fundModel" 
+		javaType="myApp.client.vi.fnd.model.Fnd00_FundModel"
+		resultMap="fnd00_fund.mapper"
+	/>	
+	
+</resultMap>
+
+<select id="selectSearchDoc" resultMap="mapper" parameterType="HashMap" >
+select rownum as seqid
+     , a.*
+from(
+    select *
+    from
+    (
+        select a.dcr01_class_tree_id
+             , a.dcr01_class_tree_nm
+             , '파일' as dcr04_type_nm
+             , c.dcr04_doc_nm
+             , c.dcr04_doc_id
+             , f.fnd00_fund_nm
+             , c.dcr04_reg_date
+             , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+             , f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date)) as dcr04_org_nm
+             , null as apr01_appr_id
+             , a.dcr01_class_tree_nm as dcr04_doc_type_nm
+             , upper(f_emp_kor_nm(dcr04_reg_emp_id)) as dcr04_reg_emp_nm_temp
+             , upper(f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date))) as dcr04_org_nm_temp
+             , upper(fnd00_fund_nm) as fnd00_fund_nm_temp
+             , upper(dcr04_doc_nm) as dcr04_doc_nm_temp
+             , upper(dcr01_class_tree_nm) as dcr01_class_tree_nm_temp
+        from   dcr01_class_tree a
+             , dcr03_org_auth b
+             , dcr04_doc c
+             , apr03_relate_item d
+             , fnd00_fund f
+        where  a.dcr01_class_tree_id = b.dcr03_class_tree_id
+        and    a.dcr01_class_tree_id = c.dcr04_doc_type_id
+        and    c.dcr04_doc_id = d.apr03_doc_id(+)
+        and    d.apr03_fund_id = f.fnd00_fund_info_id(+)
+        and    a.dcr01_company_id = #{companyId}
+        and    b.dcr03_org_code_id = #{orgCode}
+        and    ( b.dcr03_retrieve_yn = 'true' or
+                 b.dcr03_update_yn   = 'true' )
+        and    trunc(c.dcr04_reg_date) between nvl(#{startRegDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endRegDate}, to_date('99991231', 'yyyyMMdd'))
+        and    trunc(f.fnd00_start_date) between nvl(#{startFundDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endFundDate}, to_date('99991231', 'yyyyMMdd'))
+        <choose>
+            <when test="fundClose.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_close_yn = #{fundClose}
+            </otherwise>
+		</choose>
+        <choose>
+            <when test="publicSubscribe.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_public_yn = #{publicSubscribe}
+            </otherwise>
+		</choose>
+		<choose>
+            <when test="sintak.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_sintak_gb = #{sintak}
+            </otherwise>
+		</choose>
+		<choose>
+            <when test="fundType.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_fund_type_cd = #{fundType}
+            </otherwise>
+		</choose>
+        and    c.dcr04_appr_id is null
+    )
+    where dcr04_reg_emp_nm_temp like upper(#{personText})
+    and   dcr04_org_nm_temp like upper(#{orgText})
+    and   fnd00_fund_nm_temp like upper(#{fundText})
+    <!-- 
+     and   dcr04_doc_nm_temp like upper(#{docText})
+     -->
+    and   dcr01_class_tree_nm_temp like upper(#{docTypeText})
+    
+    union all
+    select *
+    from 
+    (
+        select a.dcr01_class_tree_id
+             , a.dcr01_class_tree_nm
+             , '파일' as dcr04_type_nm
+             , c.dcr04_doc_nm
+             , c.dcr04_doc_id
+             , f.fnd00_fund_nm
+             , c.dcr04_reg_date
+             , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+             , f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date)) as dcr04_org_nm
+             , apr01_appr_id
+             , a.dcr01_class_tree_nm as dcr04_doc_type_nm
+             , upper(f_emp_kor_nm(dcr04_reg_emp_id)) as dcr04_reg_emp_nm_temp
+             , upper(f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date))) as dcr04_org_nm_temp
+             , upper(fnd00_fund_nm) as fnd00_fund_nm_temp
+             , upper(dcr04_doc_nm) as dcr04_doc_nm_temp
+             , upper(dcr01_class_tree_nm) as dcr01_class_tree_nm_temp
+        from   dcr01_class_tree a
+             , dcr03_org_auth b
+             , dcr04_doc c
+             , apr01_appr d
+             , apr03_relate_item e
+             , fnd00_fund f
+        where  a.dcr01_class_tree_id = b.dcr03_class_tree_id
+        and    a.dcr01_class_tree_id = c.dcr04_doc_type_id
+        and    c.dcr04_appr_id = d.apr01_appr_id
+        and    c.dcr04_doc_id = e.apr03_doc_id(+)
+        and    e.apr03_fund_id = f.fnd00_fund_info_id(+)
+        and    a.dcr01_company_id = #{companyId}
+        and    b.dcr03_org_code_id = #{orgCode}
+        and    ( b.dcr03_retrieve_yn = 'true' or
+                 b.dcr03_update_yn   = 'true' )
+        and    trunc(c.dcr04_reg_date) between nvl(#{startRegDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endRegDate}, to_date('99991231', 'yyyyMMdd'))
+        and    trunc(f.fnd00_start_date) between nvl(#{startFundDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endFundDate}, to_date('99991231', 'yyyyMMdd'))
+        <choose>
+            <when test="fundClose.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_close_yn = #{fundClose}
+            </otherwise>
+		</choose>
+        <choose>
+            <when test="publicSubscribe.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_public_yn = #{publicSubscribe}
+            </otherwise>
+		</choose>
+        <choose>
+            <when test="sintak.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_sintak_gb = #{sintak}
+            </otherwise>
+		</choose>
+		<choose>
+            <when test="fundType.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_fund_type_cd = #{fundType}
+            </otherwise>
+		</choose>
+        and    d.apr01_status_cd = 30
+    )
+    where dcr04_reg_emp_nm_temp like upper(#{personText})
+    and   dcr04_org_nm_temp like upper(#{orgText})
+    and   fnd00_fund_nm_temp like upper(#{fundText})
+    <!-- 
+     and   dcr04_doc_nm_temp like upper(#{docText})
+     -->
+    and   dcr01_class_tree_nm_temp like upper(#{docTypeText})
+
+    union all
+    select *
+    from 
+    (
+        select a.dcr01_class_tree_id
+             , a.dcr01_class_tree_nm
+             , '결재' as dcr04_type_nm
+             , d.apr01_title as dcr04_doc_nm
+             , apr01_appr_id as dcr04_doc_id
+             , f.fnd00_fund_nm
+             , d.apr01_reg_date as dcr04_reg_date
+             , f_emp_kor_nm(apr01_reg_emp_id) as dcr04_reg_emp_nm
+             , f_org_kor_nm(apr01_reg_emp_id, apr01_reg_date) as dcr04_org_nm
+             , apr01_appr_id
+             , a.dcr01_class_tree_nm as dcr04_doc_type_nm
+             , upper(f_emp_kor_nm(apr01_reg_emp_id)) as dcr04_reg_emp_nm_temp
+             , upper(f_org_kor_nm(apr01_reg_emp_id, to_date(apr01_reg_date))) as dcr04_org_nm_temp
+             , upper(fnd00_fund_nm) as fnd00_fund_nm_temp
+             , upper(dcr04_doc_nm) as dcr04_doc_nm_temp
+             , upper(dcr01_class_tree_nm) as dcr01_class_tree_nm_temp
+        from   dcr01_class_tree a
+             , dcr03_org_auth b
+             , dcr04_doc c
+             , apr01_appr d
+             , apr03_relate_item e
+             , fnd00_fund f
+        where  a.dcr01_class_tree_id = b.dcr03_class_tree_id
+        and    a.dcr01_class_tree_id = c.dcr04_doc_type_id
+        and    c.dcr04_appr_id = d.apr01_appr_id
+        and    c.dcr04_doc_id = e.apr03_doc_id(+)
+        and    e.apr03_fund_id = f.fnd00_fund_info_id(+)
+        and    a.dcr01_company_id = #{companyId}
+        and    b.dcr03_org_code_id = #{orgCode}
+        and    ( b.dcr03_retrieve_yn = 'true' or
+                 b.dcr03_update_yn   = 'true' )
+        and    trunc(c.dcr04_reg_date) between nvl(#{startRegDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endRegDate}, to_date('99991231', 'yyyyMMdd'))
+        and    trunc(f.fnd00_start_date) between nvl(#{startFundDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endFundDate}, to_date('99991231', 'yyyyMMdd'))
+        <choose>
+            <when test="fundClose.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_close_yn = #{fundClose}
+            </otherwise>
+		</choose>
+        <choose>
+            <when test="publicSubscribe.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_public_yn = #{publicSubscribe}
+            </otherwise>
+		</choose>
+        <choose>
+            <when test="sintak.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_sintak_gb = #{sintak}
+            </otherwise>
+		</choose>
+		<choose>
+            <when test="fundType.equals('ALL') ">
+            </when>
+            <otherwise>
+		and    f.fnd00_fund_type_cd = #{fundType}
+            </otherwise>
+		</choose>
+        and    d.apr01_status_cd = 30
+    )
+    where dcr04_reg_emp_nm_temp like upper(#{personText})
+    and   dcr04_org_nm_temp like upper(#{orgText})
+    and   fnd00_fund_nm_temp like upper(#{fundText})
+    <!-- 
+     and   dcr04_doc_nm_temp like upper(#{docText})
+     -->
+    and   dcr01_class_tree_nm_temp like upper(#{docTypeText})
+) a
+order by  dcr04_reg_date asc
+</select>
+
+
+<select id="selectBySearchText" resultMap="mapper" parameterType="HashMap" >
+select rownum as seqid
+     , a.*
+from(
+    select *
+    from
+    (
+        select a.dcr01_class_tree_id
+             , a.dcr01_class_tree_nm
+             , '파일' as dcr04_type_nm
+             , c.dcr04_doc_nm
+             , c.dcr04_doc_id
+             , f.fnd00_fund_nm
+             , c.dcr04_reg_date
+             , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+             , f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date)) as dcr04_org_nm
+             , null as apr01_appr_id
+             , a.dcr01_class_tree_nm as dcr04_doc_type_nm
+             , upper(f_emp_kor_nm(dcr04_reg_emp_id)) as dcr04_reg_emp_nm_temp
+             , upper(f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date))) as dcr04_org_nm_temp
+             , upper(fnd00_fund_nm) as fnd00_fund_nm_temp
+             , upper(dcr04_doc_nm) as dcr04_doc_nm_temp
+             , upper(dcr01_class_tree_nm) as dcr01_class_tree_nm_temp
+        from   dcr01_class_tree a
+             , dcr03_org_auth b
+             , dcr04_doc c
+             , apr03_relate_item d
+             , fnd00_fund f
+        where  a.dcr01_class_tree_id = b.dcr03_class_tree_id
+        and    a.dcr01_class_tree_id = c.dcr04_doc_type_id
+        and    c.dcr04_doc_id = d.apr03_doc_id(+)
+        and    d.apr03_fund_id = f.fnd00_fund_id(+)
+        and    a.dcr01_company_id = #{companyId}
+        and    b.dcr03_org_code_id = #{orgCode}
+        and    ( b.dcr03_retrieve_yn = 'true' or
+        	     b.dcr03_update_yn   = 'true' )
+        and    c.dcr04_reg_date between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+        and    c.dcr04_appr_id is null
+    )
+    where dcr04_reg_emp_nm_temp like upper(#{searchText})
+    or    dcr04_org_nm_temp like upper(#{searchText})
+    or    fnd00_fund_nm_temp like upper(#{searchText})
+    or    dcr04_doc_nm_temp like upper(#{searchText})
+    or    dcr01_class_tree_nm_temp like upper(#{searchText})
+    
+    union all
+    select *
+    from 
+    (
+        select a.dcr01_class_tree_id
+             , a.dcr01_class_tree_nm
+             , '파일' as dcr04_type_nm
+             , c.dcr04_doc_nm
+             , c.dcr04_doc_id
+             , f.fnd00_fund_nm
+             , c.dcr04_reg_date
+             , f_emp_kor_nm(dcr04_reg_emp_id) as dcr04_reg_emp_nm
+             , f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date)) as dcr04_org_nm
+             , apr01_appr_id
+             , a.dcr01_class_tree_nm as dcr04_doc_type_nm
+             , upper(f_emp_kor_nm(dcr04_reg_emp_id)) as dcr04_reg_emp_nm_temp
+             , upper(f_org_kor_nm(dcr04_reg_emp_id, to_date(dcr04_reg_date))) as dcr04_org_nm_temp
+             , upper(fnd00_fund_nm) as fnd00_fund_nm_temp
+             , upper(dcr04_doc_nm) as dcr04_doc_nm_temp
+             , upper(dcr01_class_tree_nm) as dcr01_class_tree_nm_temp
+        from   dcr01_class_tree a
+             , dcr03_org_auth b
+             , dcr04_doc c
+             , apr01_appr d
+             , apr03_relate_item e
+             , fnd00_fund f
+        where  a.dcr01_class_tree_id = b.dcr03_class_tree_id
+        and    a.dcr01_class_tree_id = c.dcr04_doc_type_id
+        and    c.dcr04_appr_id = d.apr01_appr_id
+        and    c.dcr04_doc_id = e.apr03_doc_id(+)
+        and    e.apr03_fund_id = f.fnd00_fund_id(+)
+        and    a.dcr01_company_id = #{companyId}
+        and    b.dcr03_org_code_id = #{orgCode}
+        and    ( b.dcr03_retrieve_yn = 'true' or
+                 b.dcr03_update_yn   = 'true' )
+        and    c.dcr04_reg_date between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+        and    d.apr01_status_cd = 30
+    )
+    where dcr04_reg_emp_nm_temp like upper(#{searchText})
+    or    dcr04_org_nm_temp like upper(#{searchText})
+    or    fnd00_fund_nm_temp like upper(#{searchText})
+    or    dcr04_doc_nm_temp like upper(#{searchText})
+    or    dcr01_class_tree_nm_temp like upper(#{searchText})
+
+    union all
+    select *
+    from 
+    (
+        select a.dcr01_class_tree_id
+             , a.dcr01_class_tree_nm
+             , '결재' as dcr04_type_nm
+             , d.apr01_title as dcr04_doc_nm
+             , apr01_appr_id as dcr04_doc_id
+             , f.fnd00_fund_nm
+             , d.apr01_reg_date as dcr04_reg_date
+             , f_emp_kor_nm(apr01_reg_emp_id) as dcr04_reg_emp_nm
+             , f_org_kor_nm(apr01_reg_emp_id, apr01_reg_date) as dcr04_org_nm
+             , apr01_appr_id
+             , a.dcr01_class_tree_nm as dcr04_doc_type_nm
+             , upper(f_emp_kor_nm(apr01_reg_emp_id)) as dcr04_reg_emp_nm_temp
+             , upper(f_org_kor_nm(apr01_reg_emp_id, to_date(apr01_reg_date))) as dcr04_org_nm_temp
+             , upper(fnd00_fund_nm) as fnd00_fund_nm_temp
+             , upper(dcr04_doc_nm) as dcr04_doc_nm_temp
+             , upper(dcr01_class_tree_nm) as dcr01_class_tree_nm_temp
+        from   dcr01_class_tree a
+             , dcr03_org_auth b
+             , dcr04_doc c
+             , apr01_appr d
+             , apr03_relate_item e
+             , fnd00_fund f
+        where  a.dcr01_class_tree_id = b.dcr03_class_tree_id
+        and    a.dcr01_class_tree_id = c.dcr04_doc_type_id
+        and    c.dcr04_appr_id = d.apr01_appr_id
+        and    c.dcr04_doc_id = e.apr03_doc_id(+)
+        and    e.apr03_fund_id = f.fnd00_fund_id(+)
+        and    a.dcr01_company_id = #{companyId}
+        and    b.dcr03_org_code_id = #{orgCode}
+        and    ( b.dcr03_retrieve_yn = 'true' or
+                 b.dcr03_update_yn   = 'true' )
+        and    c.dcr04_reg_date between nvl(#{startDate}, to_date('19000101', 'yyyyMMdd')) and nvl(#{endDate}, to_date('99991231', 'yyyyMMdd'))
+        and    d.apr01_status_cd = 30
+    )
+    where dcr04_reg_emp_nm_temp like upper(#{searchText})
+    or    dcr04_org_nm_temp like upper(#{searchText})
+    or    fnd00_fund_nm_temp like upper(#{searchText})
+    or    dcr04_doc_nm_temp like upper(#{searchText})
+    or    dcr01_class_tree_nm_temp like upper(#{searchText})
+) a
+order by  dcr04_reg_date asc
+
+
+</select>
+
+</mapper>

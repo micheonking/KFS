@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys04_role">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys04_RoleModel" >
+	<id  	column="sys04_role_id"		property="roleId" />
+	<result column="sys04_company_id"	property="companyId" />
+	<result column="sys04_role_nm"		property="roleName" />
+	<result column="sys04_seq" 			property="seq" />
+	<result column="sys04_user_role_yn" property="userRoleYn" />
+	<result column="sys04_note"			property="note" />
+	
+	<association property="userRoleModel" 
+		javaType="myApp.client.vi.sys.model.Sys05_UserRoleModel" 
+		resultMap="sys05_user_role.mapper"
+	/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long">
+	select 	* 
+	from 	sys04_role
+	where 	sys04_role_id = #{roleId} 
+</select>
+
+<select id="selectByName" resultMap="mapper" parameterType="HashMap"> 
+	select 	* 
+	from 	sys04_role
+	where 	sys04_role_nm like #{roleName} 
+	and		sys04_company_id = #{companyId}
+	order 	by sys04_seq
+</select>
+
+<select id="selectByUserId" resultMap="mapper" parameterType="HashMap" >
+	select 	sys04_role.*, 
+        	sys05_user_role.*, 
+			case when sys05_user_role_id is null then 'false' else 'true' end sys04_user_role_yn 
+	from 	sys04_role, 
+            sys05_user_role
+	where 	sys04_role_id = sys05_role_id(+)
+	and		sys05_user_id(+) = #{userId}
+	and		sys04_company_id = #{companyId}
+	order 	by sys04_seq , sys05_seq 
+</select>
+
+</mapper>

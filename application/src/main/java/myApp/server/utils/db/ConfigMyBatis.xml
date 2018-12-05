@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+
+<settings>
+<!--	MyBatis에서 null 값을 처리하기 위한 기본설정 -->   
+	<setting name="jdbcTypeForNull" value="NULL"/> 
+</settings>
+
+<environments default="ezis">
+	<environment id="ezis">
+		<transactionManager type="JDBC"/>
+		<dataSource type="POOLED">
+		 	<property name="poolMaximumActiveConnections" value="100" /> 
+			<property name="poolMaximumIdleConnections" value="100"/>
+			<property name="poolMaximumCheckoutTime" value="120000"/>
+			<property name="poolTimeToWait" value="500"/>
+			<property name="poolPingQuery" value="select 1 from dual"/>
+			<property name="poolPingEnabled" value="true"/>
+
+		<!-- Tibero (티베로) -->
+			<property name="driver" value="com.tmax.tibero.jdbc.TbDriver" />
+
+		<!-- (개발DB) --> 
+ 			<property name="url" value="jdbc:tibero:thin:@183.96.184.118:8629:HDB" />
+		<!-- (운영DB-외부연결) -->
+<!-- 			<property name="url" value="jdbc:tibero:thin:@211.37.95.150:8629:HDB" /> -->
+		<!-- (운영DB-현대내부연결:운영계컴파일할때!!) -->
+<!-- 			<property name="url" value="jdbc:tibero:thin:@192.168.3.155:8629:HDB" /> -->
+
+<!-- 		<property name="url" value="jdbc:tibero:thin:@183.96.184.119:8629:HDB" />  -->
+<!--		<property name="url" value="jdbc:tibero:thin:@172.20.200.247:8629:HDB" />  -->
+			<property name="username" value="hiis" />
+			<property name="password" value="senchagxt" />
+		
+		</dataSource>
+	</environment>
+</environments>
+
+<mappers>
+	<!-- database 공통 처리 -->
+	<mapper resource="myApp/server/utils/db/mapper/DBConfig.xml"/>
+	
+	<!-- Report 업무단 처리  -->
+	<mapper resource="myApp/server/rpt/mapper/rpt01_DailyAccount.xml"/>
+	<mapper resource="myApp/server/rpt/mapper/rpt02_CashBook.xml"/>
+	<mapper resource="myApp/server/rpt/mapper/rpt03_TrialBalance.xml"/>
+	<mapper resource="myApp/server/rpt/mapper/rpt04_GeneralLedger.xml"/>
+	
+	<!-- 개별 업무단 처리  -->
+	<mapper resource="myApp/server/org/mapper/org01_code.xml"/>
+	<mapper resource="myApp/server/org/mapper/org02_info.xml"/>
+	
+	<mapper resource="myApp/server/dbm/mapper/dbm01_tab_comments.xml"/>
+	<mapper resource="myApp/server/dbm/mapper/dbm02_col_comments.xml"/>
+	<mapper resource="myApp/server/dbm/mapper/dbm03_tab_columns.xml"/>
+
+	<mapper resource="myApp/server/sys/mapper/sys01_company.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys02_user.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys03_company_menu.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys04_role.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys05_user_role.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys06_menu.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys07_role_menu.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys08_code_kind.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys09_code.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys10_file.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys12_calendar.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys21_license_code.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys90_after_service.xml"/>
+
+	<mapper resource="myApp/server/apr/mapper/apr00_stamp_seq.xml"/>
+    <mapper resource="myApp/server/apr/mapper/apr01_appr.xml"/>
+    <mapper resource="myApp/server/apr/mapper/apr03_relate_fund.xml"/>
+    <mapper resource="myApp/server/apr/mapper/apr04_appr_step.xml"/>
+    <mapper resource="myApp/server/apr/mapper/apr05_relate_doc.xml"/>
+    <mapper resource="myApp/server/apr/mapper/apr06_appr_step_rule.xml"/>
+    <mapper resource="myApp/server/apr/mapper/apr07_alt_appr.xml"/>
+    <mapper resource="myApp/server/apr/mapper/apr10_stamp.xml"/>
+	<mapper resource="myApp/server/apr/mapper/apr11_advert_book.xml"/>
+	
+	<mapper resource="myApp/server/emp/mapper/emp00_info.xml"/>
+	<mapper resource="myApp/server/emp/mapper/emp01_person.xml"/>
+	<mapper resource="myApp/server/emp/mapper/emp02_emp.xml"/>
+	<mapper resource="myApp/server/emp/mapper/emp03_trans.xml"/>
+	<mapper resource="myApp/server/emp/mapper/emp04_add_title.xml"/>
+	<mapper resource="myApp/server/emp/mapper/emp09_mgr_rule.xml"/>
+	<mapper resource="myApp/server/emp/mapper/emp10_manager_contact.xml"/>
+	<mapper resource="myApp/server/emp/mapper/emp10_addr_book.xml"/>
+	
+	<mapper resource="myApp/server/cmp/mapper/cmp01_advertise.xml"/>
+	 
+	<mapper resource="myApp/server/dcr/mapper/dcr00_doc_list.xml"/>
+	<mapper resource="myApp/server/dcr/mapper/dcr01_class_tree.xml"/>
+	<mapper resource="myApp/server/dcr/mapper/dcr03_org_auth.xml"/>
+	<mapper resource="myApp/server/dcr/mapper/dcr04_search_doc.xml"/>
+	<mapper resource="myApp/server/dcr/mapper/dcr10_mail_history.xml"/>
+	
+	<mapper resource="myApp/server/bbs/mapper/bbs01_board.xml"/>
+	<mapper resource="myApp/server/bbs/mapper/bbs02_board.xml"/>
+
+	<mapper resource="myApp/server/opr/mapper/opr01_create.xml"/>
+	<mapper resource="myApp/server/opr/mapper/opr02_fund.xml"/>
+	<mapper resource="myApp/server/opr/mapper/opr03_reg.xml"/>
+
+<!--  상품기획 -->
+<!-- 	<mapper resource="myApp/server/pln/mapper/pln01_fund.xml"/> -->
+	<mapper resource="myApp/server/pln/mapper/pln02_plan.xml"/>
+<!-- 	<mapper resource="myApp/server/pln/mapper/pln02_plan_person.xml"/> -->
+	<mapper resource="myApp/server/pln/mapper/pln03_resrch.xml"/>
+
+	<!-- Fund 관련  -->
+	<!-- 
+	 -->
+	<mapper resource="myApp/server/fnd/mapper/fnd00_fund.xml"/>
+	<mapper resource="myApp/server/fnd/mapper/fnd01_fund_code.xml"/>
+	<mapper resource="myApp/server/fnd/mapper/fnd02_fund_info.xml"/>
+	<mapper resource="myApp/server/fnd/mapper/fnd03_consignment.xml"/>
+	<mapper resource="myApp/server/fnd/mapper/fnd06_office_work.xml"/>
+	<mapper resource="myApp/server/fnd/mapper/fnd07_issuing_entity.xml"/>
+	<mapper resource="myApp/server/fnd/mapper/fnd08_org_auth.xml"/>
+</mappers>
+
+</configuration>

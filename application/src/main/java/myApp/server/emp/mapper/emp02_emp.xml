@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="emp02_emp">
+
+<resultMap 	id="mapper" type="myApp.client.vi.emp.model.Emp02_EmpModel" >
+	<id  	column="emp02_emp_id"      property="empId"/>
+	<result column="emp02_person_id"   property="personId"/>
+	<result column="emp02_emp_no"      property="empNo"/>
+	<result column="emp02_emp_kind_cd" property="empKindCode"/>
+	<result column="emp02_emp_kind_nm" property="empKindName"/>
+	<result column="emp02_hire_date"   property="hireDate"/>
+	<result column="emp02_hire_cd"     property="hireCode"/>
+	<result column="emp02_hire_nm"     property="hireName"/>
+	<result column="emp02_hire_note"   property="hireNote"/>
+	<result column="emp02_retire_date" property="retireDate"/>
+	<result column="emp02_retire_cd"   property="retireCode"/>
+	<result column="emp02_retire_nm"   property="retireName"/>
+	<result column="emp02_retire_note" property="retireNote"/>
+	<result column="emp02_retire_yn"   property="retireYn"/>
+	<result column="emp02_note"        property="note"/>
+	<result column="emp02_cycle_time"  property="cycleTime"/>
+	
+	<result column="emp02_emp_id_string"  property="empId_String"/>
+<!-- 	<result column="emp02_person_id_string"  property="personId_String"/> -->
+
+    <association property="personModel" 
+		javaType="myApp.client.vi.emp.model.Emp01_PersonModel" 
+		resultMap="emp01_person.mapper"
+	/>
+	<association property="transModel" 
+		javaType="myApp.client.vi.emp.model.Emp03_TransModel" 
+		resultMap="emp03_trans.mapper"
+	/>
+	<association property="orgCodeModel" 
+		javaType="myApp.client.vi.org.model.Org01_CodeModel" 
+		resultMap="org01_code.mapper"
+	/>
+	<association property="orgInfoModel" 
+		javaType="myApp.client.vi.org.model.Org02_InfoModel" 
+		resultMap="org02_info.mapper"
+	/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select a.*
+	     , b.*
+	     , c.*
+	     , d.*
+	     , e.*
+	     , f_cdnm('NationCode', emp01_nat_cd, emp01_company_id, emp02_hire_date) as emp01_nat_nm
+	     , f_cdnm('GenderCode', emp01_gender_cd, emp01_company_id, emp02_hire_date) as emp01_gender_nm
+	     , f_cdnm('HireCode', emp02_hire_cd, emp01_company_id, emp02_hire_date) as emp02_hire_nm
+	     , f_cdnm('RetireCode', emp02_retire_cd, emp01_company_id, emp02_retire_date) as emp02_retire_nm
+	     , f_cdnm('EmpKindCode', emp02_emp_kind_cd, emp01_company_id, emp02_hire_date) as emp02_emp_kind_nm
+	     , f_cdnm('EmpPosCode', emp03_pos_cd, emp01_company_id, emp03_trans_date) as emp03_pos_nm
+	     , f_cdnm('EmpTitleCode', emp03_title_cd, emp01_company_id, emp03_trans_date) as emp03_title_nm
+	  from emp01_person a
+	     , emp02_emp b
+	     , emp03_trans c 
+	     , org01_code d
+	     , org02_info e
+	 where b.emp02_emp_id = #{empId}
+	   and emp01_person_id = emp02_person_id
+	   and emp02_emp_id = emp03_emp_id
+	   and trunc(sysdate) between emp02_hire_date and nvl(emp02_retire_date, trunc(sysdate))
+	   and emp03_trans_date = (
+	       select max(x.emp03_trans_date)
+	         from emp03_trans x
+	        where x.emp03_emp_id = emp02_emp_id
+	          and x.emp03_trans_date &lt;= trunc(sysdate))
+	   and emp03_org_code_id = org01_code_id 
+	   and org01_code_id = org02_code_id
+	   and trunc(sysdate) between org01_open_date and case when org01_close_date is null then trunc(sysdate) else org01_close_date end    
+	   and org02_mod_date = (
+	       select max(x.org02_mod_date)
+	         from org02_info x
+	        where x.org02_code_id = e.org02_code_id 
+	          and x.org02_mod_date &lt;= c.emp03_trans_date ) 
+</select>
+
+<select id="selectByText" resultMap="mapper" parameterType="HashMap" > 
+	select a.*
+	     , b.*
+	     , c.*
+	     , d.*
+	     , e.*
+	     , f_cdnm('NationCode', emp01_nat_cd, emp01_company_id, emp02_hire_date) as emp01_nat_nm
+	     , f_cdnm('GenderCode', emp01_gender_cd, emp01_company_id, emp02_hire_date) as emp01_gender_nm
+	     , f_cdnm('HireCode', emp02_hire_cd, emp01_company_id, emp02_hire_date) as emp02_hire_nm
+	     , f_cdnm('RetireCode', emp02_retire_cd, emp01_company_id, emp02_retire_date) as emp02_retire_nm
+	     , f_cdnm('EmpKindCode', emp02_emp_kind_cd, emp01_company_id, emp02_hire_date) as emp02_emp_kind_nm
+	     , f_cdnm('EmpPosCode', emp03_pos_cd, emp01_company_id, emp03_trans_date) as emp03_pos_nm
+	     , f_cdnm('EmpTitleCode', emp03_title_cd, emp01_company_id, emp03_trans_date) as emp03_title_nm
+	     , case when emp02_retire_date is null then '재직' else '퇴직' end as emp02_retire_yn
+	  from emp01_person a
+	     , emp02_emp b
+	     , emp03_trans c 
+	     , org01_code d
+	     , org02_info e
+	 where emp01_company_id = #{companyId}
+	   and a.emp01_person_id = b.emp02_person_id
+	<choose>
+		<when test="workTypeCode == 'RETIRE' ">
+	   and b.emp02_retire_date <![CDATA[<=]]> trunc(sysdate)
+		</when>
+		<when test="workTypeCode == 'WORK' ">
+	   and trunc(sysdate) between emp02_hire_date and nvl(emp02_retire_date, trunc(sysdate))
+		</when>
+		<otherwise> </otherwise>
+	</choose>
+       and b.emp02_emp_id = c.emp03_emp_id
+       and c.emp03_trans_date = ( 
+	       select max(x.emp03_trans_date)
+	         from emp03_trans x
+	        where x.emp03_emp_id = b.emp02_emp_id
+	          and x.emp03_trans_date <![CDATA[<=]]> nvl(b.emp02_retire_date, trunc(sysdate)) ) 
+	   and d.org01_code_id = c.emp03_org_code_id
+	   and e.org02_code_id = d.org01_code_id
+	   and trunc(sysdate) between org01_open_date and case when org01_close_date is null then trunc(sysdate) else org01_close_date end
+	   and e.org02_mod_date = (
+	       select max(x.org02_mod_date)
+	         from org02_info x
+	        where x.org02_code_id = e.org02_code_id 
+	          and x.org02_mod_date <![CDATA[<=]]> c.emp03_trans_date ) 
+	   and (b.emp02_emp_no like #{searchText} or a.emp01_kor_nm like #{searchText} or e.org02_kor_nm like #{searchText} )
+	   order by f_org_seq(d.org01_code_id, trunc(sysdate)), c.emp03_title_cd, emp03_pos_cd, emp02_hire_date
+</select>
+
+</mapper>

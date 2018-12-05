@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script type="text/javascript" src="/smarteditor/js/lib/jquery3.3.1.js"></script>
+<script type="text/javascript" src="/smarteditor/js/service/HuskyEZCreator.js" charset="utf-8"></script>
+
+<script>
+var editor_object = [];
+var isOnload = "0";
+$(function(){
+    //전역변수선언
+    nhn.husky.EZCreator.createInIFrame({
+        oAppRef: editor_object,
+        elPlaceHolder: "smarteditor",
+        sSkinURI: "/smarteditor/SmartEditor2Skin.html",
+        htParams : {
+            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+            bUseToolbar : true,            
+            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+            bUseVerticalResizer : false,    
+            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+            bUseModeChanger : true,
+            // client-side xss filter 무시 여부 (true:사용하지 않음 / 그외:사용)
+            bSkipXssFilter : true,
+        },
+        fOnAppLoad : function(){
+        	editorLoad2();
+        } 
+    });
+    
+    //전송버튼 클릭이벤트
+    $("#savebutton").click(function(){
+        //id가 smarteditor인 textarea에 에디터에서 대입
+        editor_object.getById["smarteditor"].exec("UPDATE_CONTENTS_FIELD", []);
+        alert($("#smarteditor").text());     
+        // 이부분에 에디터 validation 검증
+        //폼 submit
+        //$("#frm").submit();
+    });
+    
+    
+});
+    
+function sendToServer(){
+	//id가 smarteditor인 textarea에 에디터에서 대입
+    editor_object.getById["smarteditor"].exec("UPDATE_CONTENTS_FIELD", []);
+    //var bbb = a.getElementById("htmlTemplate").contentWindow;
+    // 이부분에 에디터 validation 검증
+    //폼 submit(필요하면 쓰기)
+    //$("#frm").submit();
+    
+    var htmlText = document.getElementById("smarteditor").value;
+    //이미지 업로드시 개행문자가 들어감, 그래서 문자 치환함
+    htmlText = htmlText.replace(/&#10;/gi, '');
+    return htmlText;
+}
+
+function setHtmlText(str){
+    editor_object.getById["smarteditor"].exec("PASTE_HTML", [str]); //내용밀어넣기
+}
+
+function editorLoad(){
+	//var fn = window.parent.myApp.client.utils.JSCaller.getHtml();
+	//fn();
+}
+
+function editorLoad2(){
+	var fn = window.parent.myApp.client.utils.JSCaller.getHtml();
+	fn();
+}
+
+function resize(arg){
+}
+
+</script>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+    <form action="naverReceiveEditor.jsp" method="post" id="frm">
+        <textarea name="smarteditor" id="smarteditor" rows="10" cols="100" style="width:100%; height:300px;"></textarea>
+    </form>
+    <textarea name="smarteditorText" id="smarteditorText" style="display:none;"rows="10" cols="100" style="width:100%; height:300px;"></textarea>
+</body>
+</html>

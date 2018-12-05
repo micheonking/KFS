@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="emp03_trans">
+
+<resultMap 	id="mapper" type="myApp.client.vi.emp.model.Emp03_TransModel" >
+	<id  	column="emp03_trans_id"     property="transId"/>
+	<result column="emp03_emp_id"    	property="empId"/>
+	<result column="emp03_trans_date"   property="transDate"/>
+	<result column="emp03_trans_cd"     property="transCode"/>
+	<result column="emp03_trans_nm"     property="transName"/>
+	<result column="emp03_org_code_id"  property="orgCodeId"/>
+	<result column="emp03_pos_cd"       property="posCode"/>
+	<result column="emp03_pos_nm"       property="posName"/>
+	<result column="emp03_title_cd"     property="titleCode"/>
+	<result column="emp03_title_nm"     property="titleName"/>
+	<result column="emp03_grade_cd"     property="gradeCode"/>
+	<result column="emp03_grade_nm"     property="gradeName"/>
+	<result column="emp03_trans_reason" property="transReason"/>
+	<result column="emp03_trans_note"   property="transNote"/>
+
+	<result column="emp04_close_date"   property="addTitleCloseDate"/>
+
+	<association property="orgCodeModel" 
+		javaType="myApp.client.vi.org.model.Org01_CodeModel" 
+		resultMap="org01_code.mapper"
+	/>
+	<association property="orgInfoModel" 
+		javaType="myApp.client.vi.org.model.Org02_InfoModel" 
+		resultMap="org02_info.mapper"
+	/>
+	
+	
+</resultMap>
+
+<select id="selectByEmpId" resultMap="mapper" parameterType="HashMap" > 
+<!-- 
+	select 	a.*
+	, 		b.*
+	, 		c.*
+	, 		f_cdnm('TransCode', emp03_trans_cd, org01_company_id, emp03_trans_date) as emp03_trans_nm
+	, 		f_cdnm('EmpPosCode', emp03_pos_cd, org01_company_id, emp03_trans_date) as emp03_pos_nm
+	, 		f_cdnm('EmpTitleCode', emp03_title_cd, org01_company_id, emp03_trans_date) as emp03_title_nm
+	from   emp03_trans a
+	     , org01_code b
+	     , org02_info c
+	where  emp03_emp_id = #{empId}
+    and    emp03_trans_date between #{hireDate} and #{retireDate}
+    and    org01_code_id = emp03_org_code_id 
+	and    org02_code_id = emp03_org_code_id 
+    and    org02_mod_date 
+    =   (   select max(x.org02_mod_date)
+            from    org02_info x
+            where   x.org02_code_id = emp03_org_code_id
+            and     x.org02_mod_date &lt;= emp03_trans_date )
+-->
+select a.*
+     , b.*
+     , c.*
+     , f_cdnm('TransCode', emp03_trans_cd, org01_company_id, emp03_trans_date) as emp03_trans_nm
+     , f_cdnm('EmpPosCode', emp03_pos_cd, org01_company_id, emp03_trans_date) as emp03_pos_nm
+     , f_cdnm('EmpTitleCode', emp03_title_cd, org01_company_id, emp03_trans_date) as emp03_title_nm
+     , null emp04_close_date
+  from emp03_trans a
+     , org01_code b
+     , org02_info c
+ where emp03_emp_id = #{empId}
+   and emp03_trans_date between #{hireDate} and #{retireDate}
+   and org01_code_id = emp03_org_code_id 
+   and org02_code_id = emp03_org_code_id 
+   and org02_mod_date 
+   =   (select max(x.org02_mod_date)
+	      from org02_info x
+	     where x.org02_code_id = emp03_org_code_id
+	       and x.org02_mod_date &lt;= emp03_trans_date)
+union all
+select emp04_add_title_id as emp03_trans_id
+     , emp04_start_date as emp03_trans_date
+     , null as emp03_trans_cd
+     , emp04_reason as emp03_trans_reason
+     , null as emp03_pos_cd, null as emp03_title_cd, null as emp03_grade_cd, null as emp03_org_code_id
+     , null as emp03_note, null as emp03_emp_id, null as org01_code_id, null as org01_company_id
+     , null as org01_org_cd, null as org01_open_date, null as org01_close_date, null as org01_open_reason
+     , null as org01_close_reason, null as org01_note, null as org02_info_id
+     , f_org_nm(emp04_org_code_id, nvl(emp04_close_date,to_date('99991231','yyyymmdd'))) as org02_kor_nm
+     , null as org02_mod_date, null as org02_mod_reason, null as org02_code_id, null as org02_parent_code_id
+     , null as org02_short_nm, null as org02_eng_nm, null as org02_note, null as org02_level_cd
+     , null as org02_sort_order, null as org02_mod_detail
+     , '겸직' as emp03_trans_nm
+     , f_cdnm('EmpPosCode', emp00_pos_cd, emp00_company_id, emp04_close_date) as emp03_pos_nm
+     , f_cdnm('EmpTitleCode', emp04_title_cd, emp00_company_id, emp04_close_date) as emp03_title_nm
+     , emp04_close_date
+  from emp04_add_title
+   , emp00_info
+ where emp04_emp_id = #{empId}
+   and emp04_emp_id = emp00_emp_id 
+   and emp04_start_date between emp00_trans_date and emp00_close_date       
+   and emp00_all_title = 0
+order by emp03_trans_date asc
+</select>
+
+
+<select id="selectById" resultMap="mapper" parameterType="HashMap" >
+	select 	a.*
+	, 		b.*
+    , 		c.*
+	, 		f_cdnm('TransCode', emp03_trans_cd, org01_company_id, emp03_trans_date) as emp03_trans_nm
+	, 		f_cdnm('EmpPosCode', emp03_pos_cd, org01_company_id, emp03_trans_date) as emp03_pos_nm
+	, 		f_cdnm('EmpTitleCode', emp03_title_cd, org01_company_id, emp03_trans_date) as emp03_title_nm
+	from   emp03_trans a
+	     , org01_code b
+	     , org02_info c
+	where  emp03_trans_id = #{transId}
+    and    org01_code_id = emp03_org_code_id 
+	and    org02_code_id = emp03_org_code_id 
+    and    org02_mod_date 
+    =   (   select max(x.org02_mod_date)
+            from    org02_info x
+            where   x.org02_code_id = emp03_org_code_id
+            and     x.org02_mod_date &lt;= emp03_trans_date ) 
+</select>
+
+</mapper>

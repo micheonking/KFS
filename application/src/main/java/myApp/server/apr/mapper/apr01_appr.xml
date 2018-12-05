@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="apr01_appr">
+
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr01_ApprModel" >
+ 	<id  	column="apr01_appr_id"    		property="apprId"/>
+	<result column="apr01_class_tree_id"    property="classTreeId"/>
+	<result column="apr01_title"      		property="title"/>
+	<result column="apr01_reg_date"   		property="regDate"/>
+	<result column="apr01_status_cd"  		property="statusCode"/>
+	<result column="apr01_status_nm"  		property="statusName"/>
+	<result column="apr01_content"    		property="content" jdbcType="CLOB" javaType="java.lang.String" />
+	<result column="apr01_note"       		property="note"/>
+	<result column="apr01_reg_emp_id" 		property="regEmpId"/>
+	<result column="apr01_reg_emp_nm" 		property="regEmpNm"/>
+	<result column="apr01_effect_date" 		property="effectDate"/>
+	<result column="apr01_stamp_id" 		property="stampId"/>
+	<result column="apr01_stamp_Name" 		property="stampName"/>
+	<result column="apr01_stamp_seq" 		property="stampSeq"/>
+	<result column="apr01_inout_cd" 		property="inOutTypeCode"/>
+	
+	<result column="apr01_receive_nm" 		property="receiveName"/>
+	<result column="apr01_reference_nm" 	property="referenceName"/>
+	
+	<result column="sys10_file_nm" 			property="fileName"/>
+	
+	<result column="next_appr_nm" 			property="NextApprName"/>
+	
+	<result column="recent_approval_name"   property="recentApprovalName"/>
+	<result column="recent_approval_date"   property="recentApprovalDate"/>
+	<result column="my_approval_date"    	property="myApprovalDate"/>
+	
+	<result column="class_tree_nm_allpath"	property="classTreeNameAppPath"/>
+	
+	<result column="mailYn"					property="mailYn"/>
+	
+	<association property="empInfoModel" 
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel" 
+		resultMap="emp00_info.mapper"
+	/>
+	<association property="fundModel" 
+		javaType="myApp.client.vi.fnd.model.Fnd00_FundModel" 
+		resultMap="fnd00_fund.mapper"
+	/>
+	<association property="classTreeModel" 
+		javaType="myApp.client.vi.dcr.model.Dcr01_ClassTreeModel" 
+		resultMap="dcr01_class_tree.mapper"
+	/>
+	<association property="stampModel" 
+		javaType="myApp.client.vi.apr.model.Apr10_StampModel" 
+		resultMap="apr10_stamp.mapper"
+	/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+select a.*
+     , b.*
+     , c.*
+     , d.*
+     , apr10_stamp_nm as apr01_stamp_Name
+     , f_class_tree_nm_allpath(dcr01_class_tree_id) as class_tree_nm_allpath
+  from apr01_appr a
+     , dcr01_class_tree b 
+     , emp00_info c
+     , apr10_stamp d
+ where apr01_appr_id = #{apprId}
+   and apr01_class_tree_id = dcr01_class_tree_id 
+   and apr01_reg_emp_id = emp00_emp_id
+	   and emp00_all_title = 0
+   and apr01_stamp_id = apr10_stamp_id(+)
+   and apr01_reg_date between emp00_trans_date and emp00_close_date 
+</select>
+
+<select id="selectByClassTreeId" resultMap="mapper" parameterType="Long" >
+select *
+ from apr01_appr
+    , apr03_relate_fund 
+    , fnd00_fund 
+    , emp00_info
+    , dcr01_class_tree
+    , apr10_stamp
+where apr01_class_tree_id = #{classTreeId}
+  and apr01_class_tree_id = dcr01_class_tree_id 
+  and apr01_reg_emp_id = emp00_emp_id
+	   and emp00_all_title = 0
+  and apr01_reg_date between emp00_trans_date and emp00_close_date
+  and apr01_appr_id = apr03_appr_id(+)
+  and apr03_fund_id = fnd00_fund_id(+)
+  and apr01_stamp_id = apr10_stamp_id(+) 
+</select>
+
+<select id="selectByFundCodeId" resultMap="mapper" parameterType="HashMap" > 
+	select *
+	  from apr01_appr
+	     , sys10_file 
+	     , apr03_relate_fund
+	     , apr10_stamp
+	     , ( select * 
+               from fnd00_fund
+              where fnd00_fund_id = #{fundCodeId}
+                and fnd00_work_date = f_max_workdate(fnd00_fund_id, sysdate)
+              union all
+             select *
+               from fnd00_fund
+              where fnd00_real_fund_id = #{fundCodeId}
+                and fnd00_work_date = f_max_workdate(fnd00_fund_id, sysdate)
+           ) 
+	 where apr01_class_tree_id = #{classTreeId}
+	   and apr01_appr_id = sys10_parent_id(+)
+	   and 'true'        = sys10_title_yn(+)
+	   and apr01_appr_id = apr03_appr_id
+	   and apr03_fund_id = fnd00_fund_id
+	   and apr01_stamp_id = apr10_stamp_id(+)
+</select>
+
+<select id="selectByApprId" resultMap="mapper" parameterType="Long" > 
+select a.*
+     , b.*
+     , c.*
+     , d.*
+     , f_class_tree_nm_allpath(dcr01_class_tree_id) as class_tree_nm_allpath
+  from apr01_appr a
+     , dcr01_class_tree b
+     , emp00_info c
+     , apr10_stamp d
+ where apr01_appr_id = #{apprId}
+   and apr01_class_tree_id = dcr01_class_tree_id 
+   and apr01_reg_emp_id = emp00_emp_id
+   and emp00_all_title = 0
+   and apr01_reg_date between emp00_trans_date and emp00_close_date
+   and apr01_stamp_id = apr10_stamp_id(+) 
+</select>
+
+<select id="selectByEmpId" resultMap="mapper" parameterType="HashMap" > 
+select a.*
+     , f_cdnm('AprStatusCode', a.apr01_status_cd, #{companyId}, a.apr01_reg_date) as apr01_status_nm
+from   apr01_appr a
+where  a.apr01_reg_emp_id = #{empId}
+and    a.apr01_status_cd like #{status}
+and    to_date(a.apr01_reg_date, 'yyyy-MM-dd') between #{startDate} and #{endDate}
+
+</select>
+
+<select id="selectByRequestEmpId" resultMap="mapper" parameterType="HashMap" >
+<!-- 
+ -->
+select apr01_appr.* 
+     , emp00_info.*
+     , dcr01_class_tree.* 
+     , apr10_stamp.*
+     , f_cdnm('AprStatusCode', apr01_status_cd, emp00_company_id, apr01_reg_date) as apr01_status_nm
+     , (
+       select apr04_appr_date
+       from   apr04_appr_step
+       where  apr04_appr_id = apr01_appr_id
+       and    apr04_step_type_cd in ('00', '10', '20')
+       and    apr04_appr_date = (select max(apr04_appr_date) from apr04_appr_step where apr04_appr_id = apr01_appr_id)
+       and    rownum = 1
+       ) as recent_approval_date
+     , f_apr_get_title_nm((
+                             select apr04_step_emp_id
+                             from   apr04_appr_step
+                             where  apr04_appr_id = apr01_appr_id
+                             and    apr04_step_type_cd in ('00', '10', '20')
+                             and    apr04_appr_date = (select max(apr04_appr_date) from apr04_appr_step where apr04_appr_id = apr01_appr_id)
+                             and    rownum = 1
+                            ), 
+                            (
+                             select apr04_appr_date
+                             from   apr04_appr_step
+                             where  apr04_appr_id = apr01_appr_id
+                             and    apr04_step_type_cd in ('00', '10', '20')
+                             and    apr04_appr_date = (select max(apr04_appr_date) from apr04_appr_step where apr04_appr_id = apr01_appr_id)
+                             and    rownum = 1
+                             )
+                             )as recent_approval_name
+	, decode( (select count(*) from dcr10_mail_history where dcr10_apr_id = apr01_appr_id), 0, '', '송신') as mailYn
+ from apr01_appr 
+    , emp00_info
+    , dcr01_class_tree
+    , apr10_stamp
+where apr01_class_tree_id = dcr01_class_tree_id
+  and apr01_stamp_id = apr10_stamp_id(+) 
+  and apr01_reg_emp_id = emp00_emp_id
+  and apr01_reg_date between emp00_trans_date and emp00_close_date
+  and apr01_reg_emp_id = #{regEmpId}
+  and apr01_status_cd like #{statusCode}
+  and apr01_reg_date between #{startDate} and #{endDate}
+  and emp00_all_title = 0
+  and (( #{aprYn} = 'false' and apr01_status_cd not in ('30','40') ) or
+       ( #{aprYn} = 'true'  ))
+order by apr01_reg_date
+<!-- 
+select apr01_appr.* 
+     , emp00_info.*
+     , dcr01_class_tree.* 
+     , apr04_appr_step.*
+     , f_cdnm('AprStatusCode', apr01_status_cd, emp00_company_id, apr01_reg_date) as apr01_status_nm
+ from apr01_appr 
+    , emp00_info
+    , dcr01_class_tree
+    , apr04_appr_step
+where apr01_class_tree_id = dcr01_class_tree_id
+  and apr04_step_emp_id = emp00_emp_id
+  and apr01_reg_date between emp00_trans_date and emp00_close_date
+  and apr01_reg_emp_id = #{regEmpId}
+  and apr01_status_cd like #{statusCode}
+  and apr01_reg_date between #{startDate} and #{endDate}
+order by apr01_reg_date
+ -->
+</select>
+
+
+<select id="selectAplyListByEmpId" resultMap="mapper" parameterType="HashMap" >
+select a.*
+     , f_cdnm('AprStatusCode', a.apr01_status_cd, #{companyId}, a.apr01_reg_date) as apr01_status_nm
+     , a.apr04_appr_date as recent_approval_date
+     , f_apr_get_position_nm(apr04_step_emp_id, apr04_appr_date) as recent_approval_name
+from(
+    select x.*
+         , y.*
+         , (select apr04_appr_date
+              from APR04_APPR_STEP
+             where apr04_appr_id = x.apr01_appr_id
+               and apr04_step_type_cd in ('10', '20')
+               and apr04_appr_date = (select max(apr04_appr_date) from apr04_appr_step where apr04_appr_id = x.apr01_appr_id)
+               and rownum = 1
+           ) as apr04_appr_date
+         , (select apr04_step_emp_id
+              from   APR04_APPR_STEP
+             where  apr04_appr_id = x.apr01_appr_id
+               and    apr04_step_type_cd in ('10', '20')
+               and    apr04_appr_date = (select max(apr04_appr_date) from apr04_appr_step where apr04_appr_id = x.apr01_appr_id)
+               and    rownum = 1
+           ) as apr04_step_emp_id
+      from APR01_APPR x
+         , apr10_stamp y
+     where apr01_reg_emp_id = #{empId}
+       and apr01_stamp_id = apr10_stamp_id(+) 
+    ) a
+where a.apr01_status_cd like #{status}
+and   to_date(a.apr01_reg_date, 'yyyy-MM-dd') between #{startDate} and #{endDate}
+</select>
+
+<select id="selectApprListByEmpId" resultMap="mapper" parameterType="HashMap" >
+<!-- 
+select a.*
+     , b.*
+     , b.apr04_appr_date as my_approval_date
+     , f_cdnm('AprStatusCode', a.apr01_status_cd, #{companyId}, a.apr01_reg_date) as apr01_status_nm
+from   apr01_appr a
+     , apr04_appr_step b
+where  a.apr01_appr_id = b.apr04_appr_id
+and    b.apr04_step_emp_id = #{empId}
+and    a.apr01_status_cd like #{status}
+and    to_date(a.apr01_reg_date, 'yyyy-MM-dd') between #{startDate} and #{endDate}
+ -->
+select x.*
+     , decode( (select count(*) from dcr10_mail_history where dcr10_apr_id = apr01_appr_id), 0, '', '송신') as mailYn 
+from (
+      select a.*
+           , b.*
+           , c.*
+           , d.*
+           , b.apr04_appr_date as my_approval_date
+           , f_cdnm('AprStatusCode', a.apr01_status_cd, #{companyId}, a.apr01_reg_date) as apr01_status_nm
+      from   apr01_appr a
+           , apr04_appr_step b
+           , dcr01_class_tree c
+           , apr10_stamp d
+      where  a.apr01_appr_id = b.apr04_appr_id
+      and    a.apr01_class_tree_id = c.dcr01_class_tree_id
+      and    a.apr01_stamp_id = d.apr10_stamp_id(+) 
+      and    b.apr04_step_emp_id = #{empId}
+      and    a.apr01_status_cd like #{status}
+      and    to_date(a.apr01_reg_date, 'yyyy-MM-dd') between #{startDate} and #{endDate}
+      union all
+      select a.*
+           , b.*
+           , c.*
+           , d.*
+           , b.apr04_appr_date as my_approval_date
+           , f_cdnm('AprStatusCode', a.apr01_status_cd, #{companyId}, a.apr01_reg_date) as apr01_status_nm
+      from   apr01_appr a
+           , apr04_appr_step b
+           , dcr01_class_tree c
+           , apr10_stamp d
+      where  a.apr01_appr_id = b.apr04_appr_id
+      and    a.apr01_class_tree_id = c.dcr01_class_tree_id
+      and    a.apr01_stamp_id = d.apr10_stamp_id(+)
+      and    b.apr04_step_emp_id in (
+                                     select apr07_target_emp_id
+                                     from apr07_alt_appr
+                                     where apr07_alt_emp_id = #{empId}
+                                     and   trunc(sysdate) between apr07_start_date and apr07_close_date
+                                    )
+      and    a.apr01_status_cd like #{status}
+      and    to_date(a.apr01_reg_date, 'yyyy-MM-dd') between #{startDate} and #{endDate}
+     ) x
+where (( #{aprYn} = 'false' and apr01_status_cd not in ('30','40') ) or
+       ( #{aprYn} = 'true'  ))
+order by apr01_reg_date asc
+ 
+</select>
+
+<select id="selectOutstanding" resultMap="mapper" parameterType="HashMap" >		<!-- 미결함 -->
+	select	a.*
+	     ,	f_cdnm('AprStepStatusCode', apr04_step_status_cd, emp00_company_id, apr01_reg_date) as apr01_status_nm
+<!-- 	     ,  emp00_kor_nm||' '||emp00_pos_nm as apr01_reg_emp_nm -->
+	     ,  emp00_kor_nm as apr01_reg_emp_nm
+	  from	apr01_appr a
+	     ,	( select *
+	            from apr04_appr_step
+ 	   		   where apr04_step_type_cd   not in ('30') 		<!-- 결재구분(30:참조) -->
+ 	   		     and apr04_step_status_cd not in ('20','30')	<!-- 결재단계(20:승인/30:반려)-->
+ 	             and apr04_step_emp_id in ( #{empId}, (select apr07_target_emp_id
+ 	                                                     from apr07_alt_appr
+ 	                                                    where apr07_alt_emp_id = #{empId}
+ 	                                                      and trunc(sysdate) between apr07_start_date and apr07_close_date) )
+ 			)
+	     ,	emp00_info
+	 where	apr01_appr_id = apr04_appr_id
+	   and  apr01_reg_emp_id = emp00_emp_id
+	   and  apr01_reg_date between emp00_trans_date and emp00_close_date
+	   and	emp00_company_id = #{companyId}
+	   and emp00_all_title = 0
+ 	   and	apr01_status_cd not in ('30','40','99')	<!--문서결재상태(30:완료/40:반려/99:임시저장)-->
+<!--  	 union all -->
+<!--  	select	pln03_resrch_id											as APR01_APPR_ID -->
+<!--  		 ,	dcr01_class_tree_nm||'('||fnd07_issuing_entity_nm||')'	as APR01_TITLE -->
+<!--  		 ,	pln03_reg_date											as APR01_REG_DATE -->
+<!--  		 ,	'00'													as APR01_STATUS_CD -->
+<!--  		 ,	null													as APR01_CONTENT -->
+<!--  		 ,	pln03_note												as APR01_NOTE -->
+<!--  		 ,	pln03_reg_emp_id										as APR01_REG_EMP_ID -->
+<!--  		 ,	pln03_cfrm_date											as APR01_EFFECT_DATE -->
+<!--  		 ,	'대기'													as APR01_STATUS_NM -->
+<!--  		 ,	emp00_kor_nm||' '||emp00_pos_nm							as APR01_REG_EMP_NM -->
+<!--  	  from	pln03_resrch -->
+<!--  	  	 ,	dcr01_class_tree -->
+<!--  	  	 ,	fnd07_issuing_entity -->
+<!--  	  	 ,	emp00_info -->
+<!--  	 where	pln03_class_tree_id		= dcr01_class_tree_id -->
+<!--  	   and	pln03_issuing_entity_id	= fnd07_issuing_entity_id -->
+<!--  	   and	pln03_reg_emp_id		= emp00_emp_id -->
+<!--  	   and	pln03_reg_date			between emp00_trans_date and emp00_close_date -->
+<!--  	   and	pln03_cfrm_date	is null -->
+<!--  	   and	pln03_cfrm_emp_id = #{empId}	 -->
+	 order by apr01_reg_date desc
+</select>
+
+<select id="selectMonitorngAppr" resultMap="mapper" parameterType="HashMap" >	<!-- 결재요청함 -->
+	select	a.*
+	     ,	f_cdnm('AprStatusCode', apr01_status_cd, #{companyId}, apr01_reg_date) as apr01_status_nm
+	  from	( select a.*
+<!-- 	  			   , emp00_kor_nm||' '||emp00_pos_nm as next_appr_nm -->
+	  			   , emp00_kor_nm as next_appr_nm
+	            from apr01_appr a
+	               , apr04_appr_step
+				   , emp00_info
+	           where apr01_appr_id = apr04_appr_id
+	             and nvl(apr04_appr_emp_id, apr04_step_emp_id) = emp00_emp_id
+	             and trunc(apr04_appr_date) between emp00_trans_date and emp00_close_date
+	             and apr01_status_cd in ('30','40')			<!--(30:완료/40:반려)-->
+	             and apr04_step_status_cd in ('20','30')	<!--(20:승인/30:반려)-->
+	             and trunc(apr04_appr_date) between #{toDay}-7 and #{toDay}
+	             and apr01_reg_emp_id = #{empId}
+	   and emp00_all_title = 0
+ 	   		   union all
+ 	   		  select a.*
+<!--  	   		  	   , emp00_kor_nm||' '||emp00_pos_nm as next_appr_nm -->
+				   , emp00_kor_nm as next_appr_nm
+	            from apr01_appr a
+	               , ( select *
+	                     from apr04_appr_step
+	                    where apr04_appr_id||apr04_seq in ( select apr04_appr_id||min(apr04_seq)
+	                    									  from apr04_appr_step
+<!-- 	                    									 where apr04_step_status_cd not in ('40')  (40:참조) -->
+															 where apr04_step_type_cd not in ('30')
+	                    									 group by apr04_appr_id ) ) b
+	               , emp00_info
+	           where apr01_appr_id = apr04_appr_id
+	             and nvl(apr04_appr_emp_id, apr04_step_emp_id) = emp00_emp_id
+	             and apr01_reg_date between emp00_trans_date and emp00_close_date
+	             and apr01_status_cd in ('10','20')	<!--(10:상신/20:진행중)-->
+	             and apr01_reg_emp_id = #{empId}
+	   and emp00_all_title = 0
+	        ) a
+<!-- 	 union all -->
+<!-- 	select	pln03_resrch_id											as APR01_APPR_ID -->
+<!--  		 ,	dcr01_class_tree_nm||'('||fnd07_issuing_entity_nm||')'	as APR01_TITLE -->
+<!--  		 ,	pln03_reg_date											as APR01_REG_DATE -->
+<!--  		 ,	decode(pln03_cfrm_date,null,'00','30')					as APR01_STATUS_CD -->
+<!--  		 ,	null													as APR01_CONTENT -->
+<!--  		 ,	pln03_note												as APR01_NOTE -->
+<!--  		 ,	pln03_reg_emp_id										as APR01_REG_EMP_ID -->
+<!--  		 ,	pln03_cfrm_date											as APR01_EFFECT_DATE -->
+<!--  		 ,	emp00_kor_nm||' '||emp00_pos_nm							as NEXT_APPR_NM -->
+<!--  		 ,	decode(pln03_cfrm_date,null,'대기','완료')					as APR01_STATUS_NM -->
+<!--  	  from	( select * -->
+<!--  	            from pln03_resrch -->
+<!--  	           where pln03_cfrm_date is null -->
+<!--  	             and pln03_reg_emp_id = #{empId} -->
+<!--  	           union all -->
+<!--  	          select * -->
+<!--  	            from pln03_resrch -->
+<!--  	           where pln03_cfrm_date is not null -->
+<!--  	             and pln03_cfrm_date between #{toDay}-7 and #{toDay} -->
+<!--  	             and pln03_reg_emp_id = #{empId} -->
+<!--  	        ) -->
+<!--  	  	 ,	dcr01_class_tree -->
+<!--  	  	 ,	fnd07_issuing_entity -->
+<!--  	  	 ,	emp00_info -->
+<!--  	 where	pln03_class_tree_id		= dcr01_class_tree_id -->
+<!--  	   and	pln03_issuing_entity_id	= fnd07_issuing_entity_id -->
+<!--  	   and	pln03_cfrm_emp_id		= emp00_emp_id -->
+<!--  	   and	pln03_reg_date			between emp00_trans_date and emp00_close_date -->
+	 order by apr01_reg_date desc
+</select>
+
+<update id="confirmUpdate" parameterType="HashMap" >
+update apr01_appr
+   set apr01_status_cd = #{apprStatusCode}
+     , apr01_stamp_seq = #{stampSeq}
+ where apr01_appr_id = #{apprId}
+</update>
+
+<update id="cancelUpdate" parameterType="HashMap" >
+update apr01_appr
+   set apr01_status_cd = 99
+ where apr01_appr_id = #{apprId}
+</update>
+
+<select id="selectToDoList" resultMap="mapper" parameterType="HashMap" >
+ 	select	pln03_resrch_id											as APR01_APPR_ID
+ 		 ,	dcr01_class_tree_nm||'('||case when pln03_target_type_code = '10' then ( select fnd07_issuing_entity_nm
+		     		                                                                   from fnd07_issuing_entity
+		     		                                                                  where fnd07_issuing_entity_id = pln03_issuing_entity_id )
+		     	                           when pln03_target_type_code = '20' then ( select sys09_name
+		     	                                                                       from sys09_code
+		     	                                                                      where sys09_code_id = pln03_issuing_entity_id )
+		     	                           when pln03_target_type_code = '30' then '시장조사' end||')' as APR01_TITLE
+ 		 ,	pln03_reg_date											as APR01_REG_DATE
+ 		 ,	'일정관리'													as APR01_NOTE
+ 		 ,	pln03_reg_emp_id										as APR01_REG_EMP_ID
+<!--  		 ,	emp00_kor_nm||' '||emp00_pos_nm							as APR01_REG_EMP_NM -->
+ 		 ,	emp00_kor_nm											as APR01_REG_EMP_NM
+	  from	pln03_resrch
+	     ,  emp00_info
+	     ,  dcr01_class_tree
+	 where	pln03_class_tree_id		= dcr01_class_tree_id
+	   and	pln03_reg_emp_id		= emp00_emp_id
+	   and	pln03_reg_date			between emp00_trans_date and emp00_close_date
+	   and  #{empId}				IN (pln03_reg_emp_id, pln03_cfrm_emp_id)
+	   and	#{selectDate} between pln03_resrch_start_date and pln03_resrch_close_date
+	   and emp00_all_title = 0
+	 union all
+	select	pln02_plan_id									as APR01_APPR_ID
+ 		 ,	fnd00_fund_nm||'-'||dcr01_class_tree_nm			as APR01_TITLE
+ 		 ,	pln02_start_date								as APR01_REG_DATE
+ 		 ,	'상품기획'											as APR01_NOTE
+ 		 ,	pln02_emp_id									as APR01_REG_EMP_ID
+<!--  		 ,	emp00_kor_nm||' '||emp00_pos_nm					as APR01_REG_EMP_NM -->
+ 		 ,	emp00_kor_nm									as APR01_REG_EMP_NM
+	  from	( select *
+	            from pln02_plan
+	           where pln02_emp_id = #{empId}
+	   		 	 and #{selectDate} between pln02_start_date and nvl(pln02_due_date, pln02_start_date)
+	   		   minus <!-- 상신완료된건 제외 -->
+	   		  select x.*
+	   		    from pln02_plan x
+	   		       , apr01_appr
+	   		   where pln02_appr_id = apr01_appr_id
+	   		     and '30'	   	   = apr01_status_cd
+	   		     and pln02_emp_id  = #{empId}
+	   		 	 and #{selectDate} between pln02_start_date and nvl(pln02_due_date, pln02_start_date) )
+	     ,	fnd00_fund
+	     ,	dcr01_class_tree
+	  	 ,	emp00_info
+	 where	pln02_fund_id		= fnd00_fund_id
+	   and	fnd00_work_date     = f_max_workdate(fnd00_fund_id, pln02_start_date)
+	   and	pln02_class_tree_id	= dcr01_class_tree_id
+	   and	pln02_emp_id		= emp00_emp_id
+	   and	pln02_start_date	between emp00_trans_date and emp00_close_date
+	   and emp00_all_title = 0
+	 union all
+ 	select	opr01_create_id							as APR01_APPR_ID
+ 		 ,	opr01_title								as APR01_TITLE
+ 		 ,	opr03_reg_date							as APR01_REG_DATE
+ 		 ,	'운용보고'									as APR01_NOTE
+ 		 ,	opr03_reg_emp_id						as APR01_REG_EMP_ID
+<!--  		 ,	emp00_kor_nm||' '||emp00_pos_nm			as APR01_REG_EMP_NM -->
+ 		 ,	emp00_kor_nm							as APR01_REG_EMP_NM
+	  from	( select *
+	            from opr01_create
+	           where #{selectDate} between opr01_start_date and nvl(opr01_due_date, opr01_start_date)
+	           minus <!-- 상신완료된건 제외 -->
+	          select x.*
+	            from opr01_create x
+	               , apr01_appr
+	           where opr01_appr_id = apr01_appr_id
+	             and #{selectDate} between opr01_start_date and nvl(opr01_due_date, opr01_start_date)
+	             and '30'	       = apr01_status_cd )
+	  	 ,	opr03_reg
+	     ,	emp00_info
+	 where	opr01_create_id = opr03_create_id
+       and	opr03_reg_emp_id = #{empId}
+       and  opr03_reg_emp_id = emp00_emp_id
+	   and	opr01_start_date between emp00_trans_date and emp00_close_date
+	   and emp00_all_title = 0
+	 union all
+ 	select	apr01_appr_id							as APR01_APPR_ID
+ 		 ,	apr01_title								as APR01_TITLE
+ 		 ,	apr01_reg_date							as APR01_REG_DATE
+ 		 ,	'상신문서'									as APR01_NOTE
+ 		 ,	apr01_reg_emp_id						as APR01_REG_EMP_ID
+<!--  		 ,	emp00_kor_nm||' '||emp00_pos_nm			as APR01_REG_EMP_NM -->
+ 		 ,	emp00_kor_nm							as APR01_REG_EMP_NM
+ 	  from	( select distinct
+ 	  				 apr01_appr_id
+ 	  			   , apr01_title
+ 	  			   , apr01_reg_date
+ 	  			   , apr01_status_cd
+ 	  			   , apr01_reg_emp_id
+ 	            from apr01_appr
+ 	               , apr04_appr_step 
+ 	           where apr01_appr_id = apr04_appr_id
+ 	             and apr01_status_cd = '30'	<!-- (30:완료)  -->
+ 	             and #{empId} in (apr01_reg_emp_id, apr04_step_emp_id, apr04_appr_emp_id)
+ 	             and apr01_effect_date = #{selectDate} )
+ 	     ,	emp00_info
+	 where	apr01_reg_emp_id	= emp00_emp_id
+	   and	apr01_reg_date		between emp00_trans_date and emp00_close_date
+	   and emp00_all_title = 0
+</select>
+
+<select id="selectCalendar" resultMap="mapper" parameterType="HashMap" >
+	select	sys12_day					as APR01_REG_DATE
+     	 ,  title||' '||sum(cnt)||'건'	as APR01_TITLE
+     	 ,  title						as APR01_NOTE
+	  from	sys12_calendar
+	  	 ,	( select '일정관리' 				 title
+	  	     	   , count(*)				 cnt
+	  	     	   , pln03_resrch_start_date start_date
+	  	     	   , pln03_resrch_close_date close_date
+	  	     	from pln03_resrch
+	  	       where #{userId} in (pln03_reg_emp_id, pln03_cfrm_emp_id)
+			     and ( substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(pln03_resrch_start_date,'yyyymm') or
+			   		   substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(pln03_resrch_close_date,'yyyymm') )
+			   group by pln03_resrch_start_date, pln03_resrch_close_date
+			   union all
+			  select '상품기획'			title
+			       , count(*)			cnt
+			       , pln02_start_date 	start_date
+			       , nvl(pln02_due_date, pln02_start_date) close_date
+			    from ( select *
+			             from pln02_plan
+					    where pln02_emp_id  = #{userId}
+					      and ( substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(pln02_start_date,'yyyymm') or
+					   		    substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(nvl(pln02_due_date, pln02_start_date),'yyyymm') )
+						minus <!-- 상신완료된건 제외 -->
+					   select x.*
+			             from pln02_plan x
+			                , apr01_appr
+					    where pln02_appr_id = apr01_appr_id
+					      and apr01_status_cd = '30'
+					      and pln02_emp_id  = #{userId}
+					      and ( substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(pln02_start_date,'yyyymm') or
+					   		    substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(nvl(pln02_due_date, pln02_start_date),'yyyymm') )
+					  )
+			   group by pln02_start_date, nvl(pln02_due_date, pln02_start_date)
+			   union all
+			  select '운용보고'			title
+			       , count(*)			cnt
+			       , opr01_start_date	start_date
+			       , opr01_due_date		close_date
+			    from ( select distinct a.*
+			             from ( select *
+			                      from opr01_create
+			                     minus <!-- 상신완료된건 제외 -->
+			                    select x.*
+			                      from opr01_create x
+			                         , apr01_appr
+			                     where opr01_appr_id   = apr01_appr_id
+			                       and apr01_status_cd = '30' 
+			                  ) a
+			       		    , opr03_reg
+			   			where opr01_create_id  = opr03_create_id
+			     		  and opr03_reg_emp_id = #{userId} 
+			   			  and ( substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(opr01_start_date,'yyyymm') or
+			   		 		    substr(#{startDate},1,4)||substr(#{startDate},6,2) = to_char(opr01_due_date  ,'yyyymm') )
+			   		 )
+			   group by opr01_start_date, opr01_due_date
+			   union all
+			  select '상신문서'			title
+			       , count(*)			cnt
+			       , apr01_effect_date	start_date
+			       , apr01_effect_date	close_date
+			    from ( select distinct apr01_appr_id, apr01_effect_date
+			    		 from apr01_appr
+			    		 	, apr04_appr_step
+			    		where apr01_appr_id = apr04_appr_id
+			    		  and apr01_status_cd = '30'
+			    		  and #{userId} in (apr01_reg_emp_id, apr04_step_emp_id, apr04_appr_emp_id)
+			    		  and apr01_effect_date between #{startDate} and #{closeDate}
+			   		 )
+			   group by apr01_effect_date
+			)
+	 where	sys12_day between start_date and nvl(close_date,start_date)
+	   and  sys12_day between #{startDate} and #{closeDate}
+<!-- 	   and	sys12_working_yn = 'true' -->
+	 group by sys12_day, title
+	 order by 1
+</select>
+
+<update id="updateStepCd" parameterType="HashMap" >
+update apr01_appr
+set    apr01_status_cd = #{statusCd}
+where  apr01_appr_id = #{apprId}
+</update>
+
+<insert id="insert"  parameterType="myApp.client.vi.apr.model.Apr01_ApprModel">
+	insert
+	  into apr01_appr
+	     ( apr01_appr_id
+	     , apr01_title
+	     , apr01_reg_date
+	     , apr01_status_cd
+	     , apr01_content
+	     , apr01_note
+	     , apr01_reg_emp_id
+	     , apr01_effect_date
+	     , apr01_class_tree_id
+	     , apr01_inout_cd
+	     ) values (
+	       #{apprId}
+	     , #{title}
+	     , trunc(sysdate)
+	     , #{statusCode}
+	     , #{content}
+	     , #{note}
+	     , #{regEmpId}
+	     , #{effectDate}
+	     , #{classTreeId}
+	     , #{inOutTypeCode}
+	     );
+</insert>
+
+<select id="getStampSeq" resultMap="mapper" parameterType="HashMap" >
+select case
+         when apr01_stamp_seq <![CDATA[<=]]> 9999 then 10000
+         else apr01_stamp_seq
+         end as apr01_stamp_seq
+from   (
+       select (nvl(max(apr01_stamp_seq), 10000)) + 1 as apr01_stamp_seq
+       from   apr01_appr
+       )
+</select>
+
+<delete id="deleteAppr" parameterType="Long" >
+	delete
+	  from	apr01_appr
+	 where	apr01_appr_id = #{apprId}
+</delete>
+
+</mapper>

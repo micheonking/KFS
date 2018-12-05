@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys01_company">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys01_CompanyModel" >
+	<id  	column="sys01_company_id"		property="companyId"/>
+	<result column="sys01_company_nm"		property="companyName"/>
+	<result column="sys01_company_type_nm"		property="companyTypeName"/>  
+	<result column="sys01_biz_no"			property="bizNo"/>
+	<result column="sys01_tel1"				property="telNo01"/>
+	<result column="sys01_tel2"				property="telNo02"/>
+	<result column="sys01_fax1"				property="faxNo01"/>
+	<result column="sys01_zip_cd"			property="zipCode"/>
+	<result column="sys01_zip_addr"			property="zipAddress"/>
+	<result column="sys01_zip_detail"		property="zipDetail"/>
+	<result column="sys01_loc_nm"			property="locationName"/>
+	<result column="sys01_anniv_date"		property="annvDate"/>
+	<result column="sys01_note"				property="note"/>
+	<result column="sys01_menu_yn"			property="menuYn"/>
+	
+	<association property="companyMenuModel" 
+		javaType="myApp.client.vi.sys.model.Sys03_CompanyMenuModel" 
+		resultMap="sys03_company_menu.mapper"
+	/>
+	
+	
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="long" > 
+	select 	*
+	from 	sys01_company 
+	where	sys01_company_id = #{companyId}
+</select>
+
+<select id="selectByAll" resultMap="mapper" > 
+	select 	*
+	from 	sys01_company 
+	order by sys01_company_nm
+</select>
+
+<select id="selectByName" resultMap="mapper" parameterType="String">
+	select 	*
+	from 	sys01_company  
+	where 	sys01_company_nm like #{companyName}
+	order by sys01_company_nm
+</select>
+
+<select id="selectByMenuId" resultMap="mapper" parameterType="Long">
+	select 	sys01_company.*, 
+			sys03_company_menu.*, 
+			case when sys03_company_menu_id is null then 'false' else 'true' end sys01_menu_yn 
+	from 	sys01_company , 
+			sys03_company_menu 
+	where 	sys01_company_id = sys03_company_id(+)
+	and		sys03_menu_id(+) = #{menuId}
+	order by sys01_company_nm
+</select>
+
+<update id="updatePw"  parameterType="HashMap" > 
+	update 	sys01_company
+	   set 	sys01_tel2 = #{telNo02}
+	where	sys01_company_id = #{companyId}
+</update>
+</mapper>

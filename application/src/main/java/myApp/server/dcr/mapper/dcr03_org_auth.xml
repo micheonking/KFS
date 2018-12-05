@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="dcr03_org_auth">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dcr.model.Dcr03_OrgAuthModel" >
+	<id  	column="dcr03_org_auth_id"		property="orgAuthId"/>
+	<result column="dcr03_org_code_id"		property="orgCodeId"/>
+	<result column="dcr03_class_tree_id"	property="classTreeId"/>
+	<result column="dcr03_retrieve_yn"		property="retrieveYn"/>
+	<result column="dcr03_update_yn"		property="updateYn"/>
+	<result column="dcr03_note"				property="note"/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+select   a.*
+from     dcr03_org_auth a
+where    dcr03_org_auth_id = #{orgAuthId}
+</select>
+
+</mapper>

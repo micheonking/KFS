@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd04_sales">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd04_SalesModel" >
+	<id		column="fnd04_sales_id"		property="salesId"/>
+	<result	column="fnd04_sales_cd"		property="salesCode"/>
+	<result	column="fnd04_sales_nm"		property="salesName"/>
+	<result	column="fnd04_sales_use_yn"	property="salesUseYn"/>
+	<result	column="fnd04_sales_note"	property="salesNote"/>
+	
+	<result	column="fnd04_sales_use_yn"	property="salesUseString"/>
+</resultMap>
+	
+<select id="selectById" resultMap="mapper" parameterType="Long">	
+	select	*
+	from	fnd04_sales
+	where	fnd04_sales_id	=	#{salesId}
+</select>
+	
+<select id="selectByCodeName" resultMap="mapper" parameterType="HashMap">
+	select	*
+	from	fnd04_sales
+	where	fnd04_sales_nm	like	#{saleName}
+</select>
+
+</mapper>

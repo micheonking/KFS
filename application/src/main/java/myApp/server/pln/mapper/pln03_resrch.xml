@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pln03_resrch">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.pln.model.Pln03_ResrchModel" >
+		<id		column="pln03_resrch_id"        	property="resrchId"/>
+		<result column="pln03_class_tree_id"    	property="classTreeId"/>
+		<result column="pln03_issuing_entity_id"    property="issuingEntityId"/>
+		<result column="pln03_visit_reason"     	property="visitReason"/>
+		<result column="pln03_reg_emp_id"       	property="regEmpId"/>
+		<result column="pln03_reg_date"         	property="regDate"/>
+		<result column="pln03_close_date"         	property="closeDate"/>
+		<result column="pln03_close_yn"         	property="closeYn"/>
+		<result column="pln03_resrch_start_date"    property="resrchStartDate"/>
+		<result column="pln03_resrch_close_date"    property="resrchCloseDate"/>
+		<result column="pln03_cfrm_emp_id"      	property="cfrmEmpId"/>
+		<result column="pln03_cfrm_date"        	property="cfrmDate"/>
+		<result column="pln03_note"             	property="note"/>
+		<result column="pln03_target_type_code"		property="targetTypeCode"/>
+
+		<result column="pln03_class_tree_nm"    	property="classTreeNm"/>
+		<result column="pln03_parent_tree_nm"    	property="parentTreeNm"/>
+		<result column="pln03_issuing_entity_nm"    property="issuingEntityNm"/>
+		<result column="pln03_doc_yn"				property="docYn"/>
+		<result column="pln03_apr_yn"				property="aprYn"/>
+		<result column="pln03_reg_emp_nm"       	property="regEmpNm"/>
+		<result column="pln03_cfrm_emp_nm"      	property="cfrmEmpNm"/>
+		<result column="pln03_target_type_nm"		property="targetTypeName"/>
+	</resultMap>
+
+	<select id="selectById" resultMap="mapper" parameterType="Long" >
+		select	a.*
+		     ,	b.dcr01_class_tree_nm as pln03_class_tree_nm
+			 ,  ( select dcr01_class_tree_nm
+			        from dcr01_class_tree
+			       where dcr01_parent_tree_id = 0
+			       start with dcr01_class_tree_id = b.dcr01_class_tree_id
+			       connect by dcr01_class_tree_id = prior dcr01_parent_tree_id ) as pln03_parent_tree_nm
+		     ,	case when pln03_target_type_code = '10' then ( select fnd07_issuing_entity_nm
+		     		                                             from fnd07_issuing_entity
+		     		                                            where fnd07_issuing_entity_id = pln03_issuing_entity_id )
+		     	     when pln03_target_type_code = '20' then ( select sys09_name
+		     	                                                 from sys09_code
+		     	                                                where sys09_code_id = pln03_issuing_entity_id )
+		     	     else null end as pln03_issuing_entity_nm
+		     ,	f_cdnm('ResrchTargetTypeCode', a.pln03_target_type_code, f.emp00_company_id, pln03_reg_date) as pln03_target_type_nm
+<!-- 		     ,	e.emp00_kor_nm||' '||e.emp00_pos_nm||'('||e.emp00_org_nm||')' as pln03_cfrm_emp_nm -->
+<!-- 		     ,	f.emp00_kor_nm||' '||f.emp00_pos_nm||'('||f.emp00_org_nm||')' as pln03_reg_emp_nm -->
+		     ,	e.emp00_kor_nm||' ('||e.emp00_org_nm||')' as pln03_cfrm_emp_nm
+		     ,	f.emp00_kor_nm||' ('||f.emp00_org_nm||')' as pln03_reg_emp_nm
+		     ,  decode((select count(*) from sys10_file where sys10_parent_id = pln03_resrch_id),0,'','등록') as pln03_doc_yn
+		     ,	(case when pln03_close_date is null then '임시저장'
+		              else (case when pln03_cfrm_date is null then '결재중' else '완료' end) end) as pln03_apr_yn
+		  from	pln03_resrch a
+		     ,	dcr01_class_tree b
+		     ,	emp00_info e
+		     ,	emp00_info f
+		 where	a.pln03_class_tree_id 		= b.dcr01_class_tree_id
+		   and  a.pln03_cfrm_emp_id			= e.emp00_emp_id
+		   and e.emp00_all_title = 0
+		   and  a.pln03_reg_emp_id			= f.emp00_emp_id
+		   and f.emp00_all_title = 0
+		   and  a.pln03_reg_date			between e.emp00_trans_date and e.emp00_close_date
+		   and  a.pln03_reg_date			between f.emp00_trans_date and f.emp00_close_date
+		   and	a.pln03_resrch_id			= #{resrchId}
+	</select>
+	
+	<select id="selectBySearchText" resultMap="mapper" parameterType="HashMap" >
+		select	a.*
+		     ,	b.dcr01_class_tree_nm as pln03_class_tree_nm
+			 ,  ( select dcr01_class_tree_nm
+			        from dcr01_class_tree
+			       where dcr01_parent_tree_id = 0
+			       start with dcr01_class_tree_id = b.dcr01_class_tree_id
+			       connect by dcr01_class_tree_id = prior dcr01_parent_tree_id ) as pln03_parent_tree_nm
+		     ,	f_cdnm('ResrchTargetTypeCode', a.pln03_target_type_code, f.emp00_company_id, pln03_reg_date) as pln03_target_type_nm
+<!-- 		     ,	e.emp00_kor_nm||' '||e.emp00_pos_nm||'('||e.emp00_org_nm||')' as pln03_cfrm_emp_nm -->
+<!-- 		     ,	f.emp00_kor_nm||' '||f.emp00_pos_nm||'('||f.emp00_org_nm||')' as pln03_reg_emp_nm -->
+		     ,	e.emp00_kor_nm||' ('||e.emp00_org_nm||')' as pln03_cfrm_emp_nm
+		     ,	f.emp00_kor_nm||' ('||f.emp00_org_nm||')' as pln03_reg_emp_nm
+		     ,  decode((select count(*) from sys10_file where sys10_parent_id = pln03_resrch_id),0,'','등록') as pln03_doc_yn
+		     ,	(case when pln03_close_date is null then '임시저장'
+		              else (case when pln03_cfrm_date is null then '결재중' else '완료' end) end) as pln03_apr_yn
+		  from	( select x.*
+		               , fnd07_issuing_entity_nm as pln03_issuing_entity_nm
+		            from pln03_resrch x
+		               , fnd07_issuing_entity
+		           where pln03_issuing_entity_id = fnd07_issuing_entity_id
+		             and pln03_target_type_code = '10'
+		           union all
+		          select x.*
+		               , sys09_name as pln03_issuing_entity_nm
+		            from pln03_resrch x
+		               , sys09_code
+		           where pln03_issuing_entity_id = sys09_code_id
+		             and pln03_target_type_code = '20'
+		           union all
+		          select x.*
+		               , '시장조사' as pln03_issuing_entity_nm
+		            from pln03_resrch x
+		           where pln03_target_type_code = '30'
+		        ) a
+		     ,	dcr01_class_tree b
+		     ,  dcr03_org_auth c
+		     ,	emp00_info e
+		     ,	emp00_info f
+		 where	a.pln03_class_tree_id 		= b.dcr01_class_tree_id
+		   and	a.pln03_class_tree_id		= c.dcr03_class_tree_id
+		   and  #{orgId}					= c.dcr03_org_code_id
+		   and	( c.dcr03_retrieve_yn		= 'true' or
+		          c.dcr03_update_yn   		= 'true' )
+		   and  a.pln03_cfrm_emp_id			= e.emp00_emp_id
+		   and e.emp00_all_title = 0
+		   and  a.pln03_reg_emp_id			= f.emp00_emp_id
+		   and f.emp00_all_title = 0
+		   and  a.pln03_reg_date			between e.emp00_trans_date and e.emp00_close_date
+		   and  a.pln03_reg_date			between f.emp00_trans_date and f.emp00_close_date
+<!-- 		   and  #{regEmpId} in (a.pln03_reg_emp_id, a.pln03_cfrm_emp_id) -->
+		   and  to_date(a.pln03_reg_date,'yyyy/mm/dd') between #{startDate} and #{closeDate}
+		   and  a.pln03_issuing_entity_nm like #{searchText}
+		   and  ( ( #{closeYn} = 'true' and a.pln03_cfrm_date is null ) or
+		          ( #{closeYn} = 'false') )
+		 order by a.pln03_reg_date;
+	</select>
+
+	<select id="selectDetailInit" resultMap="mapper" parameterType="HashMap" >
+		select	seq.nextval as pln03_resrch_id
+			 ,	#{empId}	as pln03_reg_emp_id
+<!-- 			 ,	c.emp00_kor_nm||' '||c.emp00_pos_nm||'('||c.emp00_org_nm||')' as pln03_reg_emp_nm -->
+			 ,	c.emp00_kor_nm||' ('||c.emp00_org_nm||')' as pln03_reg_emp_nm
+			 ,	trunc(sysdate) 	as pln03_reg_date
+			 ,	trunc(sysdate) as pln03_resrch_start_date
+			 ,	trunc(sysdate) + 7 as pln03_resrch_close_date
+			 ,	f_apr_get_approval(#{empId}, trunc(sysdate), apr06_appr_line01) as pln03_cfrm_emp_id
+<!-- 		     ,	a.emp00_kor_nm||' '||a.emp00_pos_nm||'('||a.emp00_org_nm||')' as pln03_cfrm_emp_nm -->
+			 ,	a.emp00_kor_nm||' ('||a.emp00_org_nm||')' as pln03_cfrm_emp_nm
+		     ,	'10' as pln03_target_type_code
+		     ,  '종목' as pln03_target_type_nm
+		  from	apr06_appr_step_rule
+		     ,	emp00_info a	<!-- 승인자정보 -->
+		     ,  emp00_info c	<!-- 등록자정보 -->
+		 where	apr06_appr_step_rule_cd = 40
+		   and  a.emp00_emp_id = f_apr_get_approval(#{empId}, trunc(sysdate), apr06_appr_line01)
+		   and	a.emp00_org_code_id = #{orgId}
+		   and	trunc(sysdate) between a.emp00_trans_date and a.emp00_close_date
+		   and a.emp00_all_title(+) = 0
+		   and  c. emp00_emp_id = #{empId}
+		   and c.emp00_all_title(+) = 0
+		   and	trunc(sysdate) between c.emp00_trans_date and c.emp00_close_date
+	</select>
+
+	<update id="closeUpdate" parameterType="HashMap">
+		update	pln03_resrch
+		   set	pln03_close_yn 		= #{closeYn}
+		     ,  pln03_close_date 	= #{closeDate}
+		 where	pln03_resrch_id 	= #{resrchId}
+	</update>
+
+	<update id="apprUpdate" parameterType="HashMap">
+		update	pln03_resrch
+		   set	pln03_cfrm_emp_id 	= #{cfrmEmpId}
+		     ,  pln03_cfrm_date 	= #{cfrmDate}
+		 where	pln03_resrch_id 	= #{resrchId}
+	</update>
+
+	<insert id="insert" parameterType="myApp.client.vi.pln.model.Pln03_ResrchModel">
+	    merge into pln03_resrch a
+	    using dual
+	    on
+	    (
+	        a.pln03_resrch_id = #{resrchId}
+	    )
+	    when matched then
+	    update set
+	        a.pln03_class_tree_id       = #{classTreeId}
+		,	a.pln03_issuing_entity_id   = #{issuingEntityId}
+		,	a.pln03_visit_reason        = #{visitReason}
+		,	a.pln03_reg_emp_id          = #{regEmpId}
+		,	a.pln03_reg_date            = #{regDate}
+		,	a.pln03_close_date			= #{closeDate}
+		,	a.pln03_close_yn			= #{closeYn}
+		,	a.pln03_resrch_start_date   = #{resrchStartDate}
+		,	a.pln03_resrch_close_date   = #{resrchCloseDate}
+		,	a.pln03_cfrm_emp_id         = #{cfrmEmpId}
+		,	a.pln03_cfrm_date           = #{cfrmDate}
+		,	a.pln03_note                = #{note}
+		,	a.pln03_target_type_code	= #{targetTypeCode}
+	    
+	    when not matched then
+		insert
+		(	a.pln03_resrch_id
+		,	a.pln03_class_tree_id
+		,	a.pln03_issuing_entity_id
+		,	a.pln03_visit_reason
+		,	a.pln03_reg_emp_id
+		,	a.pln03_reg_date
+		,	a.pln03_close_date
+		,	a.pln03_close_yn
+		,	a.pln03_resrch_start_date
+		,	a.pln03_resrch_close_date
+		,	a.pln03_cfrm_emp_id
+		,	a.pln03_cfrm_date
+		,	a.pln03_note
+		,	a.pln03_target_type_code
+ 		) 
+		values 
+		(	#{resrchId}
+		,	#{classTreeId}
+		,	#{issuingEntityId}
+		,	#{visitReason}
+		,	#{regEmpId}
+		,	#{regDate}
+		,	#{closeDate}
+		,	#{closeYn}
+		,	#{resrchStartDate}
+		,	#{resrchCloseDate}
+		,	#{cfrmEmpId}
+		,	#{cfrmDate}
+		,	#{note}
+		,	#{targetTypeCode}
+		)  	
+	</insert>
+
+</mapper>
