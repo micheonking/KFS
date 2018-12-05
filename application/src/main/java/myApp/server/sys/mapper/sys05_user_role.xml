@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys05_user_role">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys05_UserRoleModel" >
+	<id  	column="sys05_user_role_id"	property="userRoleId"/>
+	<result column="sys05_user_id" 		property="userId"/>
+	<result column="sys05_role_id" 		property="roleId"/>
+	<result column="sys05_seq" 			property="seq"/>
+	<result column="sys05_note" 		property="note"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	*
+	from 	sys05_user_role
+	where 	sys05_user_role_id = #{userRoleId}
+</select>
+ 
+ 
+ <insert id="insert">
+ 	
+ 	<selectKey keyProperty="userRoleId" resultType="Long" order="BEFORE">
+		select seq.nextval from dual
+	</selectKey>
+	
+	insert into sys05_user_role
+  	(	sys05_user_role_id
+  	, 	sys05_user_id 
+  	, 	sys05_role_id 
+  	, 	sys05_seq
+  	, 	sys05_note )
+  	values 
+  	(	#{userRoleId}
+  	, 	#{userId}
+  	, 	#{roleId}
+  	, 	#{seq}
+  	, 	#{note} )
+</insert>
+
+<delete id="delete" parameterType="Long" >
+	delete from sys05_user_role
+	where sys05_user_role_id = #{userRoleId}
+</delete>
+
+</mapper>

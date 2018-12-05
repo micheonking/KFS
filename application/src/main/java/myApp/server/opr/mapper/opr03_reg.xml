@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="opr03_reg">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.opr.model.Opr03_RegModel" >
+		<id	    column="opr03_reg_id"    	property="regId"/>
+		<result column="opr03_create_id"	property="createId"/>
+		<result column="opr03_reg_emp_id"	property="regEmpId"/>
+		<result column="opr03_seq"			property="seq"/>
+		<result column="opr03_doc_nm"		property="docNm"/>
+		<result column="opr03_reg_date"		property="regDate"/>
+		<result column="opr03_close_yn"		property="closeYn"/>
+		<result column="opr03_note"			property="note"/>
+		
+		<result column="opr03_upload_yn"	property="uploadYn"/>
+		<result column="opr03_file_id"		property="fileId"/>
+
+		<association property="empInfoModel"
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel"
+		resultMap="emp00_info.mapper"
+		/>
+	</resultMap>
+	
+	<select id="selectById" resultMap="mapper" parameterType="Long" >
+		select	b.*
+		     ,	c.*
+			 ,	( select max(sys10_file_id)
+			  		from sys10_file
+			  	   where sys10_parent_id = b.opr03_reg_id ) as opr03_file_id
+		  from	opr01_create a
+		     ,	opr03_reg b
+		     ,	emp00_info c
+		 where	a.opr01_create_id	= b.opr03_create_id
+		   and	a.opr01_company_id	= c.emp00_company_id
+		   and	b.opr03_reg_emp_id	= c.emp00_emp_id
+		   and c.emp00_all_title = 0
+		   and  a.opr01_start_date	between c.emp00_trans_date and nvl(c.emp00_close_date,to_date('99991231','yyyymmdd'))
+		   and	b.opr03_reg_id		= #{regId}
+		 order by b.opr03_seq
+	</select>
+
+	<select id="selectByCreateId" resultMap="mapper" parameterType="HashMap" >
+		select	b.*
+		     ,	c.*
+		     ,	( select /*+ index_desc(opr03_reg, opr03_reg_idx) */
+                         nvl(opr03_close_yn,'false')
+		  			from opr03_reg
+		 		   where opr03_create_id  = #{createId}
+		   			 and opr03_seq        &lt; ( select opr03_seq
+		                                  		   from opr03_reg
+		                                          where opr03_create_id  = #{createId}
+		                                            and opr03_reg_emp_id = #{empId}
+		                                            and rownum = 1 )
+           		     and rownum = 1 ) as opr03_upload_yn
+			 ,	( select max(sys10_file_id)
+			  		from sys10_file
+			  	   where sys10_parent_id = b.opr03_reg_id ) as opr03_file_id
+		  from	opr01_create a
+		     ,	opr03_reg b
+		     ,	emp00_info c
+		 where	a.opr01_create_id	=	b.opr03_create_id
+		   and	a.opr01_company_id	=	c.emp00_company_id
+		   and	b.opr03_reg_emp_id	=	c.emp00_emp_id
+		   and c.emp00_all_title = 0
+		   and  a.opr01_start_date	between c.emp00_trans_date and nvl(c.emp00_close_date, to_date('99991231','yyyymmdd'))
+		   and	a.opr01_company_id	=	#{companyId}
+		   and	a.opr01_create_id	=	#{createId}
+		 order by b.opr03_seq
+	</select>
+
+	<select id="selectOnePreRegCheck" resultType="String" parameterType="HashMap" >
+		select	/*+ index_desc(opr03_reg, opr03_reg_idx) */
+                nvl(opr03_close_yn,'false')
+		  from	opr03_reg
+		 where	opr03_create_id  = #{createId}
+		   and  opr03_seq        &lt; ( select opr03_seq
+		                                  from opr03_reg
+		                                 where opr03_create_id  = #{createId}
+		                                   and opr03_reg_emp_id = #{empId} )
+           and  rownum           = 1
+	</select>
+
+	<select id="selectOnePreCancelCheck" resultType="Long" parameterType="HashMap" >
+		select	sum(cnt)
+		  from  ( select count(*) cnt
+				    from opr03_reg
+				   where opr03_create_id  =    #{createId}
+  				     and opr03_seq        &gt; #{seq}
+		             and opr03_doc_nm is not null
+				   union all
+				  select count(*) cnt
+				    from opr01_create a
+				       , apr01_appr b
+				   where opr01_appr_id   = apr01_appr_id
+				     and opr01_create_id = #{createId}
+				     and apr01_status_cd != '40' )	
+	</select>
+
+</mapper>

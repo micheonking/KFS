@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd03_consignment">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd03_ConsignmentModel" >
+	<id		column="fnd03_consignment_id"		property="consignmentId"/>
+	<result	column="fnd03_consignment_cd"		property="consignmentCode"/>
+	<result	column="fnd03_consignment_nm"		property="consignmentName"/>
+	<result	column="fnd03_consignment_use_yn"	property="consignmentUseYn"/>
+	<result	column="fnd03_consignment_note"		property="consignmentNote"/>
+	<result	column="fnd03_company_id"			property="companyId"/>
+</resultMap>
+	
+<select id="selectById" resultMap="mapper" parameterType="Long">
+	select	*
+	from	fnd03_consignment
+	where	fnd03_consignment_id = #{consignmentId}
+</select>
+
+<select id="selectByCd" resultMap="mapper" parameterType="String">
+	select	*
+	from	fnd03_consignment
+	where	fnd03_consignment_cd = #{consignmentCode}
+</select>
+
+<select id="selectByCodeName" resultMap="mapper" parameterType="HashMap">
+	select	*
+	from	fnd03_consignment
+	where	fnd03_consignment_nm	like	#{consignmentName}
+</select>
+
+<select id="selectByConsignmentName" resultMap="mapper" parameterType="String">
+	select	*
+	from	fnd03_consignment
+	where	fnd03_consignment_cd||fnd03_consignment_nm like '%'||#{searchText}||'%'
+</select>
+
+
+<insert id="insertUpdate" parameterType="myApp.client.vi.fnd.model.Fnd03_ConsignmentModel">
+merge into fnd03_consignment a
+    using dual
+    on
+    (
+        a.fnd03_consignment_id 		= #{consignmentId}
+    )    
+    when matched then
+    update set
+      	a.fnd03_consignment_cd			= #{consignmentCode}
+      , a.fnd03_consignment_nm			= #{consignmentName}
+      , a.fnd03_consignment_use_yn		= #{consignmentUseYn}
+      , a.fnd03_consignment_note		= #{consignmentNote}
+      , a.fnd03_company_id				= #{companyId}
+   	
+    when not matched then
+	insert
+	(	a.fnd03_consignment_id
+	, 	a.fnd03_consignment_cd
+	, 	a.fnd03_consignment_nm
+	, 	a.fnd03_consignment_use_yn
+	, 	a.fnd03_consignment_note
+	, 	a.fnd03_company_id
+	) 
+	values 
+	(	#{consignmentId}
+	,	#{consignmentCode}
+	, 	#{consignmentName}
+	, 	#{consignmentUseYn}
+	, 	#{consignmentNote}
+	, 	#{companyId}
+	 )  
+  		
+</insert>
+
+
+</mapper>

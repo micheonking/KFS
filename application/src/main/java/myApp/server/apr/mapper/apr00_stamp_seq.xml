@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="apr00_stamp_seq">
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr00_StampSeqModel" >
+ 	<id  	column="apr00_appr_id"		property="apprId"/>
+ 	<result	column="apr00_stamp_seq"    property="stampSeq"/>
+	<result column="apr00_stamp_id"		property="stampId"/>
+	<result column="apr00_appr_date"    property="apprDate"/> 
+	<result column="apr00_reg_emp_nm"	property="regEmpName"/> 
+	<result column="apr00_appr_emp_nm"	property="apprEmpName"/> 
+	<result column="apr00_title"		property="title"/> 
+	<result column="apr00_stamp_nm"		property="stampName"/> 
+	<result column="apr00_receive_nm"	property="receiveName"/> 
+	<result column="apr00_note"			property="note"/>
+</resultMap>
+
+<!--  인감대장 조회용 -->
+
+<select id="selectByApprDate" resultMap="mapper" parameterType="HashMap" > 
+select apr01_appr_id 	as apr00_appr_id
+     , apr01_stamp_seq 	as apr00_stamp_seq
+     , apr10_stamp_id 	as apr00_stamp_id 
+     , apr04_appr_date 	as apr00_appr_date  
+     , a.emp00_kor_nm 	as apr00_reg_emp_nm
+     , b.emp00_kor_nm 	as apr00_appr_emp_nm
+     , apr01_title 		as apr00_title
+     , apr10_stamp_nm 	as apr00_stamp_nm
+     , apr01_receive_nm as apr00_receive_nm
+     , apr01_note		as apr00_note
+  from apr01_appr 
+     , apr04_appr_step 
+     , apr10_stamp 
+     , emp00_info a 
+     , emp00_info b 
+where apr01_stamp_id is not null
+  and apr01_appr_id = apr04_appr_id 
+  and apr01_stamp_id = apr10_stamp_id
+  and apr01_status_cd = '30'
+<!--   and apr04_seq  -->
+<!--       = ( select max(x.apr04_seq)  -->
+<!--             from apr04_appr_step x -->
+<!--            where x.apr04_appr_id = apr01_appr_id  -->
+<!--              and x.apr04_step_status_cd= '20')  -->
+  and apr04_appr_date = (select max(apr04_appr_date)
+                           from apr04_appr_step x
+                          where x.apr04_appr_id = apr01_appr_id
+                            and x.apr04_step_status_cd = '20'
+                            and x.apr04_step_type_cd in ('00','10')
+                         )
+  and apr01_reg_emp_id = a.emp00_emp_id
+<!--   추가Start -->
+  and a.emp00_all_title	= 0
+  and b.emp00_all_title	= 0
+<!--   추가End -->
+  and apr01_reg_date between a.emp00_trans_date and a.emp00_close_date
+  and apr04_appr_emp_id = b.emp00_emp_id
+  and apr04_appr_date between b.emp00_trans_date and b.emp00_close_date
+  and apr01_stamp_seq is not null
+  and apr01_reg_date between nvl(#{startDate}, to_date(19000101)) and nvl(#{endDate}, to_date(99991231))
+  order by apr00_stamp_seq desc
+ </select>
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="emp01_person">
+
+<resultMap 	id="mapper" type="myApp.client.vi.emp.model.Emp01_PersonModel" >
+	<id	    column="emp01_person_id"    property="personId"/>
+	<result column="emp01_company_id"   property="companyId"/>
+	<result column="emp01_kor_nm"       property="korName"/>
+	<result column="emp01_eng_nm"       property="engName"/>
+	<result column="emp01_chn_nm"       property="chnName"/>
+	<result column="emp01_nat_cd"       property="nationCode"/>
+	<result column="emp01_nat_nm"       property="nationName"/>
+	<result column="emp01_ctz_no"       property="ctzNo"/>
+	<result column="emp01_gender_cd"    property="genderCode"/>
+	<result column="emp01_gender_nm"    property="genderName"/>
+	<result column="emp01_birthday"     property="birthday"/>
+	<result column="emp01_mobile_telno" property="mobileTelno"/>
+	<result column="emp01_home_telno"   property="homeTelno"/>
+	<result column="emp01_emgrcy_telno" property="emgrcyTelno"/>
+	<result column="emp01_email_addr"   property="emailAddr"/>
+	<result column="emp01_zip_cd"       property="zipCode"/>
+	<result column="emp01_zip_addr"     property="zipAddr"/>
+	<result column="emp01_addr_detail"  property="addrDetail"/>
+	<result column="emp01_note"         property="note"/>
+	<result column="emp01_password"     property="password"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	emp01_person.* 
+	, 		f_cdnm('NationCode', emp01_nat_cd, emp01_company_id, sysdate) 		as emp01_nat_nm
+	, 		f_cdnm('GenderCode', emp01_gender_cd, emp01_company_id, sysdate) 	as emp01_gender_nm
+    from 	emp01_person
+    where 	emp01_person_id = #{personId}
+</select>
+
+<select id="selectByCtzNo" resultMap="mapper" parameterType="HashMap" > 
+	select emp01_person.* 
+	     , f_cdnm('NationCode', emp01_nat_cd, emp01_company_id, sysdate) 		as emp01_nat_nm
+	     , f_cdnm('GenderCode', emp01_gender_cd, emp01_company_id, sysdate) 	as emp01_gender_nm
+      from emp01_person
+     where emp01_company_id = #{companyId}
+       and emp01_ctz_no = #{ctzNo}
+</select>
+
+
+<select id="selectByEmpId" resultMap="mapper" parameterType="Long" > 
+	select 	emp01_person.* 
+	, 		f_cdnm('NationCode', emp01_nat_cd, emp01_company_id, sysdate) 		as emp01_nat_nm
+	, 		f_cdnm('GenderCode', emp01_gender_cd, emp01_company_id, sysdate) 	as emp01_gender_nm
+    from 	emp01_person
+          , emp02_emp
+    where   emp01_person_id = emp02_person_id
+    and     emp02_emp_id = #{empId}
+</select>
+
+<update id="changeMail" parameterType="HashMap" >
+update emp01_person
+   set emp01_email_addr = #{mailAddress}
+     , emp01_password = #{password}
+ where emp01_person_id = #{personId}
+</update>
+
+</mapper>

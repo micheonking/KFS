@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="apr04_appr_step">
+
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr04_ApprStepModel" >
+	<id  	column="APR04_APPR_STEP_ID"   property="apprStepId"/>
+	<result column="APR04_APPR_ID"        property="apprId"/>
+	<result column="APR04_STEP_TYPE_CD"   property="stepTypeCode"/>
+	<result column="APR04_STEP_TYPE_NM"   property="stepTypeName"/>
+	<result column="APR04_SEQ"            property="seq"/>
+	<result column="APR04_STEP_STATUS_CD" property="stepStatusCode"/>
+	<result column="APR04_STEP_STATUS_NM" property="stepStatusName"/>
+	<result column="APR04_APPR_DATE"      property="apprDate"/>
+	<result column="APR04_NOTE"           property="note"/>
+	<result column="APR04_REJECT_REASON"  property="rejectReason"/>
+	<result column="APR04_STEP_EMP_ID"    property="stepEmpId"/>
+	<result column="APR04_APPR_EMP_ID"    property="apprEmpId"/>
+	<result column="APR04_STEP_APPR_NAME" property="stepApprName"/>
+	
+	<association property="empInfoModel" 
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel" 
+		resultMap="emp00_info.mapper"
+	/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+select apr04_appr_step.*, 
+       emp00_info.*
+     , f_cdnm('AprStepStatusCode', apr04_step_status_cd, emp00_company_id, sysdate) as apr04_step_status_nm
+     , f_cdnm('AprStepTypeCode', apr04_step_type_cd, emp00_company_id, sysdate) as apr04_step_type_nm
+  from apr04_appr_step, 
+       emp00_info 
+ where  apr04_step_emp_id = emp00_emp_id
+   and  apr04_appr_step_id = #{apprStepId}
+   and  sysdate between emp00_trans_date and emp00_close_date 
+	   and emp00_all_title = 0
+ order by apr04_step_type_cd, apr04_seq
+</select>
+
+<select id="selectByApprId" resultMap="mapper" parameterType="HashMap" >
+select apr04_appr_step.*, 
+       emp00_info.*
+     , f_cdnm('AprStepStatusCode', apr04_step_status_cd, emp00_company_id, sysdate) as apr04_step_status_nm
+     , f_cdnm('AprStepTypeCode', apr04_step_type_cd, emp00_company_id, sysdate) as apr04_step_type_nm
+  from apr04_appr_step, 
+       emp00_info 
+ where  apr04_step_emp_id = emp00_emp_id
+   and  apr04_appr_id = #{apprId}
+   and  nvl(apr04_appr_date, sysdate) between emp00_trans_date and emp00_close_date 
+	   and emp00_all_title = 0
+ order by apr04_step_type_cd, apr04_seq
+</select>
+
+<select id="selectCount" resultMap="mapper" parameterType="HashMap" >
+select a.*, b.*
+from apr01_appr a, apr04_appr_step b
+where a.apr01_appr_id = b.apr04_appr_id
+and   a.apr01_appr_id = #{apprId}
+and   b.apr04_step_type_cd in ('10', '20')
+and   b.apr04_seq <![CDATA[<=]]> (
+                                  select apr04_seq 
+                                  from   apr04_appr_step
+                                  where  apr04_appr_id = #{apprId}
+                                  and apr04_step_emp_id in (
+                                                           select apr07_target_emp_id
+                                                           from apr07_alt_appr
+                                                           where apr07_alt_emp_id = #{empId}
+                                                           and   sysdate between apr07_start_date and apr07_close_date
+                                                           union
+                                                           select to_number(#{empId}) as apr07_target_emp_id
+                                                           from dual
+                                                           )
+                                  and apr04_step_status_cd != 20
+                                  and rownum <![CDATA[<=]]> 1
+                                 )
+and   b.apr04_step_status_cd not in ('20', '30')
+</select>
+
+<select id="selectLastAppr" resultMap="mapper" parameterType="HashMap" >
+select *
+from APR04_APPR_STEP
+where apr04_appr_id = #{apprId}
+and   apr04_seq >= (
+                  select max(apr04_seq) 
+                  from apr04_appr_step
+                  where  apr04_appr_id = #{apprId}
+                  )
+and apr04_step_emp_id = #{empId}
+</select>
+
+<select id="selectApprStep" resultMap="mapper" parameterType="HashMap" >
+select *
+from   apr04_appr_step
+where  apr04_appr_id = #{apprId}
+and    apr04_seq = (select max(apr04_seq)
+                    from APR04_APPR_STEP
+                    where apr04_appr_id = #{apprId}
+                    )
+and    apr04_step_status_cd = 20
+</select>
+
+<select id="selectApprStepByType" resultMap="mapper" parameterType="HashMap" >
+select t1.*
+     , nvl(emp04_emp_id, emp00_emp_id) as emp00_emp_id
+     , t2.*
+     , t3.*
+from   ( 
+       select *
+       from  (
+	          select org01_code.*
+	               , org02_info.*
+              from   org01_code
+                   , org02_info 
+              where  org01_company_id = #{companyId}
+	          and    org01_code_id    = org02_code_id
+	          and    sysdate between org01_open_date and nvl(org01_close_date, to_date('99991231', 'yyyymmdd'))
+	          and    org02_mod_date = ( select max(x.org02_mod_date) 
+				                        from   org02_info x
+				                        where  x.org02_code_id = org02_info.org02_code_id 
+				                        and    x.org02_mod_date <![CDATA[<=]]> sysdate )
+                                      )
+              where to_number(org02_level_cd) >= #{approvalTypeCode}
+              start with org01_code_id = #{orgId}
+              connect by prior org02_parent_code_id = org01_code_id
+       ) t1
+     , emp00_info t2
+     , emp04_add_title t3
+where  org01_code_id = emp00_org_code_id
+and    org01_code_id = emp04_org_code_id(+)
+and	  sysdate between emp00_trans_date and emp00_close_date
+and   t2.emp00_title_cd = (
+                           select min(emp00_title_cd) 
+                             from emp00_info x 
+                            where t1.org02_code_id = x.emp00_org_code_id 
+                              and sysdate between x.emp00_trans_date
+                              and x.emp00_close_date
+                              and emp00_title_cd <![CDATA[<]]> 250
+<!-- 	   					      and emp00_all_title = 0 -->
+                           )
+<!-- 	   and emp00_all_title = 0 -->
+order by org02_level_cd desc
+
+<!-- 
+select *
+from   ( 
+       select *
+       from  (
+	          select org01_code.*
+	               , org02_info.*
+              from   org01_code
+                   , org02_info 
+              where  org01_company_id = #{companyId}
+	          and    org01_code_id    = org02_code_id
+	          and    sysdate between org01_open_date and nvl(org01_close_date, to_date('99991231', 'yyyymmdd'))
+	          and    org02_mod_date = ( select max(x.org02_mod_date) 
+				                        from   org02_info x
+				                        where  x.org02_code_id = org02_info.org02_code_id 
+				                        and    x.org02_mod_date <![CDATA[<=]]> sysdate )
+                                      )
+              where to_number(org02_level_cd) >= #{approvalTypeCode}
+              start with org01_code_id = #{orgId}
+              connect by prior org02_parent_code_id = org01_code_id
+       ) t1
+     , emp00_info t2
+where  org01_code_id = emp00_org_code_id
+and	  sysdate between emp00_trans_date and emp00_close_date
+and   t2.emp00_title_cd = (select min(emp00_title_cd) from emp00_info x where t1.org02_code_id = x.emp00_org_code_id and sysdate between x.emp00_trans_date and x.emp00_close_date)
+order by org02_level_cd desc
+-->
+</select>
+
+<delete id="deleteByApprId" parameterType="HashMap" >
+delete
+from   apr04_appr_step
+where  apr04_appr_id = #{apprId}
+</delete>
+
+<delete id="confirmUpdate" parameterType="HashMap" >
+update apr04_appr_step
+   set apr04_step_status_cd = #{apprStatusCode}
+     , apr04_reject_reason =  #{rejectMessage}
+     , apr04_appr_date = sysdate 
+     , apr04_appr_emp_id = #{apprEmpId}
+ where apr04_appr_id = #{apprId}
+  and  apr04_step_emp_id = #{stepEmpId}
+</delete>
+
+<delete id="cancelUpdate" parameterType="HashMap" >
+update apr04_appr_step
+   set apr04_step_status_cd = #{apprStatusCode}
+     , apr04_reject_reason =  ''
+     <!-- 
+      , apr04_appr_date = #{apprDate, jdbcType=DATE}
+      -->
+      , apr04_appr_date = ''
+     , apr04_appr_emp_id = #{apprEmpId}
+ where apr04_appr_id = #{apprId}
+  and  apr04_step_emp_id = #{apprEmpId}
+</delete>
+
+
+</mapper>

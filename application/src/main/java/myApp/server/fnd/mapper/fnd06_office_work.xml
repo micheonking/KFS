@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="fnd06_office_work">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd06_OfficeWorkModel" >
+
+	<id		column="fnd06_office_work_id"		property="officeWorkId"/>
+	<result	column="fnd06_office_work_cd"		property="officeWorkCode"/>
+	<result	column="fnd06_office_work_nm"		property="officeWorkName"/>
+	<result	column="fnd06_office_work_use_yn"	property="officeWorkUseYn"/>
+	<result	column="fnd06_office_work_note"		property="officeWorkNote"/>
+	<result	column="fnd06_company_id"			property="companyId"/>
+
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	fnd06_office_work
+	where	fnd06_office_work_id = #{officeWorkId}
+</select>
+
+<select id="selectByCd" resultMap="mapper" parameterType="String" >
+	select	*
+	from	fnd06_office_work
+	where	fnd06_office_work_cd = #{officeWorkCode}
+</select>
+
+<select id="selectByCodeName" resultMap="mapper" parameterType="HashMap" >
+
+	select	*
+	from	fnd06_office_work
+	where	fnd06_office_work_nm	like	#{officeWorkName}
+
+</select>
+ 
+<insert id="insertUpdate" parameterType="myApp.client.vi.fnd.model.Fnd06_OfficeWorkModel">
+merge into fnd06_office_work a
+    using dual
+    on
+    (
+        a.fnd06_office_work_id 		= #{officeWorkId}
+    )    
+    when matched then
+    update set
+      	a.fnd06_office_work_cd			= #{officeWorkCode}
+      , a.fnd06_office_work_nm			= #{officeWorkName}
+      , a.fnd06_office_work_use_yn		= #{officeWorkUseYn}
+      , a.fnd06_office_work_note		= #{officeWorkNote}
+      , a.fnd06_company_id				= #{companyId}
+   	
+    when not matched then
+	insert
+	(	a.fnd06_office_work_id
+	, 	a.fnd06_office_work_cd
+	, 	a.fnd06_office_work_nm
+	, 	a.fnd06_office_work_use_yn
+	, 	a.fnd06_office_work_note
+	, 	a.fnd06_company_id
+	) 
+	values 
+	(	#{officeWorkId}
+	,	#{officeWorkCode}
+	,	#{officeWorkName}
+	, 	#{officeWorkUseYn}
+	, 	#{officeWorkNote}
+	, 	#{companyId}
+	 )  		
+</insert>
+
+<select id="selectByOfficeWorkName" resultMap="mapper" parameterType="String">
+	select	*
+	from	fnd06_office_work
+	where	fnd06_office_work_cd||fnd06_office_work_nm like '%'||#{searchText}||'%'
+</select>
+
+
+</mapper>

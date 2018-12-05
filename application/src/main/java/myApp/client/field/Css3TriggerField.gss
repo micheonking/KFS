@@ -1,0 +1,25 @@
+
+.noedit {
+}
+
+.over .trigger {
+  gwt-sprite: "triggerArrowOver";
+  background-position: center center;
+}
+
+.trigger {
+  gwt-sprite: "triggerArrow";
+  background-position: center center;
+  position: absolute;
+  top: 0%;
+  cursor: pointer;
+}
+
+.click .trigger {
+  gwt-sprite: "triggerArrowClick";
+  background-position: center center;
+}
+
+.text {
+  padding-right: 0;
+}

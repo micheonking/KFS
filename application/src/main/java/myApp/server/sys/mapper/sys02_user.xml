@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys02_user">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys02_UserModel" >
+	<id  	column="sys02_user_id" 		property="userId"/>
+	<result column="sys02_company_id"	property="companyId"/>
+	<result column="sys02_kor_nm"		property="korName"/>
+	<result column="sys02_login_id"		property="loginId"/>
+	<result column="sys02_passwd"		property="passwd"/>
+	<result column="sys02_email"		property="email"/>
+	<result column="sys02_note" 		property="note"/>
+	
+	<association property="companyModel" 
+		javaType="myApp.client.vi.sys.model.Sys01_CompanyModel" 
+		resultMap="sys01_company.mapper"
+	/>
+</resultMap>
+	
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	* 
+	from 	sys02_user, sys01_company  
+	where	sys02_company_id = sys01_company_id
+	and		sys02_user_id = #{userId}
+</select>
+
+<select id="selectByLoginId" resultMap="mapper" parameterType="String">
+	select 	*   
+	from 	sys01_company, 
+			sys02_user 
+	where 	sys02_login_id 	= #{loginId}
+	and		sys02_company_id = sys01_company_id
+</select>
+
+<!-- 	패스워드 추가기능 구현 : OTP 우선적용.  
+	and		sys02_passwd 	= #{passwd} --> 
+	
+
+<select id="selectByName" resultMap="mapper" parameterType="HashMap">
+	select 	*
+	from 	sys02_user, 
+			sys01_company
+	where	sys02_company_id = sys01_company_id
+	and		sys02_company_id = #{companyId}
+	and		sys02_kor_nm like #{korName}
+	order 	by sys02_kor_nm
+</select>
+
+
+<select id="selectByCompanyId" resultMap="mapper" parameterType="Long">
+	select 	* 
+	from 	sys02_user, 
+			sys01_company  
+	where	sys02_company_id = sys01_company_id
+	and		sys02_company_id = #{companyId}
+	order by sys02_kor_nm
+</select>
+
+</mapper>

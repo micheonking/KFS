@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="fnd05_memeco">
+
+<resultMap 	id="mapper" type="myApp.client.vi.fnd.model.Fnd05_MemecoModel" >
+	<id		column="fnd05_memeco_id"	property="memecoId"/>
+	<result	column="fnd05_memeco_cd"	property="memecoCode"/>
+	<result	column="fnd05_memeco_nm"	property="memecoName"/>
+	<result	column="fnd05_use_yn"		property="useYn"/>
+	<result	column="fnd05_note"			property="note"/>
+
+</resultMap>
+	
+<select id="selectByCodeName" resultMap="mapper" parameterType="HashMap">
+	select	*
+	from	fnd05_memeco
+	where	fnd05_memeco_nm	like	#{codeName}
+</select>
+
+</mapper>

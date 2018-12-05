@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys09_code">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys09_CodeModel" >
+	<id  	column="sys09_code_id" 		property="codeId"/>
+	<result column="sys09_company_id"	property="companyId"/>
+	<result column="sys09_code_kind_id"	property="codeKindId"/>
+	<result column="sys09_code"			property="code"/>
+	<result column="sys09_name"			property="name"/>
+	<result column="sys09_seq"			property="seq"/>
+	<result column="sys09_apply_date" 	property="applyDate"/>
+	<result column="sys09_close_date" 	property="closeDate"/>
+	<result column="sys09_last_date"	property="lastDate"/>
+	<result column="sys09_close_yn"		property="closeYn"/>
+	<result column="sys09_note"			property="note"/>
+	
+	<association property="mgrRuleModel" 
+		javaType="myApp.client.vi.emp.model.Emp09_MgrRuleModel" 
+		resultMap="emp09_mgr_rule.mapper"
+	/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	*
+	from 	sys09_code
+	where	sys09_code_id = #{codeId}
+</select>
+
+
+<!--  코드관리에서 호출 -->
+<select id="selectByCodeKindId" resultMap="mapper" parameterType="HashMap">
+	select 	a.*, 
+             (   select  MIN(x.sys09_apply_date) - 1
+                from    sys09_code x 
+                where   x.sys09_company_id = a.sys09_company_id
+                and     x.sys09_code_kind_id = a.sys09_code_kind_id
+                and		x.sys09_code = a.sys09_code 
+                and     x.sys09_apply_date &gt; a.sys09_apply_date ) sys09_last_date 
+	from 	sys09_code a
+	where 	a.sys09_code_kind_id = #{codeKindId}
+	and		a.sys09_company_id = #{companyId}
+	order 	by sys09_seq
+</select>
+
+
+<!--  콤보박스 생성에서 호출 -->
+<select id="selectByCodeKind" resultMap="mapper" parameterType="HashMap">
+    select 	* 
+    from 	sys09_code c, 
+            sys08_code_kind k
+    where 	sys08_code_kind_id = sys09_code_kind_id
+    and     sys09_company_id = (case when sys08_sys_yn = 'true' then 0 else #{companyId} end) 
+    and		sys08_kind_cd =  #{kindCode}
+    and 	#{applyDate} &lt;= (case when sys09_close_date is null then #{applyDate} else sys09_close_date end) 
+    and     sys09_apply_date = (
+        select  max(x.sys09_apply_date)
+        from    sys09_code x
+        where   x.sys09_code_kind_id = c.sys09_code_kind_id
+        and     x.sys09_company_id = c.sys09_company_id
+        and     x.sys09_code = c.sys09_code 
+        and     x.sys09_apply_date &lt;= #{applyDate} )
+   	order 	by sys09_seq 
+</select>
+
+<select id="selectByApplyDate" resultMap="mapper" parameterType="HashMap">
+	select 	* 
+	from 	sys09_code a
+	where 	a.sys09_code_kind_id = #{codeKindId}
+	and		a.sys09_apply_date
+			= (	select max(b.sys09_apply_date)
+				from 	sys09_code b
+				where 	b.sys09_code_kind_id = a.sys09_code_kind_id
+				and		b.sys09_cd = a.sys09_cd
+				and		b.sys09_apply_date &lt;= #{applyDate}
+			)
+	order 	by sys09_seq
+</select>
+
+<!-- 결재권자 조회 -->
+<select id="selectMgrRule" resultMap="mapper" parameterType="HashMap" >
+select 	a.*
+      , b.*
+from 	emp09_mgr_rule a
+      , (
+          select * 
+          from   sys09_code c
+               , sys08_code_kind k
+          where  sys08_code_kind_id = sys09_code_kind_id
+          and    sys09_company_id = case when sys08_sys_yn = 'true' then 0 else #{companyId} end 
+          and	 sys08_kind_cd =  'EmpTitleCode'
+          and    sys09_apply_date = 
+                 (
+                   select  max(x.sys09_apply_date)
+                   from    sys09_code x
+                   where   x.sys09_code_kind_id = c.sys09_code_kind_id 
+                   and     x.sys09_company_id = c.sys09_company_id
+                   and     x.sys09_code = c.sys09_code 
+                   and     x.sys09_apply_date <![CDATA[<=]]> sysdate
+                 )
+  	      order by sys09_seq 
+        ) b
+where a.emp09_title_cd(+) = b.sys09_code
+and  (a.emp09_company_id = #{companyId} or a.emp09_company_id is null)
+</select>
+
+
+</mapper>

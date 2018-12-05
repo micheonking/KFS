@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dcr00_doc_list">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dcr.model.Dcr00_DocListModel" >
+<!-- 	<id		column="dcr00_id"						property="docId"/> -->
+<!-- 	<result	column="dcr00_class_tree_nm"			property="classTreeName"/> -->
+<!-- 	<result	column="dcr00_parent_tree_id"			property="parentTreeId"/> -->
+<!-- 	<result	column="dcr00_fund_type_nm"				property="fundTypeName"/> -->
+<!-- 	<result	column="dcr00_fund_cd"					property="fundCode"/> -->
+<!-- 	<result	column="dcr00_fund_nm"					property="fundName"/> -->
+<!-- 	<result	column="dcr00_file_nm"					property="fileName"/> -->
+<!-- 	<result	column="dcr00_reg_date"					property="regDate"/> -->
+<!-- 	<result	column="dcr00_reg_emp_id"				property="regEmpId"/> -->
+<!-- 	<result	column="dcr00_emp_nm"					property="empName"/> -->
+<!-- 	<result	column="dcr00_fund_close_yn"			property="fundClose"/> -->
+<!-- 	<result	column="dcr00_fund_public_yn"			property="publicSubscribe"/> -->
+<!-- 	<result	column="dcr00_fund_sintak_gb"			property="sintak"/> -->
+<!-- 	<result	column="dcr00_fund_type_cd"				property="fundType"/> -->
+<!-- 	<result	column="dcr00_fund_start_date"			property="fundStartDate"/> -->
+<!-- 	<result	column="dcr00_fund_end_date"			property="fundEndDate"/> -->
+<!-- 	<result	column="dcr00_apr_title"				property="aprTitle"/> -->
+<!-- 	<result	column="dcr00_org_nm"					property="orgName"/> -->
+<!-- 	<result	column="dcr00_appr_id"					property="apprId"/> -->
+<!-- 	<result	column="dcr00_class_tree_id"			property="classTreeId"/> -->
+<!-- 	<result	column="dcr00_parent_tree_nm"			property="parentTreeName"/> -->
+
+	<id		column="dcr00_id"						property="docId"/>
+	<result	column="dcr01_class_tree_nm"			property="classTreeName"/>
+	<result	column="dcr01_parent_nm"				property="parentTreeId"/>
+	<result	column="fnd00_fund_type_nm"				property="fundTypeName"/>
+	<result	column="fnd00_fund_cd"					property="fundCode"/>
+	<result	column="fnd00_fund_nm"					property="fundName"/>
+	<result	column="sys10_file_nm"					property="fileName"/>
+	<result	column="apr01_reg_date"					property="regDate"/>
+	<result	column="apr01_reg_emp_id"				property="regEmpId"/>
+	<result	column="emp00_kor_nm"					property="empName"/>
+	<result	column="fnd00_close_yn"					property="fundClose"/>
+	<result	column="fnd00_public_yn"				property="publicSubscribe"/>
+	<result	column="fnd00_sintak_gb"				property="sintak"/>
+	<result	column="fnd00_fund_type_cd"				property="fundType"/>
+	<result	column="fnd00_start_date"				property="fundStartDate"/>
+	<result	column="fnd00_end_date"					property="fundEndDate"/>
+	<result	column="apr01_title"					property="aprTitle"/>
+	<result	column="emp00_org_nm"					property="orgName"/>
+	<result	column="apr01_appr_id"					property="apprId"/>
+	<result	column="dcr01_class_tree_id"			property="classTreeId"/>
+	<result	column="dcr01_parent_nm"				property="parentTreeName"/>
+
+	<association property="apprModel" 
+	javaType="myApp.client.vi.apr.model.Apr01_ApprModel" 
+	resultMap="apr01_appr.mapper"
+	/>
+	
+</resultMap>
+
+<select id="selectSearchDoc" resultMap="mapper" parameterType="HashMap" > 
+<!-- 	select rownum as dcr00_id -->
+<!-- 		 , x.* -->
+<!-- 		 , y.* -->
+<!-- 		 , dcr01_class_tree_nm as dcr00_parent_tree_nm -->
+<!-- 		 , v.* -->
+<!-- 	  from dcr00_doc_list x  -->
+<!--      	 , apr01_appr y -->
+<!--      	 , dcr01_class_tree z -->
+<!--      	 , dcr03_org_auth v -->
+<!--      	 , fnd08_org_auth -->
+<!--  	 where dcr00_appr_id 				 = apr01_appr_id -->
+<!-- 	   and dcr00_parent_tree_id 		 = dcr01_class_tree_id -->
+<!-- 	   and dcr00_class_tree_id			 = dcr03_class_tree_id -->
+<!-- 	   and dcr03_retrieve_yn 			 = 'true' -->
+<!-- 	   and v.dcr03_org_code_id 			 = #{orgId} -->
+<!-- 	   and dcr00_fund_id				 = fnd08_fund_code_id -->
+<!-- 	   and fnd08_org_code_id             = #{orgId} -->
+<!-- 	   and fnd08_auth_yn				 = 'true' -->
+<!--    	   and nvl(dcr00_fund_close_yn,'%')  like #{fundClose} -->
+<!--    	   and nvl(dcr00_fund_public_yn,'%') like #{publicSubscribe} -->
+<!--    	   and nvl(dcr00_fund_sintak_gb,'%') like #{sintak} -->
+<!--    	   and nvl(dcr00_fund_type_cd,'%') 	 like #{fundType} -->
+<!--    	   and nvl(dcr00_fund_cd,'%')||nvl(dcr00_fund_nm,'%') like #{fundName} -->
+<!-- 	   and dcr00_org_nm 				 like #{orgName} -->
+<!-- 	   and dcr00_emp_nm 				 like #{empName} -->
+<!-- 	   and dcr00_class_tree_nm 			 like #{classTreeName} -->
+<!-- 	   and trunc(nvl(dcr00_fund_start_date,sysdate)) between nvl(#{fundStartDate}, to_date('19000101', 'yyyyMMdd')) -->
+<!-- 	                                                 and     nvl(#{fundEndDate}  , to_date('99991231', 'yyyyMMdd'))		 -->
+<!-- 	   and trunc(dcr00_reg_date) between nvl(#{regDate}   , to_date('19000101', 'yyyyMMdd')) -->
+<!-- 	                             and     nvl(#{endRegDate}, to_date('99991231', 'yyyyMMdd')) -->
+<!-- 	   and apr01_status_cd = '30' -->
+<!-- 	 order by dcr01_class_tree_nm, dcr00_class_tree_nm, dcr00_reg_date -->
+
+	select rownum as dcr00_id
+	     , apr.*
+	     , fnd.*
+	     , dcr.dcr01_class_tree_id
+	     , dcr.dcr01_class_tree_nm as dcr01_class_tree_nm
+	     , dcr_parent.dcr01_class_tree_nm as dcr01_parent_nm
+	     , emp00_kor_nm
+	     , emp00_org_nm
+	     , sys10_file_nm
+	  from ( <!-- 연관펀드가 있는 문서 -->
+	        select a.*
+	             , fnd00_fund_id   as apr01_fund_id
+	             , fnd00_work_date as apr01_fund_work_date
+	          from apr01_appr a
+	             , apr03_relate_fund
+	             , ( select *
+	                   from fnd00_fund
+	                      , fnd01_fund_code -- 기획펀드정보
+	                  where fnd00_fund_id = fnd01_real_fund_id(+) )
+	             , fnd08_org_auth
+	         where apr01_appr_id       =  apr03_appr_id
+	           and apr03_fund_id       in (fnd01_fund_code_id, fnd00_fund_id)
+	           and fnd00_work_date     =  f_max_workdate(fnd00_fund_id, sysdate)
+	           and fnd00_fund_id       =  fnd08_fund_code_id
+	           and fnd08_auth_yn       =  'true'
+	           and fnd08_org_code_id   =  #{orgId}
+	        <!-- 연관펀드가 없는 문서 -->
+	         union all
+	        select a.*
+	             , null as apr01_fund_id
+	             , null as apr01_fund_work_date
+	          from apr01_appr a
+	         where apr01_appr_id not in ( select apr01_appr_id
+	                                        from apr01_appr
+	                                           , apr03_relate_fund
+	                                       where apr01_appr_id = apr03_appr_id )
+	       ) apr
+	     , fnd00_fund fnd
+	     , dcr01_class_tree dcr
+	     , dcr01_class_tree dcr_parent
+	     , dcr03_org_auth
+	     , emp00_info
+	     , sys10_file
+	 where apr01_fund_id            = fnd00_fund_id(+)
+	   and apr01_fund_work_date     = fnd00_work_date(+)
+	   and apr01_class_tree_id      = dcr.dcr01_class_tree_id
+	   and dcr.dcr01_parent_tree_id = dcr_parent.dcr01_class_tree_id
+	   and apr01_class_tree_id      = dcr03_class_tree_id
+	   and ( dcr03_retrieve_yn      = 'true' or
+	         dcr03_update_yn		= 'true' )
+	   and dcr03_org_code_id        = #{orgId}
+	   and apr01_reg_emp_id         = emp00_emp_id
+	   and apr01_reg_date           between emp00_trans_date and emp00_close_date
+	   and emp00_all_title          = 0
+	   and apr01_appr_id            = sys10_parent_id(+)
+	   and 'true'                   = sys10_title_yn(+)
+	   and apr01_status_cd          = '30'  <!-- (30:완료) -->
+	
+	   and nvl(fnd00_close_yn,'%')                          like #{fundClose}
+	   and nvl(fnd00_public_yn,'%')                         like #{publicSubscribe}
+	   and nvl(fnd00_sintak_gb,'%')                         like #{sintak}
+	   and nvl(fnd00_fund_type_cd,'%') 	                    like #{fundType}
+	   and nvl(fnd00_fund_cd,'%')||nvl(fnd00_fund_nm,'%')   like #{fundName}
+	   and emp00_org_nm 			                        like #{orgName}
+	   and emp00_kor_nm 			                        like #{empName}
+	   and dcr.dcr01_class_tree_nm 	                        like #{classTreeName}
+	   and trunc(nvl(fnd00_start_date,sysdate)) between nvl(#{fundStartDate}, to_date('19000101', 'yyyyMMdd'))
+	                                            and     nvl(#{fundEndDate}  , to_date('99991231', 'yyyyMMdd'))		
+	   and trunc(apr01_reg_date) between nvl(#{regDate}   , to_date('19000101', 'yyyyMMdd'))
+	                             and     nvl(#{endRegDate}, to_date('99991231', 'yyyyMMdd'))
+	
+	order by dcr_parent.dcr01_class_tree_nm, dcr.dcr01_class_tree_nm, apr01_reg_date
+
+</select>
+
+</mapper>

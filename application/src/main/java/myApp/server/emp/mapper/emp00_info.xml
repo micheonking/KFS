@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="emp00_info">
+
+<resultMap 	id="mapper" type="myApp.client.vi.emp.model.Emp00_InfoModel" >
+	
+	<id	    column="emp00_trans_id"    	property="transId"/>
+	<result column="emp00_company_id"   property="companyId"/>
+	<result column="emp00_person_id"    property="personId"/>
+	<result column="emp00_ctz_no"    	property="ctzNo"/>
+	<result column="emp00_kor_nm"    	property="korName"/>
+	<result column="emp00_eng_nm"    	property="engName"/>
+	<result column="emp00_birthday"    	property="birthday"/>
+	<result column="emp00_mobile_telno"	property="mobileTelNo"/>
+	<result column="emp00_home_telno"   property="homeTelNo"/>
+	<result column="emp00_emgrcy_telno" property="emergencyTelNo"/>
+	<result column="emp00_office_tel"   property="officeTel"/>
+	<result column="emp00_email_addr"   property="emailAddress"/>
+	<result column="emp00_nat_cd"    	property="nationCode"/>
+	<result column="emp00_nat_nm"    	property="nationName"/>
+	<result column="emp00_gender_cd"    property="genderCode"/>
+	<result column="emp00_gender_nm"    property="genderName"/>
+	<result column="emp00_emp_id"    	property="empId"/>
+	<result column="emp00_emp_no"    	property="empNo"/>
+	<result column="emp00_emp_kind_cd"  property="empKindCode"/>
+	<result column="emp00_emp_kind_nm"  property="empKindName"/>
+	<result column="emp00_hire_date"    property="hireDate"/>
+	<result column="emp00_hire_cd"    	property="hireCode"/>
+	<result column="emp00_hire_nm"    	property="hireName"/>
+	<result column="emp00_retire_date"  property="retireDate"/>
+	<result column="emp00_retire_cd"    property="retireCode"/>
+	<result column="emp00_retire_nm"    property="retireName"/>
+	<result column="emp00_trans_date"   property="transDate"/>
+	<result column="emp00_close_date"   property="closeDate"/>
+	<result column="emp00_pos_cd"    	property="positionCode"/>
+	<result column="emp00_pos_nm"    	property="positionName"/>
+	<result column="emp00_title_cd"    	property="titleCode"/>
+	<result column="emp00_title_nm"    	property="titleName"/>
+	<result column="emp00_org_code_id" 	property="orgCodeId"/>
+	<result column="emp00_org_cd"    	property="orgCode"/>
+	<result column="emp00_org_level_cd" property="orgLevelCode"/>
+	<result column="emp00_org_nm"    	property="orgName"/>
+	<result column="emp00_cycle_time"  	property="cycleTime"/>
+	<result column="emp00_emp_id_string"  property="empId_String"/>
+	<result column="emp00_person_id_string"  property="personId_String"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	* 
+    from 	emp00_info
+    where 	emp00_trans_id = #{transId}
+<!--   추가Start -->
+	and emp00_all_title	= 0
+<!--   추가End -->
+    
+</select>
+
+<select id="selectByText" resultMap="mapper" parameterType="HashMap" > 
+	select 	* 
+    from 	emp00_info
+    where 	emp00_company_id = #{companyId}
+<!--   추가Start -->
+	and emp00_all_title	= 0
+<!--   추가End -->
+    and		( emp00_emp_no||emp00_kor_nm like #{korName} or emp00_org_nm like #{korName} )
+    <choose> 
+    <when test="baseDate != null">
+    and     #{baseDate} between emp00_trans_date and emp00_close_date
+	</when>
+	</choose>
+    order by  f_org_seq(emp00_org_code_id, #{baseDate}), emp00_title_cd, emp00_pos_cd, emp00_hire_date
+</select>
+
+<select id="selectByOrgCodeId" resultMap="mapper" parameterType="HashMap" >
+	select emp00_info.*
+	     , emp00_emp_id || '' emp00_emp_id_string
+	     , emp00_person_id || '' emp00_person_id_string
+	  from emp00_info
+	<choose>
+	<when test="baseDate != null">
+	   where emp00_org_code_id = #{orgCodeId}
+       and #{baseDate} between emp00_trans_date and emp00_close_date
+	</when>
+	<otherwise>
+	   where emp00_org_code_id = #{orgCodeId}
+       and sysdate between emp00_trans_date and emp00_close_date
+	</otherwise>
+	</choose>
+	order by  f_org_seq(emp00_org_code_id, sysdate), emp00_title_cd, emp00_pos_cd, emp00_hire_date
+</select>
+
+<select id="selectByEmpId" resultMap="mapper" parameterType="HashMap" > 
+	select 	* 
+    from 	emp00_info
+    where 	emp00_emp_id = #{empId}
+    and     emp00_org_code_id = #{orgId}
+    and 	sysdate between emp00_trans_date and emp00_close_date
+</select>
+
+<select id="selectByEmpId2" resultMap="mapper" parameterType="HashMap" > <!-- selectByEmpId에서 겸직자 제외처리 -->
+	select 	* 
+    from 	emp00_info
+    where 	emp00_emp_id = #{empId}
+    and     emp00_all_title = 0
+    and 	sysdate between emp00_trans_date and emp00_close_date
+</select>
+
+<select id="selectOneEmpInfo" resultMap="mapper" parameterType="HashMap" > 
+	select 	* 
+    from 	emp00_info
+    where 	emp00_emp_id = #{empId}
+    and     emp00_all_title = 0
+    and		#{baseDate}  between emp00_trans_date and emp00_close_date
+</select>
+
+<select id="selectByLoginId" resultMap="mapper" parameterType="String" > 
+	select 	* 
+    from 	emp00_info
+    where 	emp00_emp_no = #{loginId}
+    and     emp00_all_title = 0
+    and		sysdate between emp00_trans_date and emp00_close_date
+</select>
+
+<select id="selectByEmpNo" resultMap="mapper" parameterType="HashMap" > 
+	select 	* 
+    from 	emp00_info
+    where 	emp00_emp_no = #{empNo}
+    and     emp00_all_title = 0
+    and		#{baseDate} between emp00_trans_date and emp00_close_date
+</select>
+
+<select id="selectTeamLeader" resultMap="mapper" parameterType="HashMap" > 
+select * 
+from emp00_info t1
+where emp00_org_code_id = (
+                          select emp00_org_code_id
+                          from   emp00_info
+                          where  emp00_emp_id = #{empId}
+						  and	emp00_all_title = 0
+                          and    sysdate between emp00_trans_date and emp00_close_date
+                          )
+and t1.emp00_title_cd = (select min(emp00_title_cd) from emp00_info x where t1.emp00_org_code_id = x.emp00_org_code_id and sysdate between x.emp00_trans_date and x.emp00_close_date)
+and rownum = 1
+</select>
+
+<select id="selectTeamLeaderByOrgId" resultMap="mapper" parameterType="HashMap" > 
+select * 
+from emp00_info t1
+where emp00_org_code_id = #{orgId} 
+and t1.emp00_title_cd = (select min(emp00_title_cd) from emp00_info x where t1.emp00_org_code_id = x.emp00_org_code_id and sysdate between x.emp00_trans_date and x.emp00_close_date)
+and rownum = 1
+</select>
+
+<select id="selectOrgLeaderByEmpId" resultMap="mapper" parameterType="HashMap" > 
+	select *
+	  from emp00_info
+	 where emp00_emp_id = ( 
+	       select f_apr_get_approval(emp00_emp_id, #{baseDate}, null)
+	         from emp00_info
+	        where emp00_emp_id = #{empId}
+			  and emp00_all_title = 0
+	          and to_date(#{baseDate}, 'yyyy-mm-dd') between emp00_trans_date and emp00_close_date
+	 ) 
+<!-- 	 and emp00_org_code_id = #{orgId} -->
+	 and emp00_all_title = 0
+	 and to_date(#{baseDate}, 'yyyy-mm-dd') between emp00_trans_date and emp00_close_date
+	 
+</select>
+
+<select id="selectComplianceOfficer" resultMap="mapper" parameterType="HashMap" > 
+	select 	* 
+    from 	emp00_info
+    where 	emp00_company_id = #{companyId}
+    and     emp00_title_cd = 120
+		and		emp00_all_title = 0
+    and 	sysdate between emp00_trans_date and emp00_close_date
+</select>
+
+</mapper>

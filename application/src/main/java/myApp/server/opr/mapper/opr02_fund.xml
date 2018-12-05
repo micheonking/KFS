@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="opr02_fund">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.opr.model.Opr02_FundModel" >
+		<id	    column="opr02_fund_id"    	property="fundId"/>
+		<result column="opr02_create_id"	property="createId"/>
+		<result column="opr02_reg_fund_id"	property="regFundId"/>
+
+	    <association property="fundModel" 
+			javaType ="myApp.client.vi.fnd.model.Fnd00_FundModel" 
+			resultMap="fnd00_fund.mapper"
+		/>
+	</resultMap>
+	
+	<select id="selectById" resultMap="mapper" parameterType="Long" > 
+		select 	*
+	      from 	opr02_fund
+	     where 	opr02_fund_id = #{fundId}
+	</select>
+
+	<select id="selectByCreateId" resultMap="mapper" parameterType="Long" >
+		select 	a.*
+			 ,	b.*
+		 	 ,	f_cdnm('FundTypeCode', b.fnd00_fund_type_cd, b.fnd00_company_id, fnd00_work_date) as fnd00_fund_type_nm
+		 	 ,	decode(fnd00_public_yn,'true','공모','사모') as fnd00_public_nm
+		 	 ,	f_org_nm(fnd00_org_code_id, fnd00_work_date) as fnd00_org_code_nm
+		 	 ,	c.emp00_kor_nm as fnd00_emp1_nm
+	      from 	opr02_fund a
+	         ,  fnd00_fund b
+	         ,	emp00_info c
+	         ,  fnd08_org_auth d
+	     where 	a.opr02_reg_fund_id = b.fnd00_fund_id
+	       and	b.fnd00_work_date   = f_max_workdate(a.opr02_reg_fund_id, trunc(sysdate))
+	       and  b.fnd00_emp1_id		= c.emp00_emp_id(+)
+		   and c.emp00_all_title(+) = 0
+		   and  b.fnd00_work_date 	between c.emp00_trans_date(+) and c.emp00_close_date(+)
+		   and  a.opr02_reg_fund_id = d.fnd08_fund_code_id
+		   and  d.fnd08_auth_yn     = 'true'
+		   and  d.fnd08_org_code_id = #{orgId}
+		   and  b.fnd00_company_id  = #{companyId}
+	       and  a.opr02_create_id   = #{createId}
+	     order by fnd00_fund_cd
+	</select>
+
+</mapper>

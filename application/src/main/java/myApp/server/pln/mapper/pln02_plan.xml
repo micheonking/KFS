@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pln02_plan">
+
+<resultMap 	id="mapper" type="myApp.client.vi.pln.model.Pln02_PlanModel" >
+	<id		column="pln02_plan_id"			property="planId"/>
+	<result	column="pln02_fund_id"			property="fundId"/>
+	<result	column="pln02_class_tree_id"	property="classTreeId"/>
+	<result	column="pln02_start_date"		property="startDate"/>
+	<result	column="pln02_due_date"			property="dueDate"/>
+	<result	column="pln02_appr_id"			property="apprId"/>
+	<result	column="pln02_doc_id"			property="docId"/>
+	<result	column="pln02_emp_id"			property="empId"/>
+	<result	column="pln02_close_yn"			property="closeYn"/>
+	<result	column="pln02_note"				property="note"/>
+	<result	column="pln02_update_yn"		property="updateYn"/>
+
+    <association property="fundInfoModel" 
+		javaType="myApp.client.vi.fnd.model.Fnd02_FundInfoModel" 
+		resultMap="fnd02_fund_info.mapper"
+	/>
+
+    <association property="empInfoModel" 
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel" 
+		resultMap="emp00_info.mapper"
+	/>
+
+    <association property="classTreeModel" 
+		javaType="myApp.client.vi.dcr.model.Dcr01_ClassTreeModel" 
+		resultMap="dcr01_class_tree.mapper"
+	/>
+
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	t1.*
+		,	t2.*
+		,	t3.*
+		,	t4.*
+		,	t5.*
+		,	case when nvl(pln02_appr_id,0) = 0 then null
+				 else f_cdnm('AprStatusCode',apr01_status_cd,emp00_company_id,pln02_start_date) end as pln02_close_yn
+		,	f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	from	pln02_plan			t1
+		,	fnd01_fund_code		t2
+		,	dcr01_class_tree	t3
+		,	emp00_info			t4
+		,	apr01_appr			t5
+	where	t1.pln02_fund_id		=	t2.fnd01_fund_code_id
+	and		t1.pln02_class_tree_id	=	t3.dcr01_class_tree_id
+	and		t2.fnd01_company_id		=	t3.dcr01_company_id
+	and		t1.pln02_emp_id			=	t4.emp00_emp_id(+)
+	and		t1.pln02_start_date		between t4.emp00_trans_date(+) and t4.emp00_close_date(+)
+	and		t1.pln02_appr_id		=	t5.apr01_appr_id(+)
+	and		t1.pln02_plan_id		=	#{planId}
+		   and t4.emp00_all_title(+) = 0
+</select>
+
+<select id="selectByPlanFundName" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	t3.*
+		,	t4.*
+		,	t5.*
+		,	case when nvl(t1.pln02_appr_id,0)	+	nvl(t1.pln02_doc_id,0) = 0 then '...'
+				else '완료' end as pln02_close_yn
+		,	f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	from	pln02_plan			t1
+		,	fnd01_fund_code		t2
+		,	dcr01_class_tree	t3
+		,	emp00_info			t4
+		,	apr01_appr			t5
+		,	dcr04_doc			t6
+	where	t1.pln02_fund_id		=	t2.fnd01_fund_code_id
+	and		t1.pln02_start_date	between	#{startDate}	and		#{endDate}
+	and		t1.pln02_class_tree_id	=	t3.dcr01_class_tree_id
+	and		t2.fnd01_company_id		=	t3.dcr01_company_id
+	and		t1.pln02_emp_id			=	t4.emp00_emp_id(+)
+	and		t1.pln02_appr_id		=	t5.apr01_appr_id(+)
+	and		t1.pln02_doc_id			=	t6.dcr04_doc_id(+)
+	and		t2.pln01_fund_nm		like	#{fundName}
+		   and t4.emp00_all_title(+) = 0
+</select>
+
+<select id="selectByPlanFundId" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	t3.*
+		,	t4.*
+		,	t5.*
+		,	t6.*
+		,	case when nvl(t1.pln02_appr_id,0)	+	nvl(t1.pln02_doc_id,0) = 0 then '...'
+				else '완료' end as pln02_close_yn
+		,	f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	from	pln02_plan			t1
+		,	fnd01_fund_code		t2
+		,	dcr01_class_tree	t3
+		,	emp00_info			t4
+		,	apr01_appr			t5
+		,	dcr04_doc			t6
+	where	t1.pln02_fund_id		=	t2.fnd01_fund_code_id
+	and		t1.pln02_class_tree_id	=	t3.dcr01_class_tree_id
+	and		t2.fnd01_company_id		=	t3.dcr01_company_id
+	and		t1.pln02_emp_id			=	t4.emp00_emp_id(+)
+		   and t4.emp00_all_title(+) = 0
+	and		t1.pln02_appr_id		=	t5.apr01_appr_id(+)
+	and		t1.pln02_doc_id			=	t6.dcr04_doc_id(+)
+	<if test="closeYn == 'true'">
+		<![CDATA[	and	nvl(t1.pln02_appr_id,0)	+	nvl(t1.pln02_doc_id,0)	=	0	]]>
+	</if>
+	and		t1.pln02_fund_id		=	#{fundId}
+</select>
+
+<select id="selectByFundId" resultMap="mapper" parameterType="Long" >
+	select	t1.*
+		,	t2.*
+		,	t3.*
+		,	t4.*
+		,	t5.*
+		,	case when nvl(pln02_appr_id,0) = 0 then null
+				 else f_cdnm('AprStatusCode',apr01_status_cd,emp00_company_id,pln02_start_date) end as pln02_close_yn
+		,	f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	from	pln02_plan			t1
+		,	fnd01_fund_code		t2
+		,	dcr01_class_tree	t3
+		,	emp00_info			t4
+		,	apr01_appr			t5
+	where	t1.pln02_fund_id		=	t2.fnd01_fund_code_id
+	and		t1.pln02_class_tree_id	=	t3.dcr01_class_tree_id
+	and		t2.fnd01_company_id		=	t3.dcr01_company_id
+	and		t1.pln02_emp_id			=	t4.emp00_emp_id(+)
+		   and t4.emp00_all_title(+) = 0
+	and		t1.pln02_start_date		between t4.emp00_trans_date(+) and t4.emp00_close_date(+)
+	and		t1.pln02_appr_id		=	t5.apr01_appr_id(+)
+	and		t1.pln02_fund_id		=	#{fundId}
+   order by dcr01_seq
+</select>
+
+<select id="selectByFundIdEmp" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	t3.*
+		,	t4.*
+		,	t5.*
+		,	case when nvl(t1.pln02_appr_id,0) = 0 then null
+				 else f_cdnm('AprStatusCode',apr01_status_cd,emp00_company_id,pln02_start_date) end as pln02_close_yn
+		,	f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, fnd01_company_id, pln02_start_date) as dcr01_approval_type_nm
+		,	nvl(dcr03_update_yn,'false') as pln02_update_yn
+	from	pln02_plan			t1
+		,	fnd01_fund_code		t2
+		,	dcr01_class_tree	t3
+		,	emp00_info			t4
+		,	apr01_appr			t5
+		,	dcr03_org_auth		t6
+	where	t1.pln02_fund_id		=	t2.fnd01_fund_code_id
+	and		t1.pln02_class_tree_id	=	t3.dcr01_class_tree_id
+	and		t1.pln02_class_tree_id	=	t6.dcr03_class_tree_id(+)
+	and		t2.fnd01_company_id		=	t3.dcr01_company_id
+	and		t1.pln02_emp_id			=	t4.emp00_emp_id(+)
+		   and t4.emp00_all_title(+) = 0
+	and		t1.pln02_start_date		between t4.emp00_trans_date(+) and t4.emp00_close_date(+)
+	and		t1.pln02_appr_id		=	t5.apr01_appr_id(+)
+	and		t1.pln02_fund_id		=	#{fundId}
+	and		t6.dcr03_org_code_id(+)	=	#{orgId}
+   order by dcr01_seq
+</select>
+
+<select id="selectByEmpPlanFundId" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	t2.*
+		,	t3.*
+		,	t4.*
+		,	t5.*
+		,	t6.*
+		,	case when nvl(t1.pln02_appr_id,0)	+	nvl(t1.pln02_doc_id,0) = 0 then '...'
+				else '완료' end as pln02_close_yn
+		,	f_cdnm('ApprovalTypeCode', dcr01_approval_type_cd, dcr01_company_id, sysdate) as dcr01_approval_type_nm
+	from	pln02_plan			t1
+		,	fnd01_fund_code		t2
+		,	dcr01_class_tree	t3
+		,	emp00_info			t4
+		,	apr01_appr			t5
+		,	dcr04_doc			t6
+	where	t1.pln02_fund_id		=	t2.fnd01_fund_code_id
+	and		t1.pln02_class_tree_id	=	t3.dcr01_class_tree_id
+	and		t2.fnd01_company_id		=	t3.dcr01_company_id
+	and		t1.pln02_emp_id			=	t4.emp00_emp_id(+)
+		   and t4.emp00_all_title(+) = 0
+	and		t1.pln02_appr_id		=	t5.apr01_appr_id(+)
+	and		t1.pln02_doc_id			=	t6.dcr04_doc_id(+)
+	and		t1.pln02_emp_id			=	#{empId}
+	<if test="closeYn == 'true'">
+		<![CDATA[	and	nvl(t1.pln02_appr_id,0)	+	nvl(t1.pln02_doc_id,0)	=	0	]]>
+	</if>
+	and		t1.pln02_fund_id		=	#{fundId}
+</select>
+
+<update id="updateApprId"  parameterType="myApp.client.vi.pln.model.Pln02_PlanModel">
+	update pln02_plan
+	   set pln02_appr_id = #{apprId}
+	 where pln02_plan_id = #{planId} 	
+</update>
+
+<update id="updateApprIdByApprId"  parameterType="Long">
+	update pln02_plan
+	   set pln02_appr_id = null
+	 where pln02_appr_id = #{apprId} 	
+</update>
+
+</mapper>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html style="margin: 0; height: 100%">
+	<head>
+		<meta charset="utf-8">
+		<title>Crownix ReportingServer Invoker</title>
+		<script src="../../js/invoker/crownix-invoker.min.js"></script>
+		<script>
+			window.onload = function(){
+				//m2soft.crownix.Ajax.debug = true;
+				m2soft.crownix.ReportingServerInvoker.debug = true;
+				
+				var invoker = new m2soft.crownix.ReportingServerInvoker('http://localhost:8080/ReportingServer/service');
+				invoker.addParameter('opcode', '500');
+				invoker.addParameter('mrd_path', 'sample.mrd');
+				invoker.addParameter('mrd_param', '/rfn [sample.txt]');
+				// 브라우저에서 pdf 인쇄를 동작하게 하려면 /rpdfprintdialog 파라미터가 필요함
+				//invoker.addParameter('mrd_param', '/rpdfprintdialog /rfn [sample.txt]');
+				invoker.addParameter('export_type', 'pdf');
+				invoker.addParameter('protocol', 'sync');
+
+				// export 중 에러 발생시 에러를 감지 할 수 있음.
+				// 이중화 환경에서 "export_name"을 사용하는 경우에는 정상동작하지 않음.
+				// 이중화 환경에서 "export_name"을 사용하는 경우, 파일 다운로드를 위해서 invoker_downloadProtocolFile.html을 사용하여야 함.
+				invoker.invoke(function(response) {
+					var downloadServletPath = 'http://localhost:8080/ReportingServer/download'; 
+					var ret = response.split('|');
+					var resultCode = ret[0];
+					var message = ret[1];
+					if(resultCode == '1') {
+						// 성공일 경우 message가 filepath
+						document.getElementById('downloadFrame').src = downloadServletPath + '?attachment=true&filename=' + message;
+					} else {
+						// 실패일 경우 message가 에러 메시지
+						document.getElementById('response').innerText = message;
+					}
+				});
+			};
+		</script>
+	</head>
+	<body style="margin: 0; height: 100%">
+		<iframe id="downloadFrame" style="display: none"></iframe>
+		<div id="response" style="position:absolute; width:100%; height:100%;">
+		</div>
+	</body>
+</html>

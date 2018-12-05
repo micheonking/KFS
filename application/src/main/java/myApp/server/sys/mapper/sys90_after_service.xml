@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sys90_after_service">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys90_AfterServiceModel" >
+	<id		column="sys90_after_service_id"	property="afterServiceId"/>
+	<result	column="sys90_happen_date"		property="happenStartDate"/>
+	<result	column="sys90_type_yn"			property="typeYn"/>
+	<result	column="sys90_happen_reason"	property="happenReason"/>
+	<result	column="sys90_happen_remedy"	property="happenRemedy"/>
+	<result	column="sys90_worker"			property="worker"/>
+	<result	column="sys90_due_date"			property="dueDate"/>
+	<result	column="sys90_close_yn"			property="closeYn"/>
+	<result	column="sys90_remarks"			property="remarks"/>
+	<result	column="sys90_reg_emp_id"		property="regEmpId"/>
+	<result	column="sys90_reg_emp_nm"		property="regEmpName"/>
+	<result	column="sys90_company_id"		property="companyId"/>
+	
+	<result	column="sys09_afterService_nm"	property="afterServiceName"/>
+	<result	column="sys90_close_nm"			property="closeName"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	*
+		 ,  f_cdnm('AfterServiceCode', a.sys90_type_yn, 1000000, sysdate) as sys09_afterService_nm
+		 , (case when nvl(sys90_close_yn,'false') = 'true' then '완료' else '' end) as sys90_close_nm
+	from	sys90_after_service
+	where	sys90_after_service_id	=	#{afterServiceId}
+</select>
+
+<select id="selectByTitle" resultMap="mapper" parameterType="HashMap" >
+
+	select	a.*
+		 ,  f_cdnm('AfterServiceCode', a.sys90_type_yn, 1000000, sysdate) as sys09_afterService_nm
+		 ,	(case when nvl(sys90_close_yn,'false') = 'true' then '완료' else '' end) as sys90_close_nm
+		 ,	f.emp00_kor_nm||' '||f.emp00_pos_nm as sys90_reg_emp_nm
+	from	sys90_after_service a 
+		 ,	emp00_info f
+	where	sys90_worker like #{worker}
+	and		sys90_happen_reason like #{happenReason}
+	and		sys90_type_yn like #{typeYn}
+	and		sys90_reg_emp_id = emp00_emp_id 
+	and 	sys90_happen_date between emp00_trans_date and emp00_close_date
+	and 	sys90_happen_date between emp00_trans_date and emp00_close_date
+	and		sys90_happen_date between #{happenStartDate}  and #{happenEndDate}
+	and		( ( #{closeYn} = 'false' and nvl(sys90_close_yn,'false') = 'false') or
+		      ( #{closeYn} = 'true' ) )
+
+</select>
+
+</mapper>

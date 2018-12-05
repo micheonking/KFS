@@ -1,0 +1,23 @@
+
+.twinTriggerClick {
+}
+
+.twinTriggerOver {
+}
+
+.triggerClick {
+}
+
+.triggerOver {
+}
+
+.twinTrigger {
+}
+
+.triggerWrap {
+}
+
+.text {
+  padding-right: 0;
+  text-align:right;
+}

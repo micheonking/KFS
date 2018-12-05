@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="apr11_advert_book">
+
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr11_AdvertBookModel" >
+	<id		column="apr11_advert_book_id"	property="advertBookId"/> 
+	<result	column="apr11_company_id"		property="companyId"/>
+	<result	column="apr11_appr_id"			property="apprId"/>        
+	<result	column="apr11_advert_seq"		property="advertSeq"/>     
+	<result	column="apr11_advert_type_nm"	property="advertTypeName"/> 
+	<result	column="apr11_media_nm"			property="mediaName"/>       
+	<result	column="apr11_cnt"				property="count"/>            
+	<result	column="apr11_note"				property="note"/>           
+	
+	<association property="apprModel" 
+		javaType="myApp.client.vi.apr.model.Apr01_ApprModel" 
+		resultMap="apr01_appr.mapper"
+	/>
+	<association property="apprStepModel" 
+		javaType="myApp.client.vi.apr.model.Apr04_ApprStepModel" 
+		resultMap="apr04_appr_step.mapper"
+	/>
+	     
+	<association property="empModel" 
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel" 
+		resultMap="emp00_info.mapper"
+	/>
+
+</resultMap>
+
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select *
+	  from apr11_advert_book
+	     , apr01_appr
+	     , apr04_appr_step
+	     , emp00_info
+	 where apr11_advert_book_id = #{advertBookId}
+	   and apr11_appr_id = apr01_appr_id
+	   and apr11_appr_id = apr04_appr_id
+	   and apr04_seq 
+	       = ( select max(x.apr04_seq) 
+	             from apr04_appr_step x
+	            where x.apr04_appr_id = apr01_appr_id 
+	              and x.apr04_step_type_cd = '10')
+	   and apr01_reg_emp_id = emp00_emp_id 
+	   and apr01_reg_date between emp00_trans_date and emp00_close_date
+		   and emp00_all_title = 0
+</select>
+
+<select id="selectByApprDate" resultMap="mapper" parameterType="HashMap" >
+	<!-- 
+	select *
+	  from apr11_advert_book
+	     , apr01_appr
+	     , apr04_appr_step
+	     , emp00_info
+	 where apr11_company_id = #{companyId}
+	   and apr11_appr_id = apr01_appr_id
+	   and apr11_appr_id = apr04_appr_id
+	   and trunc(apr04_appr_date) between #{startDate} and #{endDate}
+	   and apr04_seq 
+	       = ( select max(x.apr04_seq) 
+	             from apr04_appr_step x
+	            where x.apr04_appr_id = apr01_appr_id 
+	              and x.apr04_step_type_cd = '10')
+	   and apr01_reg_emp_id = emp00_emp_id 
+	   and apr01_reg_date between emp00_trans_date and emp00_close_date
+	 order by apr11_advert_seq 
+	 -->
+	 
+	 select *
+	  from apr11_advert_book
+	     , apr01_appr
+	     , apr04_appr_step
+	     , emp00_info
+	 where apr11_company_id = #{companyId}
+	   and apr11_appr_id = apr01_appr_id
+	   and apr11_appr_id = apr04_appr_id
+	   and trunc(apr04_appr_date) between #{startDate} and #{endDate}
+	   and apr04_seq 
+	       = ( select max(x.apr04_seq) 
+	             from apr04_appr_step x
+	            where x.apr04_appr_id = apr01_appr_id 
+	              and x.apr04_step_status_cd = '20')
+	   and apr01_reg_emp_id = emp00_emp_id 
+	   and apr01_reg_date between emp00_trans_date and emp00_close_date
+		   and emp00_all_title = 0
+	 order by apr11_advert_seq desc
+</select>
+
+<select id="getAdvertSeq" resultMap="mapper" parameterType="HashMap" >
+select case
+         when apr11_advert_seq <![CDATA[<=]]> 9999 then 10000
+         else apr11_advert_seq
+         end as apr11_advert_seq
+from   (
+       select (nvl(max(apr11_advert_seq), 10000)) + 1 as apr11_advert_seq
+       from   apr11_advert_book
+       )
+</select>
+
+<insert id="insertAdvertHistory"  parameterType="HashMap" flushCache="true">
+<!-- 
+    <selectKey keyProperty="advertBookId" resultType="Long" order="BEFORE">
+		select seq.nextval from dual
+	</selectKey>
+ -->
+	<!-- 
+    <selectKey keyProperty="BOOKID,SEQ" resultType="HashMap" order="BEFORE">
+		select seq.nextval as BOOKID
+             , case
+                 when seq <![CDATA[<=]]> 9999 then 10000
+                 else seq
+                 end as SEQ
+        from   (
+               select (nvl(max(apr11_advert_seq), 10000)) + 1 as seq
+               from   apr11_advert_book
+               )
+	</selectKey>
+	
+	insert into apr11_advert_book
+  	(	apr11_advert_book_id
+  	, 	apr11_advert_seq
+  	, 	apr11_advert_type_nm 
+  	, 	apr11_media_nm
+  	, 	apr11_cnt
+  	,   apr11_note
+  	,   apr11_appr_id
+  	,   apr11_company_id
+  	)
+  	values
+  	(	#{advertBookId}
+  	, 	#{advertSeq}
+  	, 	#{advertTypeNm}
+  	, 	#{mediaNm}
+  	, 	#{cnt}
+  	,   #{note}
+  	,   #{apprId}
+  	,   #{companyId}
+  	)
+	 -->
+	
+	insert into apr11_advert_book
+  	(	apr11_advert_book_id
+  	, 	apr11_advert_seq
+  	, 	apr11_advert_type_nm 
+  	, 	apr11_media_nm
+  	, 	apr11_cnt
+  	,   apr11_note
+  	,   apr11_appr_id
+  	,   apr11_company_id
+  	)
+  	select seq.nextval
+  	, 	#{advertSeq}
+  	, 	#{advertTypeNm}
+  	, 	#{mediaNm}
+  	, 	#{cnt}
+  	,   #{note}
+  	,   #{apprId}
+  	,   #{companyId}
+  	from dual
+</insert>
+
+<delete id="deleteByApprId" parameterType="Long" >
+	delete
+	  from	apr11_advert_book
+	 where	apr11_appr_id = #{apprId}
+</delete>
+ 
+</mapper>

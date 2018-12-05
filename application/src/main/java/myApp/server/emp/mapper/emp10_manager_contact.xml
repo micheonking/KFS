@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="emp10_manager_contact">
+
+<resultMap 	id="mapper" type="myApp.client.vi.emp.model.Emp10_ManagerContactModel" >
+
+	<id		column="emp10_manager_contact_id"			property="managerId"/>
+	<result	column="emp10_manager_nm"			property="managerName"/>
+	<result	column="emp10_manager_email"		property="managerEmail"/>
+	<result	column="emp10_manager_mobile"		property="managerMobile"/>
+	<result	column="emp10_manager_telephone"	property="managerTelephone"/>
+	<result	column="emp10_manager_company_nm"	property="managerCompanyName"/>
+	<result	column="emp10_emp_id"				property="empId"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	emp10_manager_contact
+	where	emp10_manager_id = #{managerId};
+</select>
+
+<select id="selectByEmpId" resultMap="mapper" parameterType="HashMap" >
+	select	*
+	from	emp10_manager_contact
+	where	emp10_emp_id = #{empId}
+<!-- 	order by emp10_manager_company_nm ; -->
+</select>
+
+
+</mapper>

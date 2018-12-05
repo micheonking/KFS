@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="opr01_create">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.opr.model.Opr01_CreateModel" >
+		<id	    column="opr01_create_id"    	property="createId"/>
+		<result column="opr01_year"             property="year"/>
+		<result column="opr01_term_cd"          property="termCd"/>
+		<result column="opr01_term_nm"			property="termNm"/>
+		<result column="opr01_create_emp_id"	property="createEmpId"/>
+		<result column="opr01_create_emp_nm"	property="createEmpNm"/>
+		<result column="opr01_title"            property="title"/>
+		<result column="opr01_start_date"       property="startDate"/>
+		<result column="opr01_due_date"         property="dueDate"/>
+		<result column="opr01_note"             property="note"/>
+		<result column="opr01_company_id"       property="companyId"/>
+		<result column="opr01_appr_id"       	property="apprId"/>
+		<result column="opr01_kor_nm"           property="korNm"/>
+		<result column="opr01_pos_cd"           property="posCd"/>
+		<result column="opr01_org_kor_nm"       property="orgKorNm"/>
+		<result column="opr01_apr_nm"			property="aprNm"/>
+		<result column="apr04_appr_date"		property="aprDate"/>
+		<result column="opr03_reg_id"			property="regId"/>
+		<result column="opr03_reg_date"			property="closeDate"/>
+
+		<association property="empInfoModel"
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel"
+		resultMap="emp00_info.mapper"
+		/>
+	</resultMap>
+
+	<select id="selectById" resultMap="mapper" parameterType="Long" > 
+		select	a.*
+		     ,	b.*
+		     ,  f_cdnm('TermCodeOpr', a.opr01_term_cd, a.opr01_company_id, sysdate) as opr01_term_nm
+<!-- 		     ,  decode(c.apr04_step_status_cd, null, '', f_cdnm('AprStepStatusCode', c.apr04_step_status_cd, a.opr01_company_id, sysdate)) as opr01_apr_nm -->
+			 ,  decode(c.apr01_status_cd, null, '', f_cdnm('AprStatusCode', c.apr01_status_cd, a.opr01_company_id, sysdate)) as opr01_apr_nm
+		     ,  apr04_appr_date
+		     ,  decode(opr03_close_yn, 'true', opr03_reg_id, null) as opr03_reg_id
+		     ,  opr03_reg_date
+		  from	opr01_create a
+		     ,	emp00_info b
+		     ,  ( select x.*
+		               , apr04_step_status_cd
+                             , apr04_appr_date
+                          from apr01_appr x
+                             , apr04_appr_step y
+                         where x.apr01_appr_id = y.apr04_appr_id
+                           and x.apr01_status_cd != '99'
+                           and y.apr04_seq     = ( select max(apr04_seq)
+                                                     from apr04_appr_step
+                                                    where apr04_appr_id = y.apr04_appr_id
+                                                      and apr04_step_status_cd != '40' ) ) c
+             ,  ( select *
+                    from opr03_reg z
+                   where opr03_seq = ( select max(opr03_seq)
+                                   from opr03_reg
+                                  where opr03_create_id = z.opr03_create_id ) ) d
+		 where  a.opr01_company_id    = b.emp00_company_id
+		   and	a.opr01_create_emp_id = b.emp00_emp_id
+		   and b.emp00_all_title = 0
+		   and  a.opr01_appr_id       = c.apr01_appr_id(+)
+		   and  a.opr01_create_id     = d.opr03_create_id(+)
+		   and  trunc(sysdate)        between emp00_trans_date
+		   							  and	  nvl(emp00_close_date,'9999.12.31')
+		   and  a.opr01_create_id	  = #{createId}
+	</select>
+
+	<select id="selectByTitle" resultMap="mapper" parameterType="HashMap"> 
+		select  *
+		  from ( select	a.*
+				     ,	b.*
+				     ,  f_cdnm('TermCodeOpr', a.opr01_term_cd, a.opr01_company_id, sysdate) as opr01_term_nm
+<!-- 				     ,  decode(c.apr04_step_status_cd, null, '', f_cdnm('AprStepStatusCode', c.apr04_step_status_cd, a.opr01_company_id, sysdate)) as opr01_apr_nm -->
+					 ,  decode(c.apr01_status_cd, null, ' ', f_cdnm('AprStatusCode', c.apr01_status_cd, a.opr01_company_id, sysdate)) as opr01_apr_nm
+				     ,  apr04_appr_date
+				     ,  decode(opr03_close_yn, 'true', opr03_reg_id  , null) as opr03_reg_id
+				     ,  decode(opr03_close_yn, 'true', opr03_reg_date, null) as opr03_reg_date
+				  from	opr01_create a
+				     ,	emp00_info b
+				     ,  ( select x.*
+				               , apr04_step_status_cd
+                               , apr04_appr_date
+                            from apr01_appr x
+                               , apr04_appr_step y
+                           where x.apr01_appr_id = y.apr04_appr_id
+<!--                              and x.apr01_status_cd != '99' -->
+                             and y.apr04_seq     = ( select max(apr04_seq)
+                                                       from apr04_appr_step
+                                                      where apr04_appr_id = y.apr04_appr_id
+                                                        and apr04_step_status_cd != '40' ) ) c
+                     ,  ( select *
+                            from opr03_reg z
+                           where opr03_seq = ( select max(opr03_seq)
+		                                         from opr03_reg
+		                                        where opr03_create_id = z.opr03_create_id ) ) d
+				 where	a.opr01_company_id    = b.emp00_company_id
+				   and	a.opr01_create_emp_id = b.emp00_emp_id
+		   and b.emp00_all_title = 0
+				   and  a.opr01_appr_id       = c.apr01_appr_id(+)
+				   and  a.opr01_create_id     = d.opr03_create_id(+)
+				   and  trunc(sysdate)        between emp00_trans_date
+				   							  and	  nvl(emp00_close_date,'9999.12.31')
+				   and  a.opr01_company_id    =    #{companyId}
+				   and	a.opr01_title		  like #{title}
+				   and  a.opr01_year		  like #{year}
+				   and  a.opr01_term_cd		  like #{termCd}	)
+		 where	( ( ( #{progressYn} = 'true'  and opr03_reg_date is null     ) or
+			        ( #{progressYn} = 'false' and opr03_reg_date is not null ) ) or
+			      ( ( #{closeYn}    = 'true'  and opr03_reg_date is not null ) or
+			        ( #{closeYn}    = 'false' and opr03_reg_date is null     ) ) )
+		   and 	( ( #{aprYn}      = 'false'  and opr01_apr_nm != '완료') or
+		          ( #{aprYn}      = 'true'   ) )
+	     order by opr01_title
+	</select>
+
+	<select id="selectByTitle1" resultMap="mapper" parameterType="HashMap"> 
+		select	a.*
+		     ,	b.*
+		     ,  f_cdnm('TermCodeOpr', a.opr01_term_cd, a.opr01_company_id, sysdate) as opr01_term_nm
+		     ,  decode(d.opr03_close_yn, 'true', d.opr03_reg_date, null) as opr03_reg_date
+		  from	opr01_create a
+		     ,	emp00_info b
+             ,  opr03_reg c
+             ,  ( select *
+                    from opr03_reg x
+                   where opr03_seq = ( select max(opr03_seq)
+	                                     from opr03_reg
+	                                    where opr03_create_id = x.opr03_create_id ) ) d
+		 where	a.opr01_company_id    = b.emp00_company_id
+		   and	a.opr01_create_emp_id = b.emp00_emp_id
+		   and b.emp00_all_title = 0
+		   and	a.opr01_create_id	  = c.opr03_create_id
+           and  a.opr01_create_id     = d.opr03_create_id
+		   and  trunc(sysdate)        between emp00_trans_date
+		   							  and	  nvl(emp00_close_date,'9999.12.31')
+		   and  a.opr01_company_id    =    #{companyId}
+           and  c.opr03_reg_emp_id    =    #{empId}
+		   and	a.opr01_title		  like #{title}
+		   and  a.opr01_year		  like #{year}
+		   and  a.opr01_term_cd		  like #{termCd}
+		   and  ( ( ( #{progressYn} = 'true'  and d.opr03_reg_date is null     ) or
+			        ( #{progressYn} = 'false' and d.opr03_reg_date is not null ) ) or
+			      ( ( #{closeYn}    = 'true'  and d.opr03_reg_date is not null ) or
+			        ( #{closeYn}    = 'false' and d.opr03_reg_date is null     ) ) )
+	     order by a.opr01_title
+	</select>
+
+	<select id="selectByLookupTitle" resultMap="mapper" parameterType="HashMap"> 
+		select	a.*
+		     ,	b.*
+		     ,  f_cdnm('TermCodeOpr', a.opr01_term_cd, a.opr01_company_id, sysdate) as opr01_term_nm
+		  from	opr01_create a
+		     ,	emp00_info b
+		 where	a.opr01_company_id    = 		b.emp00_company_id
+		   and	a.opr01_create_emp_id = 		b.emp00_emp_id
+		   and b.emp00_all_title = 0
+		   and  a.opr01_company_id    = 		#{companyId}
+		   and  trunc(sysdate)        between 	emp00_trans_date
+		   							  and	  	nvl(emp00_close_date,'9999.12.31')
+		   and  a.opr01_title ||b.emp00_kor_nm like #{title}
+		   and 	a.opr01_year  like #{year}
+	     order by opr01_create_id desc
+	</select>
+
+	<update id="updateApprId"  parameterType="myApp.client.vi.opr.model.Opr01_CreateModel">
+		update opr01_create
+		   set opr01_appr_id   = #{apprId}
+		 where opr01_create_id = #{createId} 	
+	</update>
+
+	<update id="updateApprIdByApprId"  parameterType="Long">
+		update opr01_create
+		   set opr01_appr_id = null
+		 where opr01_appr_id = #{apprId} 	
+	</update>
+
+</mapper>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="apr03_relate_fund">
+
+<resultMap 	id="mapper" type="myApp.client.vi.apr.model.Apr03_RelateFundModel" >
+	<id  	column="apr03_relate_fund_id" property="relateFundId"/>
+	<result column="apr03_appr_id"         property="apprId"/>
+	<result column="apr03_fund_id"        property="fundId"/>
+	
+	<association property="apprModel" 
+		javaType="myApp.client.vi.apr.model.Apr01_ApprModel"
+		resultMap="apr01_appr.mapper"
+	/>	
+	<association property="empInfoModel" 
+		javaType="myApp.client.vi.emp.model.Emp00_InfoModel" 
+		resultMap="emp00_info.mapper"
+	/>
+	<association property="fundModel" 
+		javaType="myApp.client.vi.fnd.model.Fnd00_FundModel"
+		resultMap="fnd00_fund.mapper"
+	/>	
+	<association property="classTreeModel" 
+		javaType="myApp.client.vi.dcr.model.Dcr01_ClassTreeModel" 
+		resultMap="dcr01_class_tree.mapper"
+	/>
+	<association property="stampModel" 
+		javaType="myApp.client.vi.apr.model.Apr10_StampModel" 
+		resultMap="apr10_stamp.mapper"
+	/>
+	
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+select *
+  from apr03_relate_fund
+     , fnd00_fund
+ where apr03_relate_fund_id = #{relateFundId} 
+   and apr03_fund_id = fnd00_fund_id   
+</select>
+
+<select id="selectByApprId" resultMap="mapper" parameterType="Long" >
+select case when x.fnd00_plan_yn = 'true' then 
+            case when x.fnd00_real_fund_id is null then x.fnd00_fund_nm
+                 else (select fnd00_fund_nm from fnd00_fund where fnd00_fund_id = x.fnd00_real_fund_id and rownum = 1)
+            end
+            else x.fnd00_fund_nm
+       end as fnd00_fund_nm
+     , case when x.fnd00_plan_yn = 'true' then 
+            case when x.fnd00_real_fund_id is null then x.fnd00_fund_cd
+                 else (select fnd00_fund_cd from fnd00_fund where fnd00_fund_id = x.fnd00_real_fund_id and rownum = 1)
+            end
+            else x.fnd00_fund_cd
+       end as fnd00_fund_cd
+     , x.*
+     , apr03_relate_fund.*
+  from apr03_relate_fund
+     , fnd00_fund x
+ where apr03_appr_id = #{apprId} 
+   and apr03_fund_id = fnd00_fund_id   
+</select>
+
+<select id="selectByClassTreeId" resultMap="mapper" parameterType="HashMap" >
+<!-- 	select case when apr03_relate_fund_id is null then apr01_appr_id else apr03_relate_fund_id end apr03_relate_fund_id -->
+<!-- 	     , apr03_appr_id -->
+<!-- 	     , apr03_fund_id -->
+<!-- 	     , case when x.fnd00_plan_yn = 'true' then  -->
+<!-- 	            case when x.fnd00_real_fund_id is null then x.fnd00_fund_nm -->
+<!-- 	                 else (select fnd00_fund_nm from fnd00_fund where fnd00_fund_id = x.fnd00_real_fund_id and rownum = 1) -->
+<!-- 	            end -->
+<!-- 	            else x.fnd00_fund_nm -->
+<!-- 	       end as fnd00_fund_nm -->
+<!-- 	     , case when x.fnd00_plan_yn = 'true' then  -->
+<!-- 	            case when x.fnd00_real_fund_id is null then x.fnd00_fund_cd -->
+<!-- 	                 else (select fnd00_fund_cd from fnd00_fund where fnd00_fund_id = x.fnd00_real_fund_id and rownum = 1) -->
+<!-- 	            end -->
+<!-- 	            else x.fnd00_fund_cd -->
+<!-- 	       end as fnd00_fund_cd -->
+<!-- 	     , apr01_appr.* -->
+<!-- 	     , emp00_info.* -->
+<!-- 	     , x.* -->
+<!-- 	     , dcr01_class_tree.* -->
+<!-- 	     , apr10_stamp.* -->
+<!-- 	 from apr01_appr  -->
+<!-- 	    , apr03_relate_fund  -->
+<!-- 	    , fnd00_fund x -->
+<!-- 	    , emp00_info -->
+<!-- 	    , dcr01_class_tree -->
+<!-- 	    , dcr03_org_auth -->
+<!-- 	    , apr10_stamp -->
+<!-- 	where apr01_class_tree_id = #{classTreeId}  -->
+<!-- 	  and apr01_class_tree_id = dcr01_class_tree_id -->
+<!-- 	  and apr01_class_tree_id = dcr03_class_tree_id -->
+<!-- 	  and dcr03_org_code_id   = #{orgId} -->
+<!-- 	  and ( dcr03_retrieve_yn = 'true' or -->
+<!-- 	        dcr03_update_yn   = 'true' )  -->
+<!-- 	  and apr01_reg_emp_id = emp00_emp_id -->
+<!-- 	  and apr01_reg_date between emp00_trans_date and emp00_close_date -->
+<!-- 	  and apr01_stamp_id = apr10_stamp_id(+) -->
+<!-- 	  and apr01_appr_id = apr03_appr_id(+) -->
+<!-- 	  and apr03_fund_id = fnd00_fund_id(+) -->
+<!-- 	  and fnd00_work_date(+) = f_max_workdate(apr03_fund_id, sysdate)  -->
+<!-- 	  and 'true' = case when fnd00_plan_yn = 'true' then -->
+<!-- 	                    case when fnd00_real_fund_id is not null then 'true' -->
+<!-- 	                    else 'false' end -->
+<!-- 	               else 'true' end -->
+<!-- 	  and emp00_all_title = 0 -->
+<!-- 	  order by apr01_reg_date desc, apr01_status_cd, apr01_effect_date -->
+<!-- (20181113 CYY - 아래 쿼리 다시 작성) -->
+	select rownum        as apr03_relate_fund_id
+	     , apr01_appr_id as apr03_appr_id
+	     , apr01_fund_id as apr03_fund_id
+	     , fnd00_fund_nm
+	     , fnd00_fund_cd
+	     , apr.*
+	     , fnd00_fund.*
+	     , emp00_info.*
+	     , dcr01_class_tree.*
+	     , apr10_stamp.*
+	 from ( -- 연관펀드가 있는 문서
+	        select a.*
+	             , fnd00_fund_id   as apr01_fund_id
+	             , fnd00_work_date as apr01_fund_work_date
+	          from apr01_appr a
+	             , apr03_relate_fund
+	             , ( select *
+	                   from fnd00_fund
+	                      , fnd01_fund_code -- 기획펀드정보
+	                  where fnd00_fund_id = fnd01_real_fund_id(+) )
+	             , fnd08_org_auth
+	         where apr01_appr_id       =  apr03_appr_id
+	           and apr03_fund_id       in (fnd01_fund_code_id, fnd00_fund_id)
+	           and fnd00_work_date     =  f_max_workdate(fnd00_fund_id, sysdate)
+	           and fnd00_fund_id       =  fnd08_fund_code_id
+	           and fnd08_auth_yn       =  'true'
+	           and fnd08_org_code_id   =  #{orgId}
+	        -- 연관펀드가 없는 문서
+	         union all
+	        select a.*
+	             , null as apr01_fund_id
+	             , null as apr01_fund_work_date
+	          from apr01_appr a
+	         where apr01_appr_id not in ( select apr01_appr_id
+	                                        from apr01_appr
+	                                           , apr03_relate_fund
+	                                       where apr01_appr_id = apr03_appr_id )
+	       ) apr
+	    , fnd00_fund
+	    , dcr01_class_tree
+	    , dcr03_org_auth
+	    , emp00_info
+	    , apr10_stamp
+	where apr01_fund_id        = fnd00_fund_id(+)
+	  and apr01_fund_work_date = fnd00_work_date(+)
+	  and apr01_class_tree_id  = #{classTreeId} 
+	  and apr01_class_tree_id  = dcr01_class_tree_id
+	  and apr01_class_tree_id  = dcr03_class_tree_id
+	  and dcr03_org_code_id    = #{orgId}
+	  and ( dcr03_retrieve_yn  = 'true' or
+	        dcr03_update_yn    = 'true' ) 
+	  and apr01_reg_emp_id     = emp00_emp_id
+	  and apr01_reg_date       between emp00_trans_date and emp00_close_date
+	  and emp00_all_title      = 0
+	  and apr01_stamp_id       = apr10_stamp_id(+)
+	order by apr01_reg_date desc, apr01_status_cd, apr01_effect_date
+</select>
+
+<select id="selectByClassTreeId2" resultMap="mapper" parameterType="HashMap" >
+
+select case when apr03_relate_fund_id is null then apr01_appr_id else apr03_relate_fund_id end apr03_relate_fund_id
+     , apr03_appr_id
+     , apr03_fund_id
+     , case when x.fnd00_plan_yn = 'true' then 
+            case when x.fnd00_real_fund_id is null then x.fnd00_fund_nm
+                 else (select fnd00_fund_nm from fnd00_fund where fnd00_fund_id = x.fnd00_real_fund_id and rownum = 1)
+            end
+            else x.fnd00_fund_nm
+       end as fnd00_fund_nm
+     , case when x.fnd00_plan_yn = 'true' then 
+            case when x.fnd00_real_fund_id is null then x.fnd00_fund_cd
+                 else (select fnd00_fund_cd from fnd00_fund where fnd00_fund_id = x.fnd00_real_fund_id and rownum = 1)
+            end
+            else x.fnd00_fund_cd
+       end as fnd00_fund_cd
+     , apr01_appr.*
+     , emp00_info.*
+     , x.*
+     , dcr01_class_tree.*
+     , apr10_stamp.*
+ from apr01_appr 
+    , apr03_relate_fund 
+    , fnd00_fund x
+    , emp00_info
+    , dcr01_class_tree
+    , apr10_stamp
+where apr01_class_tree_id = dcr01_class_tree_id 
+  and apr01_reg_emp_id = emp00_emp_id
+  and apr01_reg_date between emp00_trans_date and emp00_close_date
+  and apr01_appr_id = apr03_appr_id(+)
+  and apr01_stamp_id = apr10_stamp_id(+)
+  and apr03_fund_id = fnd00_fund_id(+)
+  <choose> 
+  <when test="admin == 'false'">
+  and (apr03_fund_id in (select fnd08_fund_code_id from fnd08_org_auth 
+             where fnd08_org_code_id = #{orgId}
+               and fnd08_auth_yn = 'true'
+               )
+       or apr03_fund_id is null )
+  </when>
+  </choose> 
+  and fnd00_work_date(+) = f_max_workdate(apr03_fund_id, sysdate) 
+  and 'true' = case when fnd00_plan_yn = 'true' then
+                    case when fnd00_real_fund_id is not null then 'true'
+                    else 'false' end
+               else 'true' end
+  and apr01_class_tree_id = #{classTreeId} 
+  and apr01_reg_date between #{startDate} and #{endDate}
+  and emp00_kor_nm like '%'||#{regEmpName}||'%'
+  and emp00_org_nm like '%'||#{orgName}||'%'
+	   and emp00_all_title = 0
+  order by apr01_reg_date desc, apr01_status_cd, apr01_effect_date
+</select>
+
+<select id="selectByFundCodeId" resultMap="mapper" parameterType="HashMap" >
+select *
+  from apr03_relate_fund
+     , apr01_appr 
+ where apr03_appr_id = apr01_appr_id
+   and apr03_fund_id = #{fundCodeId}
+   and apr01_class_tree_id = #{classTreeId} 
+   and apr01_status_cd = '30'
+</select>
+
+
+<insert id="insertOprFund"  parameterType="HashMap">
+	insert
+	  into apr03_relate_fund
+	select seq.nextval
+	     , #{apprId}
+	     , opr02_reg_fund_id
+	  from opr02_fund
+	 where opr02_create_id = #{createId}
+</insert>
+
+<insert id="insert"  parameterType="myApp.client.vi.apr.model.Apr03_RelateFundModel">
+    merge into apr03_relate_fund a
+    using dual
+    on
+    (
+        a.apr03_relate_fund_id = #{relateFundId}
+    )
+    when matched then
+    update set
+    	a.apr03_appr_id  = #{apprId}
+     ,  a.apr03_fund_id  = #{fundId}
+    
+    when not matched then
+	insert
+	 (	a.apr03_relate_fund_id
+	 ,	a.apr03_appr_id
+	 , 	a.apr03_fund_id
+	 )
+	 values
+	 (	#{relateFundId}
+	 , 	#{apprId}
+	 , 	#{fundId}
+	 )
+</insert>
+
+<delete id="deleteByApprId"  parameterType="Long">
+	delete
+	  from	apr03_relate_fund
+	 where	apr03_appr_id = #{apprId}
+</delete>
+
+
+</mapper>
+

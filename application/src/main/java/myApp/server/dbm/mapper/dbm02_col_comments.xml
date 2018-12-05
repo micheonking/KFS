@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="dbm02_col_comments">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dbm.model.Dbm02_ColCommentsModel" >
+	<id		column="dbm02_ColumnId"			property="columnId"/>
+	<result	column="dbm02_ColumnName"		property="columnName"/>
+	<result	column="dbm02_DataType"			property="dataType"/>
+	<result	column="dbm02_ColumnComment"	property="columnComment"/>
+	<result	column="dbm02_NullAble"			property="nullAble"/>
+	<result	column="dbm02_ColumnLength"		property="columnLength"/>
+	<result	column="dbm02_TableName"		property="tableName"/>
+</resultMap>
+	
+<select id="selectByTableName" resultMap="mapper" parameterType="HashMap">
+	select	a.column_id	+ 1								as	dbm02_ColumnId
+		,	lower(a.column_name)						as	dbm02_ColumnName
+		,	initcap(lower(a.data_type))					as	dbm02_DataType
+		,	b.comments									as	dbm02_ColumnComment
+		,	decode(nullable,'N','Not Null','')			as	dbm02_NullAble
+		,	decode(data_type,'DATE'		,	''
+							,'LONG'		,	''
+							,'ROWID'	,	''
+							,'NUMBER'	,	data_precision||decode(data_precision,null,null,decode(data_scale,0,'',','||data_scale)),data_length)	as	dbm02_ColumnLength
+		,	a.table_name								as	dbm02_TableName
+	from	user_tab_columns	a
+		,	user_col_comments	b
+	where	a.table_name	=	b.table_name
+	and		a.column_name	=	b.column_name
+	and		a.table_name	=	upper(#{tableName})
+	order	by	a.column_id
+</select>
+
+</mapper>

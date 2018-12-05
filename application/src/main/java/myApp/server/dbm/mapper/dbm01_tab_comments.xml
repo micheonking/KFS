@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="dbm01_tab_comments">
+
+<resultMap 	id="mapper" type="myApp.client.vi.dbm.model.Dbm01_TabCommentsModel" >
+	<id		column="dbm01_table_id"			property="tableId"/>
+	<result	column="dbm01_table_name"		property="tableName"/>
+	<result	column="dbm01_comments"			property="tableComments"/>
+	<result	column="dbm01_tablespace_name"	property="tablespaceName"/>
+	<result	column="dbm01_table_type"		property="tableType"/>
+
+</resultMap>
+	
+<select id="selectByTableName" resultMap="mapper" parameterType="HashMap">
+	select	rownum 							as	dbm01_table_id
+		,	lower(a.table_name)				as	dbm01_table_name
+		,	a.comments						as	dbm01_comments
+		,	(select	b.tablespace_name from user_tables b where b.table_name = a.table_name) as dbm01_tablespace_name
+		,	initcap(lower(a.table_type))	as	dbm01_table_type
+	FROM	user_tab_comments	a
+	WHERE	a.table_name	like	upper(#{tableName})
+	order	by	a.table_name
+</select>
+
+<select id="callByDDLRun" parameterType="String" statementType="CALLABLE">
+	CALL sp_DDLRun(#{para})
+</select>
+
+</mapper>

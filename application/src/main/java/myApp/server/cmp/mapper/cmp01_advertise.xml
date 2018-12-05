@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="cmp01_advertise">
+
+<resultMap 	id="mapper" type="myApp.client.vi.cmp.model.Cmp01_AdvertiseModel" >
+	<id		column="cmp01_advertise_id"		property="advertiseId"/>
+	<result	column="cmp01_advertise_no"		property="advertiseNo"/>
+	<result	column="cmp01_screening_date"	property="screeningDate"/>
+	<result	column="cmp01_advertise_type"	property="advertiseType"/>
+	<result	column="cmp01_media_type"		property="mediaType"/>
+	<result	column="cmp01_advertise_note"	property="advertiseNote"/>
+	<result	column="cmp01_manager_emp_id"	property="managerEmpId"/>
+	<result	column="cmp01_advertise_count"	property="advertiseCount"/>
+	<result	column="cmp01_emp_nm"			property="empName"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	t1.*
+		,	f_emp_kor_nm(t1.cmp01_manager_emp_id)	as	cmp01_emp_nm
+	from	cmp01_advertise t1
+	where	t1.cmp01_advertise_id	=	#{advertiseId}
+</select>
+
+<select id="selectByScreeningDate" resultMap="mapper" parameterType="HashMap" >
+	select	t1.*
+		,	f_emp_kor_nm(t1.cmp01_manager_emp_id)	as	cmp01_emp_nm
+	from	cmp01_advertise t1
+	where	t1.cmp01_screening_date	between	#{startDate} and #{endDate}
+	and		t1.cmp01_advertise_note	like	#{advertiseNote}
+</select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys03_company_menu">
+
+<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys03_CompanyMenuModel" >
+	<id  	column="sys03_company_menu_id"	property="companyMenuId"/>
+	<result column="sys03_company_id" 		property="companyId"/>
+	<result column="sys03_menu_id" 			property="menuId"/>
+	<result column="sys03_use_yn" 			property="useYn"/>
+	<result column="sys03_note" 			property="note"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	*
+	from 	sys03_company_menu
+	where 	sys03_company_menu_id = #{companyMenuId}
+</select>
+ 
+</mapper>
