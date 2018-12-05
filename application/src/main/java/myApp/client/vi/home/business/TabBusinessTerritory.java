@@ -53,5 +53,6 @@ public class TabBusinessTerritory extends ContentPanel {
 		gridVBox.add(totalHBar);
 
 		this.add(gridVBox);
+
 	}
 }
