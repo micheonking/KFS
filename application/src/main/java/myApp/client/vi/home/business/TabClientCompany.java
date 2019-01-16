@@ -49,7 +49,5 @@ public class TabClientCompany extends ContentPanel {
 		gridVBox.add(totalHBar);
 
 		this.add(gridVBox);
-		
-
 	}
 }
