@@ -46,12 +46,12 @@ public class TabAboutUsGroup extends ContentPanel {
 
 		HTML mapImage = new HTML("<div><img src='img/wbhtGroup.jpg' width='686' height='470'></div>"); //조직도
 		
-		Image lineBar0 = new Image(ResourceIcon.INSTANCE.lineBar());
+//		Image lineBar0 = new Image(ResourceIcon.INSTANCE.lineBar());
 		gridVBox.add(lineBar0,new BoxLayoutData(new Margins(0, 0, 0, 0)));
 
 			HBoxLayoutContainer totalHBar = new HBoxLayoutContainer();
 			totalHBar.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
-			totalHBar.add(content, new BoxLayoutData(new Margins(20, 0, 5, 45)));
+//			totalHBar.add(content, new BoxLayoutData(new Margins(20, 0, 5, 45)));
 
 			gridVBox.add(MainFramePage.FuncTextContents("회사연혁"));
 			gridVBox.add(lineBar0,new BoxLayoutData(new Margins(0, 0, 0, 40)));
