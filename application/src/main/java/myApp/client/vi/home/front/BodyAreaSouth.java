@@ -13,14 +13,12 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 
-import myApp.client.vi.bbs.Bbs02_Tab_Board;
-import myApp.client.vi.bbs.Bbs02_Tab_News;
 import myApp.client.vi.home.MainFramePage;
 
 public class BodyAreaSouth extends BorderLayoutContainer {
 	
-	private Bbs02_Tab_Board west = new Bbs02_Tab_Board();
-	private Bbs02_Tab_News east = new Bbs02_Tab_News();
+//	private Bbs02_Tab_Board west = new Bbs02_Tab_Board();
+//	private Bbs02_Tab_News east = new Bbs02_Tab_News();
 
 	public BodyAreaSouth() {
 
@@ -65,8 +63,8 @@ public class BodyAreaSouth extends BorderLayoutContainer {
 
 		HorizontalLayoutContainer row01 = new HorizontalLayoutContainer();
 		row01.add(new LabelToolItem(""), rowLayout2);
-		row01.add(west, rowLayout2);
-		row01.add(east, rowLayout2);
+//		row01.add(west, rowLayout2);
+//		row01.add(east, rowLayout2);
 		row01.add(new LabelToolItem(""), rowLayout2);
 
 		VerticalLayoutContainer layoutContainer = new VerticalLayoutContainer();

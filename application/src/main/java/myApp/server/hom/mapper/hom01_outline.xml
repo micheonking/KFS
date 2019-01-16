@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hom01_outline">
+
+<resultMap 	id="mapper" type="myApp.client.vi.hom.company.model.Hom01_OutlineModel" >
+	<id		column="hom01_outline_id"				property="outlineId"/>
+	<result	column="hom01_company_id"				property="companyId"/>
+	<result	column="hom01_regist_dt"				property="registDt"/>
+	<result	column="hom01_paid_in_capital"			property="paidInCapital"/>
+	<result	column="hom01_owners_equity"			property="ownersEquity"/>
+	<result	column="hom01_contract_asset_size"		property="contractAssetSize"/>
+	<result	column="hom01_professional_personnel"	property="professionalPersonnel"/>
+	<result	column="hom01_main_business"			property="mainBusiness"/>
+	<result	column="hom01_ceo_name"					property="ceoName"/>
+	<result	column="hom01_constitute_stockholder"	property="constituteStockholder"/>
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	hom01_outline
+	where	hom01_outline_id	=	#{outlineId}
+</select>
+
+<select id="selectByMaxDate" resultMap="mapper" parameterType="Long" >
+	select	*
+	from	hom01_outline
+	where	hom01_outline_id = (select max(hom01_outline_id) from hom01_outline where hom01_company_id = #{companyId})
+</select>
+
+</mapper>

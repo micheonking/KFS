@@ -29,7 +29,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.FocusEvent;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 
-import myApp.client.kfsEntryPoint;
+import myApp.client.wbhtEntryPoint;
 import myApp.client.resource.ResourceIcon;
 
 public class MainFrame extends BorderLayoutContainer {

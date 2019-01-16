@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cst03_icam_accounts">
+
+<resultMap type="myApp.client.vi.cst.model.IcamAccModel" id="mapper">
+	<id     column="cst03_mg_id"		property="mgId"/>
+	<result column="cst03_mg_cd"    	property="mgCode"/>
+	<result column="cst03_mg_cd_nm"    	property="mgCodeName"/>
+	<result column="cst03_fund_cd"    	property="fundCode"/>
+</resultMap>
+
+<select id="selectByMgCombo" resultMap="mapper" parameterType="Long">
+	select distinct to_number(mg_cd) as cst03_mg_id 
+	     , mg_cd as cst03_mg_cd
+	 	 , mg_cd_nm||decode(mg_cd,'00028','(구)') as cst03_mg_cd_nm
+	     , mg_cd as cst03_fund_cd
+	  from cst03_icam_accounts
+</select>
+
+<select id="getFundCode" resultType="String" parameterType="HashMap">
+	select fund_cd
+	  from cst03_icam_accounts
+	 where mg_cd  = #{mgCode}
+	   and acc_no = #{accNo}
+	   and haeji_ymd is not null
+</select>
+
+</mapper>

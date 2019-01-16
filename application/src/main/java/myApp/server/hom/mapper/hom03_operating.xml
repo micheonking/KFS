@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="hom03_operating">
+
+<resultMap 	id="mapper" type="myApp.client.vi.hom.company.model.Hom03_OperatingModel" >
+	<id		column="hom03_operating_id"		    property="operatingId"/>
+	<result	column="hom03_company_id"		    property="companyId"/>
+	<result	column="hom03_org_code_id"      	property="orgCodeId"/>
+	<result	column="hom03_name_title"       	property="nameTitle"/>
+	<result	column="hom03_charge_stock_firm"	property="chargeStockFirm"/>
+	<result	column="hom03_major_career"         property="majorCareer"/>
+	<result	column="hom03_academic_certificate"	property="academicCertificate"/>
+	<result	column="hom03_contact_infomation"	property="contactInfomation"/>
+	<result	column="hom03_numerical_order"	    property="numericalOrder"/>
+	<result	column="hom03_org_name"	    		property="orgName"/>
+	<result	column="hom03_charge_stock_firm_cnt"	property="chargeStockFirmCnt"/>
+	<result	column="hom03_charge_stock_firm_max"	property="chargeStockFirmMax"/>
+</resultMap>
+	
+<select id="selectById" resultMap="mapper" parameterType="Long">	
+	select	*
+	from	hom03_operating
+	where	hom03_operating_id	=	#{operatingId}
+</select>
+	
+<select id="selectByOrgCode" resultMap="mapper" parameterType="Long">
+select	z.*
+	,	max(hom03_charge_stock_firm_cnt) over(PARTITION BY hom03_charge_stock_firm) as hom03_charge_stock_firm_max
+from	(
+	select	a.*
+		,	case when hom03_org_code_id = 1000000 then 'CEO' else f_org_nm(hom03_org_code_id,sysdate) end	as	hom03_org_name
+		,	count(hom03_charge_stock_firm) over(PARTITION BY hom03_charge_stock_firm order   by  hom03_numerical_order desc) hom03_charge_stock_firm_cnt
+	from	hom03_operating a
+	where   hom03_org_code_id = #{orgCodeId}
+    order   by  hom03_numerical_order
+	) z
+order   by  hom03_numerical_order
+</select>
+
+<select id="selectByComanyId" resultType="Long" parameterType="HashMap">
+	select	distinct hom03_org_code_id 
+	from	hom03_operating
+	order	by	hom03_org_code_id
+</select>
+
+<select id="selectByOrgCode1" resultMap="mapper" parameterType="String">
+	select	a.*
+		,	case when hom03_org_code_id = 1000000 then 'CEO' else f_org_nm(hom03_org_code_id,sysdate) end	as	hom03_org_name
+	from	hom03_operating a
+	where   hom03_org_code_id = #{companyName}
+    order   by  hom03_numerical_order
+</select>
+
+<select id="selectByOperating" resultType="String" parameterType="HashMap">
+	select	distinct hom03_org_code_id 
+	from	hom03_operating
+	where	hom03_company_id = #{companyId}
+	order	by	hom03_org_code_id
+</select>
+
+</mapper>

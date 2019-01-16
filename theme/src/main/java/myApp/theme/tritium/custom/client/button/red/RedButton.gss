@@ -1,0 +1,50 @@
+
+@def GRADIENT #ef5350;					/* 빨간색	*/
+@def BACKGROUND_COLOR #ef5350;			/* 빨간색	*/
+@def BORDER_COLOR #ef5350;				/* 빨간색	*/
+
+/* Over Color */
+@def OVER_BACKGROUND_COLOR #ef5350;		/* 빨간색	*/
+@def PRESSED_BACKGROUND_COLOR #ef5350;	/* 빨간색	*/
+
+
+/* Pressed Color */
+@def PRESSED_BACKGROUND_COLOR #ff867c;	/* 옅은빨간색	*/
+@def PRESSED_GRADIENT #ff867c;			/* 옅은빨간색	*/
+
+
+/* Focused Color */
+@def OVER_BACKGROUND_COLOR #b61827;		/* 짙은빨간색	*/
+@def OVER_GRADIENT #b61827;				/* 짙은빨간색	*/
+
+
+.button {
+  border-color: BORDER_COLOR;
+  background: BACKGROUND_COLOR;
+  /* @alternate */ background: -webkit-linear-gradient(top, GRADIENT);
+  /* @alternate */ background: -ms-linear-gradient(top, GRADIENT);
+  /* @alternate */ background: linear-gradient(to bottom, GRADIENT);
+}
+
+
+/* classes have been copied from super gss */
+.over {
+  background: OVER_BACKGROUND_COLOR;
+  /* @alternate */ background: -webkit-linear-gradient(top, OVER_GRADIENT);
+  /* @alternate */ background: -ms-linear-gradient(top, OVER_GRADIENT);
+  /* @alternate */ background: linear-gradient(to bottom, OVER_GRADIENT);
+}
+
+.pressed {
+  background: PRESSED_BACKGROUND_COLOR !important;
+  /* @alternate */ background: -webkit-linear-gradient(top, PRESSED_GRADIENT) !important;
+  /* @alternate */ background: -ms-linear-gradient(top, PRESSED_GRADIENT) !important;
+  /* @alternate */ background: linear-gradient(to bottom, PRESSED_GRADIENT) !important;
+}
+
+.focused {
+  background: OVER_BACKGROUND_COLOR;
+  /* @alternate */ background: -webkit-linear-gradient(top, OVER_GRADIENT);
+  /* @alternate */ background: -ms-linear-gradient(top, OVER_GRADIENT);
+  /* @alternate */ background: linear-gradient(to bottom, OVER_GRADIENT);
+}

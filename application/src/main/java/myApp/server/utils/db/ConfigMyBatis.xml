@@ -32,8 +32,8 @@
 
 <!-- 		<property name="url" value="jdbc:tibero:thin:@183.96.184.119:8629:HDB" />  -->
 <!--		<property name="url" value="jdbc:tibero:thin:@172.20.200.247:8629:HDB" />  -->
-			<property name="username" value="hiis" />
-			<property name="password" value="senchagxt" />
+			<property name="username" value="kfia" />
+			<property name="password" value="kfia8100" />
 		
 		</dataSource>
 	</environment>
@@ -42,6 +42,15 @@
 <mappers>
 	<!-- database 공통 처리 -->
 	<mapper resource="myApp/server/utils/db/mapper/DBConfig.xml"/>
+
+	<!-- database KFIA 처리 -->
+	<mapper resource="myApp/server/cst/mapper/cst01_user.xml"/>
+	<mapper resource="myApp/server/cst/mapper/cst02_account.xml"/>
+	<mapper resource="myApp/server/cst/mapper/cst03_icam_acc.xml"/>
+	<mapper resource="myApp/server/hom/mapper/hom01_outline.xml"/>
+	<mapper resource="myApp/server/hom/mapper/hom02_board.xml"/>
+	<mapper resource="myApp/server/hom/mapper/hom03_operating.xml"/>
+	<mapper resource="myApp/server/cst/mapper/cst99_user.xml"/> 
 	
 	<!-- Report 업무단 처리  -->
 	<mapper resource="myApp/server/rpt/mapper/rpt01_DailyAccount.xml"/>
@@ -99,7 +108,6 @@
 	<mapper resource="myApp/server/dcr/mapper/dcr10_mail_history.xml"/>
 	
 	<mapper resource="myApp/server/bbs/mapper/bbs01_board.xml"/>
-	<mapper resource="myApp/server/bbs/mapper/bbs02_board.xml"/>
 
 	<mapper resource="myApp/server/opr/mapper/opr01_create.xml"/>
 	<mapper resource="myApp/server/opr/mapper/opr02_fund.xml"/>

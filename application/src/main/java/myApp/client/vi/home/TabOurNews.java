@@ -17,15 +17,15 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 
 import myApp.client.resource.ResourceIcon;
-import myApp.client.vi.home.news.TabNews;
-import myApp.client.vi.home.news.TabNotification;
+//import myApp.client.vi.home.news.TabNews;
+//import myApp.client.vi.home.news.TabNotification;
 import myApp.client.vi.home.news.TabOfficialNotice;
 
 public class TabOurNews extends BorderLayoutContainer {
 
-	private TabNotification tabNotification  = new TabNotification();
+//	private TabNotification tabNotification  = new TabNotification();
 	private TabOfficialNotice tabOfficialNotice  = new TabOfficialNotice();
-	private TabNews tabNews  = new TabNews();
+//	private TabNews tabNews  = new TabNews();
 	
 	ContentPanel contentPanel  = new ContentPanel();
 
@@ -114,7 +114,7 @@ public class TabOurNews extends BorderLayoutContainer {
 		contentPanel.setBorders(false);
 		contentPanel.setWidth(800);
 		contentPanel.setHeight(1000);
-		contentPanel.setWidget(tabNotification);
+//		contentPanel.setWidget(tabNotification);
 
 		return contentPanel;
 	}
@@ -136,7 +136,7 @@ public class TabOurNews extends BorderLayoutContainer {
 		contentPanel.setBorders(false);
 		contentPanel.setWidth(800);
 		contentPanel.setHeight(1000);
-		contentPanel.setWidget(tabNews);
+//		contentPanel.setWidget(tabNews);
 
 		return contentPanel;
 	}

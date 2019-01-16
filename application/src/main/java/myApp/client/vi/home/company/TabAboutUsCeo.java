@@ -31,7 +31,7 @@ public class TabAboutUsCeo extends ContentPanel {
 		HBoxLayoutContainer gridHBox = new HBoxLayoutContainer();
 		gridHBox.setHBoxLayoutAlign(HBoxLayoutAlign.TOP);
 		
-		HTML ceoimage = new HTML("<div><img src='img/ceoKFS.jpg' width='190' height='266'></div>"); //인물사진
+		HTML ceoimage = new HTML("<div><img src='img/ceoWBHT.jpg' width='190' height='266'></div>"); //인물사진
 
 		VBoxLayoutContainer leftVBox = new VBoxLayoutContainer();
 		leftVBox.setVBoxLayoutAlign(VBoxLayoutAlign.LEFT);

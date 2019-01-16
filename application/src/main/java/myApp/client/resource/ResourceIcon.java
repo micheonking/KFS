@@ -15,11 +15,17 @@ public interface ResourceIcon extends ClientBundle {
 
 	public static final ResourceIcon INSTANCE = GWT.create(ResourceIcon.class);
 	  
+	  @Source("files/KFIALogo.png")
+	  ImageResource getLogo();
+
+	  @Source("files/KFSLogo.png")
+	  ImageResource getKFSLogo();
+
+	  @Source("files/WBHTLogo.png")
+	  ImageResource getWBHTLogo();
+
 	  @Source("files/logout.png")
 	  ImageResource getLogout();
-
-	  @Source("files/_Logo.png")
-	  ImageResource getLogo();
 
 	  @Source("files/gearIcon.png")
 	  ImageResource gearIcon();
@@ -51,6 +57,9 @@ public interface ResourceIcon extends ClientBundle {
 	  @Source("files/closeFolder.png")
 	  ImageResource closeFolder();
 	  
+	  @Source("files/closeButton.png")
+	  ImageResource closeButton();
+	  
 	  @Source("files/icon_left.png")
 	  ImageResource iconLeft();
 	  
@@ -66,12 +75,67 @@ public interface ResourceIcon extends ClientBundle {
 	  @Source("files/verticalBar.png")
 	  ImageResource verticalBar();
 	  
+	  @Source("files/verticalTitle.png")
+	  ImageResource verticalTitle();
+	  
+	  @Source("files/horizontalTitle.png")
+	  ImageResource horizontalTitle();
+	  
+	  @Source("files/verticalLine.png")
+	  ImageResource verticalLine();
+	  
 	  @Source("files/lineBar.png")
 	  ImageResource lineBar();
 	  
-	  @Source("files/visual.gif")
-	  ImageResource mainVisual();
-
 	  @Source("files/blank.png")
 	  ImageResource blank();
+	  
+	  @Source("files/borderBox.png")
+	  ImageResource borderBox();
+	  
+	  @Source("files/close.png")
+	  ImageResource close();
+	  
+	  @Source("files/xmlButton.png")
+	  ImageResource xmlButton();
+	  
+	  @Source("files/xmlButton16.png")
+	  ImageResource xml16Button();
+	  
+	  @Source("files/search16Btn.png")
+	  ImageResource search16Button();
+
+	  @Source("files/delete16Btn.png")
+	  ImageResource delete16Button();
+
+	  @Source("files/save16Btn.png")
+	  ImageResource save16Button();
+
+	  @Source("files/insert16Btn.png")
+	  ImageResource insert16Button();
+
+	  @Source("files/update16Btn.png")
+	  ImageResource update16Button();
+
+	  @Source("files/trash16Btn.png")
+	  ImageResource trash16Button();
+
+	  @Source("files/eraser16Btn.png")
+	  ImageResource eraser16Button();
+
+	  @Source("files/close16Btn.png")
+	  ImageResource close16Button();
+
+	  @Source("files/close24Btn.png")
+	  ImageResource close24Button();
+
+	  @Source("files/tabs24Btn.png")
+	  ImageResource tabs24Button();
+
+	  @Source("files/select16Btn.png")
+	  ImageResource select16Button();
+
+	  @Source("files/cancel16Btn.png")
+	  ImageResource cancel16Button();
+
 }

@@ -20,8 +20,8 @@ import myApp.client.grid.GridBuilder;
 import myApp.client.grid.InterfaceGridOperate;
 import myApp.client.resource.ResourceIcon;
 import myApp.client.service.GridRetrieveData;
-import myApp.client.vi.bbs.model.Bbs02_BoardModel;
-import myApp.client.vi.bbs.model.Bbs02_BoardModelProperties;
+import myApp.client.vi.hom.model.Hom02_BoardModel;
+import myApp.client.vi.hom.model.Hom02_BoardModelProperties;
 import myApp.client.vi.home.company.TabAboutUsCeo;
 import myApp.client.vi.home.company.TabAboutUsCompany;
 import myApp.client.vi.home.company.TabAboutUsGroup;
@@ -30,9 +30,9 @@ import myApp.client.vi.home.company.TabAboutUsMap;
 
 public class TabOurCompany extends BorderLayoutContainer implements InterfaceGridOperate {
 
-	Bbs02_BoardModelProperties properties = GWT.create(Bbs02_BoardModelProperties.class);
+	Hom02_BoardModelProperties properties = GWT.create(Hom02_BoardModelProperties.class);
 
-	private Grid<Bbs02_BoardModel> grid = this.buildGrid();
+	private Grid<Hom02_BoardModel> grid = this.buildGrid();
 
 	private TabAboutUsCeo tabAboutUsCeo  = new TabAboutUsCeo();
 	private TabAboutUsCompany tabAboutUsCompany  = new TabAboutUsCompany();
@@ -247,12 +247,12 @@ public class TabOurCompany extends BorderLayoutContainer implements InterfaceGri
 		return contentPanel;
 	}
 
-	public Grid<Bbs02_BoardModel> buildGrid() {
-		GridBuilder<Bbs02_BoardModel> gridBuilder = new GridBuilder<Bbs02_BoardModel>(properties.keyId());
+	public Grid<Hom02_BoardModel> buildGrid() {
+		GridBuilder<Hom02_BoardModel> gridBuilder = new GridBuilder<Hom02_BoardModel>(properties.keyId());
 //		gridBuilder.setChecked(SelectionMode.SINGLE);
 
 		gridBuilder.addText(properties.titleName(), 500, "제목");
-		gridBuilder.addDate(properties.setdate(), 110, "작성일");
+		gridBuilder.addDate(properties.settleDate(), 110, "작성일");
 		gridBuilder.addLong(properties.cnt(), 50, "조회수");
 
 //		gridBuilder.setMenuDisable(true);
@@ -262,10 +262,10 @@ public class TabOurCompany extends BorderLayoutContainer implements InterfaceGri
 
 	@Override
 	public void retrieve() {
-		GridRetrieveData<Bbs02_BoardModel> service = new GridRetrieveData<Bbs02_BoardModel>(grid.getStore());
+		GridRetrieveData<Hom02_BoardModel> service = new GridRetrieveData<Hom02_BoardModel>(grid.getStore());
 		service.addParam("typeCode", "notice");
 		service.addParam("setCount", (long)1000);
-		service.retrieve("bbs.Bbs02_Board.selectByTypeCode");
+		service.retrieve("bbs.Hom02_Board.selectByTypeCode");
 	}
 
 	@Override

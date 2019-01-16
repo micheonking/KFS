@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="hom02_board">
+
+<resultMap 	id="mapper" type="myApp.client.vi.hom.model.Hom02_BoardModel" >
+	<id		column="hom02_board_id"			property="boardId"/>
+	<result	column="hom02_type_cd"			property="typeCode"/>
+	<result	column="hom02_title_nm"			property="titleName"/>
+	<result	column="hom02_settle_dt"		property="settleDate"/>
+	<result	column="hom02_cnt"				property="cnt"/>
+	<result	column="hom02_file_name"		property="fileName"/>
+	<result	column="hom02_file_path"		property="filePath"/>
+	<result	column="hom02_writer"			property="writer"/>
+	<result	column="hom02_contents"			property="contents"/>
+
+</resultMap>
+
+<select id="selectById" resultMap="mapper" parameterType="Long" > 
+	select 	a.*
+	from 	hom02_board
+	where	hom02_board_id = #{boardId}
+</select>
+
+<select id="selectByTypeCode" resultMap="mapper" parameterType="HashMap">
+select	*
+from	(
+	select 	a.*
+	from 	hom02_board a
+	where	hom02_type_cd like #{typeCode}
+	and		hom02_title_nm like #{titleName}
+	order by hom02_settle_dt desc
+)	where	rownum	<![CDATA[<=]]>    #{setCount}
+</select>
+
+<select id="selectByTypeCode2" resultMap="mapper" parameterType="HashMap">
+select	*
+from	(
+	select 	a.*
+	from 	hom02_board a
+	where	hom02_type_cd like #{typeCode}
+	order by hom02_settle_dt desc
+)	where	rownum	<![CDATA[<=]]>    #{setCount}
+</select>
+
+</mapper>
