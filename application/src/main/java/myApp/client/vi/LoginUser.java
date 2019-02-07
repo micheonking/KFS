@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 
+import myApp.client.vi.cst.model.Cst01_UserModel;
 import myApp.client.vi.emp.model.Emp00_InfoModel;
 import myApp.client.vi.sys.model.Sys02_UserModel;
 
@@ -14,6 +15,7 @@ public class LoginUser {
 	
 	public static Sys02_UserModel userModel = new Sys02_UserModel(); // admin user 
 	public static Emp00_InfoModel empModel = new Emp00_InfoModel(); 
+	public static Cst01_UserModel cstUserModel = new Cst01_UserModel(); 
 
 	public static Boolean isAdmin = false ; 
 	public static Boolean isManager = false ; 
@@ -44,6 +46,10 @@ public class LoginUser {
 		empModel = empModel2; 
 	}
 
+	public static void setCstUserModel(Cst01_UserModel cstUserModel2) {
+		cstUserModel = cstUserModel2; 
+	}
+
  	public static long getCompanyId() {
  		
  		if(isAdmin) {
@@ -51,6 +57,9 @@ public class LoginUser {
  		} 
  		else if(empModel.getEmpId() != null ) {
  			return empModel.getCompanyId() ; 
+ 		}
+ 		else if(cstUserModel.getCompanyId() != null) {
+ 			return cstUserModel.getCompanyId();	
  		}
  		else if(userModel.getCompanyId() != null) {
  			return userModel.getCompanyId();	
@@ -68,6 +77,9 @@ public class LoginUser {
  		else if(isManager) { // 회사관리자. 
  			return userModel.getUserId();
  		} 
+ 		else if(cstUserModel.getUserId() != null) {
+ 			return cstUserModel.getUserId();	
+ 		}
  		else if(empModel.getEmpId() != null) { // 일반사용자. 
  				return empModel.getEmpId() ; 
  		}
@@ -80,10 +92,17 @@ public class LoginUser {
  		if(empModel.getEmpId() != null ) {
  			return empModel.getKorName() ;  
  		}
+ 		else if(cstUserModel.getUserId() != null) {
+ 			return cstUserModel.getUserName();	
+ 		}
  		else {
  			return userModel.getKorName(); 	
  		}
 	}
+ 	
+ 	public static Cst01_UserModel getCstUserModel() {
+ 		return cstUserModel; 
+ 	}
  	
  	public static Emp00_InfoModel getEmpModel() {
  		return empModel; 

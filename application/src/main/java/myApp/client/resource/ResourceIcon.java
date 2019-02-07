@@ -21,9 +21,6 @@ public interface ResourceIcon extends ClientBundle {
 	  @Source("files/KFSLogo.png")
 	  ImageResource getKFSLogo();
 
-	  @Source("files/WBHTLogo.png")
-	  ImageResource getWBHTLogo();
-
 	  @Source("files/logout.png")
 	  ImageResource getLogout();
 

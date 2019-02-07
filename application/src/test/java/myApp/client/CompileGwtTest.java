@@ -5,7 +5,7 @@ import com.google.gwt.junit.client.GWTTestCase;
 public class CompileGwtTest extends GWTTestCase {
   @Override
   public String getModuleName() {
-    return "myApp.WBHT";
+    return "myApp.KFS";
   }
 
   public void testSandbox() {

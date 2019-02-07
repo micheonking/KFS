@@ -126,7 +126,7 @@ public class StartPage extends BorderLayoutContainer {
 
 	public static HorizontalLayoutContainer getLabelToolItem(String textHtml) {
 		// TODO Auto-generated constructor stub
-		SafeHtml labelHtml = SafeHtmlUtils.fromTrustedString("<left><font color='#909090' font-family='arial' style='font-size:24px;font-weight:bold;'>"+ textHtml +"</font>");
+		SafeHtml labelHtml = SafeHtmlUtils.fromTrustedString("<left><font color='#909090' style='font-family:NanumGothic;font-size:2.1em;font-weight:bold;'>"+ textHtml +"</font>");
 		LabelToolItem labelToolItem = new LabelToolItem(labelHtml);
 //		labelToolItem.setSize("200", "130");
 //		labelToolItem.setLayoutData(new Margins(200, 0, 0, 0));
@@ -143,7 +143,7 @@ public class StartPage extends BorderLayoutContainer {
 		return hlc;
 	}
 	public static HBoxLayoutContainer getTextContents(String textHtml) {
-		SafeHtml labelHtml = SafeHtmlUtils.fromTrustedString("<left><font color='#015ca3' font-family='arial' style='font-size:24px;font-weight:bold;'>"+ textHtml +"</font>");
+		SafeHtml labelHtml = SafeHtmlUtils.fromTrustedString("<left><font color='#015ca3' style='font-family:NanumGothic;font-size:2.1em;font-weight:bold;'>"+ textHtml + "</font>");
 		LabelToolItem labelToolItem = new LabelToolItem(labelHtml);
 		
 		HBoxLayoutContainer hblc = new HBoxLayoutContainer();

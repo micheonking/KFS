@@ -40,7 +40,7 @@ public class StartPageHeader extends BorderLayoutContainer {
 //		Image lineImage3 = new Image(ResourceIcon.INSTANCE.horizontalTitle());
 
 		// 홈페이지 상단 회사로고 style='border-bottom: 5px solid orange;' 
-		SafeHtml logoHtml = SafeHtmlUtils.fromTrustedString("<left><div><img src='img/_WBHTLogo.png' width='154' height='44'></img></div>");
+		SafeHtml logoHtml = SafeHtmlUtils.fromTrustedString("<left><div><img src='img/_KFSLogo.png' width='154' height='44'></img></div>");
 		
 	    TextButton logoButton = new TextButton(new TextButtonCell(new WhiteButtonCellAppearance<>()));
 //		logoButton.setIconAlign(IconAlign.TOP);
@@ -146,10 +146,10 @@ public class StartPageHeader extends BorderLayoutContainer {
 		});
 
 		center.add(header);
-		center.add(borderBox, new BoxLayoutData(new Margins(0, 0, 0, 0)));
+//		center.add(borderBox, new BoxLayoutData(new Margins(0, 0, 0, 0)));
 		
 		ContentPanel cp = new ContentPanel();
-		cp.setBodyStyle("backgroundColor:white; color:red"); // http://www.w3schools.com/colors/colors_names.asp 페이지 참조
+		cp.setBodyStyle("backgroundColor:#ffffff; color:#000000; border-bottom:4px solid #ffa500;"); // http://www.w3schools.com/colors/colors_names.asp 페이지 참조
 
 		cp.add(center);
 		

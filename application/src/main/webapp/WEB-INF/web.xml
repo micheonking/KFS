@@ -6,7 +6,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>serviceBroker</servlet-name>
-    <url-pattern>/wbht/serviceBroker</url-pattern>
+    <url-pattern>/kfs/serviceBroker</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>HTMLCeo</servlet-name>
@@ -121,6 +121,6 @@
     <url-pattern>/Calendar</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
-    <welcome-file>WBHT.html</welcome-file>
+    <welcome-file>KFS.html</welcome-file>
   </welcome-file-list>
 </web-app>

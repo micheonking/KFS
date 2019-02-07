@@ -44,7 +44,7 @@ public class TabAboutUsGroup extends ContentPanel {
 			Image lineBar0 = new Image(ResourceIcon.INSTANCE.lineBar());
 			gridVBox.add(lineBar0,new BoxLayoutData(new Margins(0, 0, 0, 0)));
 
-		HTML mapImage = new HTML("<div><img src='img/wbhtGroup.jpg' width='686' height='470'></div>"); //조직도
+		HTML mapImage = new HTML("<div><img src='img/kfsGroup.jpg' width='686' height='470'></div>"); //조직도
 		
 //		Image lineBar0 = new Image(ResourceIcon.INSTANCE.lineBar());
 		gridVBox.add(lineBar0,new BoxLayoutData(new Margins(0, 0, 0, 0)));

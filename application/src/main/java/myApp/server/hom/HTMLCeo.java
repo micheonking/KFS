@@ -90,7 +90,7 @@ public class HTMLCeo implements javax.servlet.Servlet {
 //		}
 
 
-		String ceoimage = "<div><img src='img/_WBHTCeo.jpg' width='190' height='266'></div>";
+		String ceoimage = "<div><img src='img/_KFSCeo.jpg' width='190' height='266'></div>";
 
 		String content = "<font color='#606060' >"
 				+	"<span style=\"font-weight:bold;font-size:1.2em;\">안녕하세요!</span><br>"

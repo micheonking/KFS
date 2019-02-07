@@ -7,7 +7,7 @@ import myApp.client.vi.ContactPointer;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class wbhtEntryPoint implements EntryPoint {
+public class kfsEntryPoint implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {

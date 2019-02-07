@@ -17,8 +17,8 @@ public class CoverPageHeader extends ContentPanel {
 		headerVBox.setVBoxLayoutAlign(VBoxLayoutAlign.CENTER);
 
 //		BorderLayoutData northLayoutData = new BorderLayoutData(10);
-		HTML image = new HTML("<center><div> <img src='img/WBHTVisual.gif' style='border-bottom: 5px solid orange; ' width='"+ WIDTH +"' height='"+ HEIGHT +"'></div>");
-//		HTML image = new HTML("<center><div> <img src='img/WBHTVisual.gif' width='"+ WIDTH +"' height='"+ HEIGHT +"'></div>");
+		HTML image = new HTML("<center><div> <img src='img/KFSVisual.gif' style='border-bottom: 1px solid orange; ' width='"+ WIDTH +"' height='"+ HEIGHT +"'></div>");
+//		HTML image = new HTML("<center><div> <img src='img/KFSVisual.gif' width='"+ WIDTH +"' height='"+ HEIGHT +"'></div>");
 //		this.setNorthWidget(image, northLayoutData);
 		headerVBox.add(image , new BoxLayoutData(new Margins(0,0,0,0)));
 		this.add(headerVBox);
