@@ -25,21 +25,21 @@ import myApp.client.service.InterfaceCallback;
 import myApp.client.service.TreeGridDelete;
 import myApp.client.service.TreeGridUpdate;
 import myApp.client.utils.InterfaceCallbackResult;
-import myApp.client.vi.sys.model.Sys06_MenuModel;
+import myApp.client.vi.sys.model.Sys03_MenuModel;
 
-public class Sys06_Edit_Menu extends Window implements Editor<Sys06_MenuModel>{
+public class Sys06_Edit_Menu extends Window implements Editor<Sys03_MenuModel>{
 
-	interface EditDriver extends SimpleBeanEditorDriver<Sys06_MenuModel, Sys06_Edit_Menu> {}
+	interface EditDriver extends SimpleBeanEditorDriver<Sys03_MenuModel, Sys06_Edit_Menu> {}
 	EditDriver editDriver = GWT.create(EditDriver.class);
 	
-	TreeGrid<Sys06_MenuModel> treeGrid ; 
+	TreeGrid<Sys03_MenuModel> treeGrid ; 
 	TextField menuName 	= new TextField(); // 메뉴명
 	TextField className	= new TextField(); // 클래스명 
 	TextField seq 		= new TextField(); // 정렬순서 
 	CheckBox useYnFlag 	= new CheckBox(); // 메뉴감추기 
 	TextArea note 		= new TextArea(); // 비고 
 
-	public void editMenu(TreeGrid<Sys06_MenuModel> treeGrid, Sys06_MenuModel menuModel) {
+	public void editMenu(TreeGrid<Sys03_MenuModel> treeGrid, Sys03_MenuModel menuModel) {
 		
 		this.setHeading("메뉴 편집");
 		this.setBorders(false);
@@ -70,7 +70,7 @@ public class Sys06_Edit_Menu extends Window implements Editor<Sys06_MenuModel>{
 	
 	
 	private void update(){
-		TreeGridUpdate<Sys06_MenuModel> service = new TreeGridUpdate<Sys06_MenuModel>(); 
+		TreeGridUpdate<Sys03_MenuModel> service = new TreeGridUpdate<Sys03_MenuModel>(); 
 		service.update(this.treeGrid.getTreeStore(), editDriver.flush(), "sys.Sys06_Menu.update", new InterfaceCallbackResult() {
 			@Override
 			public void execute(Object result) {
@@ -80,8 +80,8 @@ public class Sys06_Edit_Menu extends Window implements Editor<Sys06_MenuModel>{
 	}
 	
 	private void delete(){
-		TreeGridDelete<Sys06_MenuModel> service = new TreeGridDelete<Sys06_MenuModel>();
-		List<Sys06_MenuModel> checkedList = treeGrid.getSelectionModel().getSelectedItems() ; 
+		TreeGridDelete<Sys03_MenuModel> service = new TreeGridDelete<Sys03_MenuModel>();
+		List<Sys03_MenuModel> checkedList = treeGrid.getSelectionModel().getSelectedItems() ; 
 		service.delete(treeGrid.getTreeStore(), checkedList, "sys.Sys06_Menu.delete", new InterfaceCallback() {
 			@Override
 			public void execute() {

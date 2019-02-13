@@ -99,7 +99,7 @@ public class Sys09_Grid_Code extends VerticalLayoutContainer implements Interfac
 			}
 		}
 		else { // 시스템여부 아님. 
-			this.codeCompanyId = LoginUser.getCompanyId(); 
+//			this.codeCompanyId = LoginUser.getCompanyId(); 
 			if(LoginUser.getIsAdmin()) { // 일반사용자는 Edting이 가능하다. 
 				this.editable = false;
 			}
@@ -124,7 +124,7 @@ public class Sys09_Grid_Code extends VerticalLayoutContainer implements Interfac
 
 		// 초기값 설정. 
 		Sys09_CodeModel codeModel = new Sys09_CodeModel();
-		codeModel.setCompanyId(LoginUser.getCompanyId()); // admin's company id is 0
+//		codeModel.setCompanyId(LoginUser.getCompanyId()); // admin's company id is 0
 		codeModel.setCodeKindId(this.codeKindId);
 		codeModel.setApplyDate(new Date());
 		

@@ -113,7 +113,7 @@ public class ComboBoxField extends StringComboBox implements InterfaceServiceCal
 	
 	public void retrieve() {
 		ServiceRequest request = new ServiceRequest("sys.Sys09_Code.selectByCodeKind");
-		request.putLongParam("companyId", LoginUser.getCompanyId()); 
+		request.putStringParam("companyId", LoginUser.getCmpCode()); 
 		request.putStringParam("kindCode", this.kindCode);
 		request.putDateParam("applyDate", this.applyDate); // 기준일이 null이면 서버에서 오늘일자로 조회한다.
 		

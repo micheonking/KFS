@@ -17,11 +17,11 @@ import myApp.client.service.ServiceCall;
 import myApp.client.service.ServiceRequest;
 import myApp.client.service.ServiceResult;
 import myApp.client.utils.GridDataModel;
-import myApp.client.vi.sys.model.Sys06_MenuModel;
+import myApp.client.vi.sys.model.Sys03_MenuModel;
 
 public class MenuTree implements InterfaceServiceCall{
 	
-	private Tree<Sys06_MenuModel, String> menuTree; // = this.getMenuTree();  
+	private Tree<Sys03_MenuModel, String> menuTree; // = this.getMenuTree();  
 	public static TabPanel tabPanel;  
 	
 	public MenuTree(TabPanel tabPanel){
@@ -31,26 +31,26 @@ public class MenuTree implements InterfaceServiceCall{
 		this.retrieveByUserId();
 	} 
 
-	public Tree<Sys06_MenuModel, String> getMenuTree(){
+	public Tree<Sys03_MenuModel, String> getMenuTree(){
 		return this.menuTree; 
 	}
 	
-	private Tree<Sys06_MenuModel, String> buildMenuTree(){
+	private Tree<Sys03_MenuModel, String> buildMenuTree(){
 		
-		TreeStore<Sys06_MenuModel> menuTreeStore = new TreeStore<Sys06_MenuModel>(new ModelKeyProvider<Sys06_MenuModel> () {
+		TreeStore<Sys03_MenuModel> menuTreeStore = new TreeStore<Sys03_MenuModel>(new ModelKeyProvider<Sys03_MenuModel> () {
 			@Override
-			public String getKey(Sys06_MenuModel menuModel) {
+			public String getKey(Sys03_MenuModel menuModel) {
 				return menuModel.getMenuId() + "";
 			}
 		});
 		
-		ValueProvider<Sys06_MenuModel, String> treeMenuValueProvider = new ValueProvider<Sys06_MenuModel, String>() {
+		ValueProvider<Sys03_MenuModel, String> treeMenuValueProvider = new ValueProvider<Sys03_MenuModel, String>() {
 			@Override
-			public String getValue(Sys06_MenuModel menuModel) {
+			public String getValue(Sys03_MenuModel menuModel) {
 				return menuModel.getMenuName();
 			}
 			@Override
-			public void setValue(Sys06_MenuModel object, String value) {
+			public void setValue(Sys03_MenuModel object, String value) {
 			}
 			@Override
 			public String getPath() {
@@ -58,10 +58,10 @@ public class MenuTree implements InterfaceServiceCall{
 			}
 		} ; 
 
-		menuTree = new Tree<Sys06_MenuModel, String>(menuTreeStore, treeMenuValueProvider) {
+		menuTree = new Tree<Sys03_MenuModel, String>(menuTreeStore, treeMenuValueProvider) {
 			@Override
 			protected void onClick(Event event) { // onDoubleClick event도 있으나...
-				TreeNode<Sys06_MenuModel> node = findNode(event.getEventTarget().<Element> cast());
+				TreeNode<Sys03_MenuModel> node = findNode(event.getEventTarget().<Element> cast());
 
 				if(node == null) {
 					return; // 선택된 메뉴가 없다. 
@@ -83,30 +83,20 @@ public class MenuTree implements InterfaceServiceCall{
 		return menuTree; 
 	}
 	
-	
 	public void retrieveByUserId(){
-		if(LoginUser.getIsMansger()) {
-			ServiceRequest request = new ServiceRequest("sys.Sys06_Menu.selectByCompanyId");
-			request.putLongParam("companyId", LoginUser.getCompanyId());
-			
-			ServiceCall service = new ServiceCall();
-			service.execute(request, this);
-		}
-		else {
-			ServiceRequest request = new ServiceRequest("sys.Sys06_Menu.selectByUserId");
-			request.putLongParam("companyId", LoginUser.getCompanyId());
-			request.putLongParam("userId", LoginUser.getUserId());
-			ServiceCall service = new ServiceCall();
-			service.execute(request, this);
-		}
+		ServiceRequest request = new ServiceRequest("sys.Sys03_Menu.selectByUserId");
+		request.putStringParam("companyId", LoginUser.getCmpCode());
+		request.putStringParam("userId", LoginUser.getUsrInfoModel().getUsrNo());
+		ServiceCall service = new ServiceCall();
+		service.execute(request, this);
 	}
 
-	private void addChild(Sys06_MenuModel parentMenu) {
+	private void addChild(Sys03_MenuModel parentMenu) {
 		if(parentMenu.getChildList() != null){
 			List<GridDataModel> childList = parentMenu.getChildList();
 			
 			for(GridDataModel child : childList){
-				Sys06_MenuModel childObject = (Sys06_MenuModel)child;
+				Sys03_MenuModel childObject = (Sys03_MenuModel)child;
 				menuTree.getStore().add(parentMenu, childObject);
 				this.addChild(childObject);
 			}
@@ -123,7 +113,7 @@ public class MenuTree implements InterfaceServiceCall{
 			
 			for (GridDataModel dataModel: result.getResult()) {
 				// 서버에서 전체 트리를 한번에 가져온 후 트리를 구성한다.  
-				Sys06_MenuModel menuModel = (Sys06_MenuModel)dataModel;   
+				Sys03_MenuModel menuModel = (Sys03_MenuModel)dataModel;   
 				menuTree.getStore().add(menuModel);
 				this.addChild(menuModel); // child menu & object setting  
 			}

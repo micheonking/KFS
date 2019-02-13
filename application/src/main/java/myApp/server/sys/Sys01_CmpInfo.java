@@ -10,34 +10,33 @@ import myApp.client.utils.GridDataModel;
 import myApp.client.vi.sys.model.Sys01_CmpInfoModel;
 import myApp.server.utils.db.UpdateDataModel;
 
-public class File {
+public class Sys01_CmpInfo {
 
-	private String mapperName = "sys10_file"; 
-	
 	public void selectByAll(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-		List<GridDataModel> list = sqlSession.selectList(mapperName + ".selectByAll");
+		List<GridDataModel> list = sqlSession.selectList("sys01_cmpInfo.selectByAll");
 		result.setRetrieveResult(1, "select ok", list);
 	}
 
-	public void selectById(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-		Long fileId = request.getLongParam("fileId"); 
-		List<GridDataModel> list = sqlSession.selectList(mapperName + ".selectByParentId",  fileId);
+	public void selectByCmpName(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
+		String cmpName = "%" + request.getStringParam("cmpName") + "%";
+		List<GridDataModel> list = sqlSession.selectList("sys01_company.selectByCmpName",  cmpName);
 		result.setRetrieveResult(1, "select ok", list);
 	}
-
-	public void selectByParentId(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-		Long parentId = request.getLongParam("parentId"); 
-		List<GridDataModel> list = sqlSession.selectList(mapperName + ".selectByParentId",  parentId);
-		result.setRetrieveResult(1, "select ok", list);
+	
+	public void selectByMenuId(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
+		String sqlId = "sys01_cmpInfo.selectByMenuId"; 
+		List<GridDataModel> list = sqlSession.selectList(sqlId, request.getLongParam("menuId")) ;
+		result.setRetrieveResult(1, sqlId, list);
 	}
 	
 	public void update(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
 		UpdateDataModel<Sys01_CmpInfoModel> updateModel = new UpdateDataModel<Sys01_CmpInfoModel>(); 
-		updateModel.updateModel(sqlSession, request.getList(), mapperName, result);
+		updateModel.updateModel(sqlSession, request.getList(), "sys01_cmpInfo", result);
 	}
 
 	public void delete(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
 		UpdateDataModel<Sys01_CmpInfoModel> updateModel = new UpdateDataModel<Sys01_CmpInfoModel>(); 
-		updateModel.deleteModel(sqlSession, request.getList(), mapperName, result);
+		updateModel.deleteModel(sqlSession, request.getList(), "sys01_cmpInfo", result);
 	}
+
 }

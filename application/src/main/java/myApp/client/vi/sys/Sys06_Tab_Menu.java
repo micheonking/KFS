@@ -32,14 +32,14 @@ import myApp.client.service.ServiceRequest;
 import myApp.client.service.ServiceResult;
 import myApp.client.utils.GridDataModel;
 import myApp.client.utils.SimpleMessage;
-import myApp.client.vi.sys.model.Sys01_CompanyModel;
-import myApp.client.vi.sys.model.Sys01_CompanyModelProperties;
-import myApp.client.vi.sys.model.Sys06_MenuModel;
-import myApp.client.vi.sys.model.Sys06_MenuModelProperties;
+import myApp.client.vi.sys.model.Sys01_CmpInfoModel;
+import myApp.client.vi.sys.model.Sys01_CmpInfoModelProperties;
+import myApp.client.vi.sys.model.Sys03_MenuModel;
+import myApp.client.vi.sys.model.Sys03_MenuModelProperties;
 
 public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceServiceCall {
 	
-	private TreeGrid<Sys06_MenuModel> treeGrid = this.buildTreeGrid();
+	private TreeGrid<Sys03_MenuModel> treeGrid = this.buildTreeGrid();
 	private Sys01_Grid_CompanyMenu grid = new Sys01_Grid_CompanyMenu(); 
 	
 	public Sys06_Tab_Menu(){
@@ -85,10 +85,10 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 		westLayoutData.setMaxSize(1000);
 		this.setWestWidget(this.treeGrid, westLayoutData);
 		this.treeGrid.getTreeStore().setAutoCommit(true);
-		this.treeGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Sys06_MenuModel>() {
+		this.treeGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Sys03_MenuModel>() {
 			@Override
-			public void onSelectionChanged(SelectionChangedEvent<Sys06_MenuModel> event) {
-				Sys06_MenuModel data = event.getSource().getSelectedItem(); 
+			public void onSelectionChanged(SelectionChangedEvent<Sys03_MenuModel> event) {
+				Sys03_MenuModel data = event.getSource().getSelectedItem(); 
 				if(data != null) {
 					grid.retrieve(data.getMenuId()); 
 				}
@@ -99,10 +99,10 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 		retrieve();
 	}
 	
-	public TreeGrid<Sys06_MenuModel> buildTreeGrid(){
+	public TreeGrid<Sys03_MenuModel> buildTreeGrid(){
 		
-		Sys06_MenuModelProperties properties = GWT.create(Sys06_MenuModelProperties.class);
-		final GridBuilder<Sys06_MenuModel> gridBuilder = new GridBuilder<Sys06_MenuModel>(properties.keyId());  
+		Sys03_MenuModelProperties properties = GWT.create(Sys03_MenuModelProperties.class);
+		final GridBuilder<Sys03_MenuModel> gridBuilder = new GridBuilder<Sys03_MenuModel>(properties.keyId());  
 		gridBuilder.setChecked(SelectionMode.SINGLE);
 		
 		gridBuilder.addText(properties.menuName(), 250, "메뉴명"); //, new TextField());
@@ -125,10 +125,10 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 		gridBuilder.addCell(properties.moveCell(), 60, "이동", moveCell) ;
 
 		gridBuilder.addBoolean(properties.useYnFlag(), 40, "사용") ;
-		gridBuilder.addText(properties.seq(), 60, "순서"); //, new TextField()) ;
+		gridBuilder.addLong(properties.seq(), 60, "순서"); //, new TextField()) ;
 		gridBuilder.addText(properties.className(), 200, "클래스명"); //, new TextField()) ;
-		gridBuilder.addText(properties.note(),500, "상세설명"); //, new TextField());
-		gridBuilder.setSortInfo(properties.seq(), SortDir.ASC);
+		gridBuilder.addText(properties.rmk(),500, "상세설명"); //, new TextField());
+//		gridBuilder.setSortInfo(properties.seq(), SortDir.ASC);
 		
 		return gridBuilder.getTreeGrid(2);  
 	}
@@ -144,16 +144,16 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 	}
 	public void retrieve(){
 		// 서버에서 전체 트리를 한번에 가져온다.  
-		ServiceRequest request = new ServiceRequest("sys.Sys06_Menu.selectByAll");
+		ServiceRequest request = new ServiceRequest("sys.Sys03_Menu.selectByAll");
 		ServiceCall service = new ServiceCall();
 		service.execute(request, this);
 	}
 
-	private void setChildMenuItem(Sys06_MenuModel parentMenu) {
+	private void setChildMenuItem(Sys03_MenuModel parentMenu) {
 		if(parentMenu.getChildList() != null){
 			List<GridDataModel> childList = parentMenu.getChildList(); 
 			for(GridDataModel child : childList){
-				Sys06_MenuModel childObject = (Sys06_MenuModel)child;
+				Sys03_MenuModel childObject = (Sys03_MenuModel)child;
 				this.treeGrid.getTreeStore().add(parentMenu, childObject);
 				this.setChildMenuItem(childObject);
 			}
@@ -162,14 +162,14 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 	
 	private void insertMenu(Long parentId){
 
-		Sys06_MenuModel menuModel = new Sys06_MenuModel();
+		Sys03_MenuModel menuModel = new Sys03_MenuModel();
 		
 		DBUtil dbUtil = new DBUtil(); 
 		dbUtil.setSeq(menuModel, new InterfaceCallback() {
 			@Override
 			public void execute() {
-				menuModel.setParentId(parentId);
-				menuModel.setNote("insert menu");
+				menuModel.setPrntId(parentId);
+				menuModel.setRmk("insert menu");
 				Sys06_Edit_Menu editMenu = new Sys06_Edit_Menu(); 
 				editMenu.editMenu(treeGrid, menuModel);
 			}
@@ -177,7 +177,7 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 	}
 
 	private void insertChildMenu(){
-		Sys06_MenuModel parentModel = treeGrid.getSelectionModel().getSelectedItem(); // 선택된 Menu를 가져온다.
+		Sys03_MenuModel parentModel = treeGrid.getSelectionModel().getSelectedItem(); // 선택된 Menu를 가져온다.
 
 		if(parentModel == null){
 			new SimpleMessage("선택된 상위 메뉴가 없습니다. "); 
@@ -204,7 +204,7 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 			
 			for (GridDataModel model: result.getResult()) {
 				// 서버에서 전체 트리를 한번에 가져온 후 트리를 구성한다.  
-				Sys06_MenuModel roleObject = (Sys06_MenuModel)model;   
+				Sys03_MenuModel roleObject = (Sys03_MenuModel)model;   
 				this.treeGrid.getTreeStore().add(roleObject);
 				this.setChildMenuItem(roleObject); // child menu & object setting  
 			}

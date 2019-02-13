@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys01_cmpInfo">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys01_CmpInfoModel" >
+		<id     column="sys01_cmp_info_id"  property="cmpInfoId"/>
+		<result column="sys01_cmp_cd"       property="cmpCode"/>
+		<result column="sys01_cmp_nm"       property="cmpName"/>
+		<result column="sys01_biz_no"       property="bizNo"/>
+		<result column="sys01_tel_no"       property="telNo"/>
+		<result column="sys01_addr"         property="addr"/>
+		<result column="sys01_use_yn"       property="useYn"/>
+		<result column="sys01_tmp_pwd"      property="tmpPwd"/>
+		<result column="sys01_rmk"          property="rmk"/>
+		<result column="sys01_ins_usr_no"   property="insUsrNo"/>
+		<result column="sys01_ins_dt"       property="insDate"/>
+		<result column="sys01_upd_usr_no"   property="updUsrNo"/>
+		<result column="sys01_upd_dt"       property="updDate"/>
+		<result column="sys01_menu_yn"		property="menuYn"/>
+		
+		<association property="cmpMenuModel" 
+			javaType="myApp.client.vi.sys.model.Sys04_CmpMenuModel" 
+			resultMap="sys04_cmpMenu.mapper"
+		/>
+	</resultMap>
+
+	<select id="selectById" resultMap="mapper" parameterType="long" > 
+		select 	*
+		from 	sys01_cmp_info 
+		where	sys01_cmp_info_id = #{cmpId}
+	</select>
+
+	<select id="selectByAll" resultMap="mapper" > 
+		select 	*
+		from 	sys01_cmp_info 
+		order by sys01_cmp_nm
+	</select>
+
+	<select id="selectByCmpCode" resultMap="mapper" parameterType="String" > 
+		select 	*
+		from 	sys01_cmp_info 
+		where	sys01_cmp_cd = #{cmpCode}
+	</select>
+
+	<select id="selectByCmpName" resultMap="mapper" parameterType="String">
+		select 	*
+		from 	sys01_cmp_info  
+		where 	sys01_cmp_nm like #{cmpName}
+		order by sys01_cmp_nm
+	</select>
+
+	<select id="selectByMenuId" resultMap="mapper" parameterType="Long">
+		select 	sys01_cmp_info.*
+		     , 	sys04_cmp_menu.* 
+			 ,	case when sys04_cmp_menu_id is null then 'N' else 'Y' end sys01_menu_yn 
+		  from 	sys01_cmp_info
+			 ,	sys04_cmp_menu
+		 where 	sys01_cmp_cd = sys04_cmp_cd(+)
+		   and	sys04_menu_id(+) = #{menuId}
+		 order by sys01_cmp_nm
+	</select>
+
+</mapper>

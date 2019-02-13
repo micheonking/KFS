@@ -11,11 +11,10 @@ public class Sys00_Admin extends ContentPanel {
 		this.setHeading("시스템 관리자");
 		this.setBorders(true);
 		
-		
 		PlainTabPanel tabPanel = new PlainTabPanel();
 		
-		Sys01_Tab_Company tabCompany = new Sys01_Tab_Company();
-		tabPanel.add(tabCompany, "고객정보");
+		Sys01_Tab_CmpInfo tabCmpInfo = new Sys01_Tab_CmpInfo();
+		tabPanel.add(tabCmpInfo, "회사정보");
 
 		Sys06_Tab_Menu tabMenu = new Sys06_Tab_Menu();
 		tabPanel.add(tabMenu, "메뉴구성");
@@ -24,6 +23,5 @@ public class Sys00_Admin extends ContentPanel {
 		tabPanel.add(tabCode, "공통코드");
 		
 		this.add(tabPanel, new MarginData(3));
-		
 	}
 }

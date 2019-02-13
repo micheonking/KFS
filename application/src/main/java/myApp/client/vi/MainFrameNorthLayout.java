@@ -58,7 +58,7 @@ public class MainFrameNorthLayout extends BorderLayoutContainer {
 //		
 //		header.add(label, new BoxLayoutData(new Margins(14, 0, 0, 0)));
 		// String userInfo = LoginUser.getCompanyId() + " " + LoginUser.getUserName();	
-		String userInfo = LoginUser.getUserName() + " 님" ; ;
+		String userInfo = LoginUser.getUsrInfoModel().getUsrName() + " 님" ; ;
 		userInfo = "<p style='color:#808080; font-size:14px; font-weight:normal'>" + userInfo + "</p>" ; 
 		
 		SafeHtml safeEscapedHtml = SafeHtmlUtils.fromTrustedString(userInfo);

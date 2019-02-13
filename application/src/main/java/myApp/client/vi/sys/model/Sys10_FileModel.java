@@ -3,7 +3,6 @@ package myApp.client.vi.sys.model;
 import java.util.Date;
 
 import myApp.client.utils.GridDataModel;
-import myApp.client.vi.apr.model.Apr01_ApprModel;
 
 public class Sys10_FileModel implements GridDataModel {
 
@@ -18,7 +17,6 @@ public class Sys10_FileModel implements GridDataModel {
 	private String note;
 	private String ext;
 	private String titleYn;
-	private Apr01_ApprModel apprModel = new Apr01_ApprModel();
 
 	private String downloadCell;
 	private String deleteCell;
@@ -135,14 +133,6 @@ public class Sys10_FileModel implements GridDataModel {
 
 	public void setDeleteCell(String deleteCell) {
 		this.deleteCell = deleteCell;
-	}
-
-	public Apr01_ApprModel getApprModel() {
-		return apprModel;
-	}
-
-	public void setApprModel(Apr01_ApprModel apprModel) {
-		this.apprModel = apprModel;
 	}
 
 }

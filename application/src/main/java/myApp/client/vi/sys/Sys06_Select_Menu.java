@@ -23,30 +23,30 @@ import myApp.client.service.ServiceResult;
 import myApp.client.service.TreeGridUpdate;
 import myApp.client.utils.GridDataModel;
 import myApp.client.utils.InterfaceCallbackResult;
-import myApp.client.vi.sys.model.Sys06_MenuModel;
+import myApp.client.vi.sys.model.Sys03_MenuModel;
 
 public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 	
-	private TreeGrid<Sys06_MenuModel> treeGrid ; 
-	private Sys06_MenuModel menuModel, deleteModel; 
-	private Tree<Sys06_MenuModel, String> menuTree ; 
+	private TreeGrid<Sys03_MenuModel> treeGrid ; 
+	private Sys03_MenuModel menuModel, deleteModel; 
+	private Tree<Sys03_MenuModel, String> menuTree ; 
 	
-	private TreeStore<Sys06_MenuModel> treeStore = new TreeStore<Sys06_MenuModel>(new ModelKeyProvider<Sys06_MenuModel> () {
+	private TreeStore<Sys03_MenuModel> treeStore = new TreeStore<Sys03_MenuModel>(new ModelKeyProvider<Sys03_MenuModel> () {
 		@Override
-		public String getKey(Sys06_MenuModel menuModel) {
+		public String getKey(Sys03_MenuModel menuModel) {
 			return menuModel.getKeyId() + "";
 		}
 	});
 
-	private ValueProvider<Sys06_MenuModel, String> treeValueProvider = new ValueProvider<Sys06_MenuModel, String>() {
+	private ValueProvider<Sys03_MenuModel, String> treeValueProvider = new ValueProvider<Sys03_MenuModel, String>() {
 		
 		@Override
-		public String getValue(Sys06_MenuModel menu) {
+		public String getValue(Sys03_MenuModel menu) {
 			return menu.getMenuName();
 		}
 		
 		@Override
-		public void setValue(Sys06_MenuModel menu, String value) {
+		public void setValue(Sys03_MenuModel menu, String value) {
 		}
 		
 		@Override
@@ -55,16 +55,16 @@ public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 		}
 	} ;  
 
-	private Tree<Sys06_MenuModel, String> getMenuTree(){
+	private Tree<Sys03_MenuModel, String> getMenuTree(){
 
-		Tree<Sys06_MenuModel, String> tree = new Tree<Sys06_MenuModel, String>(treeStore, treeValueProvider) {
+		Tree<Sys03_MenuModel, String> tree = new Tree<Sys03_MenuModel, String>(treeStore, treeValueProvider) {
 		
 			@Override
 			protected void onClick(Event event) { 
 				super.onDoubleClick(event); // tree node를 one-click으로 열기위해 사용한다. 
 			}
 			
-			protected boolean hasChildren(Sys06_MenuModel model) {
+			protected boolean hasChildren(Sys03_MenuModel model) {
 				return super.hasChildren(model); 
 			}
 		};
@@ -72,7 +72,7 @@ public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 		return tree; 
 	}
 
-	public void open(TreeGrid<Sys06_MenuModel> treeGrid, Sys06_MenuModel menuModel) {
+	public void open(TreeGrid<Sys03_MenuModel> treeGrid, Sys03_MenuModel menuModel) {
 
 		this.treeGrid = treeGrid; 
 		this.menuModel = menuModel; 
@@ -122,18 +122,18 @@ public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 	
 	private void moveTree() {
 		
-		Sys06_MenuModel targetModel = menuTree.getSelectionModel().getSelectedItem() ; 
+		Sys03_MenuModel targetModel = menuTree.getSelectionModel().getSelectedItem() ; 
 		
 		if(targetModel != null) {
-			menuModel.setParentId(targetModel.getMenuId()); // parent Id를 변경한다. 	
+			menuModel.setPrntId(targetModel.getMenuId()); // parent Id를 변경한다. 	
 
-			TreeGridUpdate<Sys06_MenuModel> service = new TreeGridUpdate<Sys06_MenuModel>(); 
+			TreeGridUpdate<Sys03_MenuModel> service = new TreeGridUpdate<Sys03_MenuModel>(); 
 			service.update(this.treeGrid.getTreeStore(), menuModel, "sys.Sys06_Menu.update", new InterfaceCallbackResult() {
 				@Override
 				public void execute(Object result) {
 					
 					// 이전 tree에서 삭제하고 
-					Sys06_MenuModel parentModel = treeGrid.getTreeStore().getParent(deleteModel);
+					Sys03_MenuModel parentModel = treeGrid.getTreeStore().getParent(deleteModel);
 					treeGrid.getTreeStore().remove(deleteModel);
 					treeGrid.setExpanded(parentModel, false); // 2번 해주어야 한다. 
 					treeGrid.setExpanded(parentModel, true);
@@ -151,11 +151,11 @@ public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 		}
 	}
 	
-	private void addChild(Sys06_MenuModel parentMenu) {
+	private void addChild(Sys03_MenuModel parentMenu) {
 		if(parentMenu.getChildList() != null){
 			List<GridDataModel> childList = parentMenu.getChildList(); 
 			for(GridDataModel child : childList){
-				Sys06_MenuModel childObject = (Sys06_MenuModel)child;
+				Sys03_MenuModel childObject = (Sys03_MenuModel)child;
 				menuTree.getStore().add(parentMenu, childObject);
 				this.addChild(childObject);
 			}
@@ -171,7 +171,7 @@ public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 			menuTree.getStore().clear(); // 깨끗이 비운다. 
 			for (GridDataModel model: result.getResult()) {
 				// 서버에서 전체 트리를 한번에 가져온 후 트리를 구성한다.  
-				Sys06_MenuModel menuModel = (Sys06_MenuModel)model;   
+				Sys03_MenuModel menuModel = (Sys03_MenuModel)model;   
 				menuTree.getStore().add(menuModel);
 				this.addChild(menuModel); // child menu & object setting  
 			}

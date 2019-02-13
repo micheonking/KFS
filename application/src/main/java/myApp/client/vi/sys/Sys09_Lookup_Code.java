@@ -97,7 +97,7 @@ public class Sys09_Lookup_Code extends Window {
 	private void retrieve() {
 		grid.mask("Loading");
 		GridRetrieveData<Sys09_CodeModel> service = new GridRetrieveData<Sys09_CodeModel>(grid.getStore());
-		service.addParam("companyId", LoginUser.getCompanyId());
+//		service.addParam("companyId", LoginUser.getCompanyId());
 		service.addParam("kindCode" , this.codeKind);
 		service.addParam("applyDate", LoginUser.getToday());
 		

@@ -7,7 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import myApp.client.service.ServiceRequest;
 import myApp.client.service.ServiceResult;
 import myApp.client.utils.GridDataModel;
-import myApp.client.vi.sys.model.Sys05_UserRoleModel;
+import myApp.client.vi.sys.model.Sys07_UsrRoleModel;
 import myApp.server.utils.db.UpdateDataModel;
 
 public class Sys05_UserRole { 
@@ -28,12 +28,12 @@ public class Sys05_UserRole {
 	}
 
 	public void update(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-		UpdateDataModel<Sys05_UserRoleModel> updateModel = new UpdateDataModel<Sys05_UserRoleModel>(); 
+		UpdateDataModel<Sys07_UsrRoleModel> updateModel = new UpdateDataModel<Sys07_UsrRoleModel>(); 
 		updateModel.updateModel(sqlSession, request.getList(), mapperName, result);
 	}
 	
 	public void delete(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-		UpdateDataModel<Sys05_UserRoleModel> updateModel = new UpdateDataModel<Sys05_UserRoleModel>(); 
+		UpdateDataModel<Sys07_UsrRoleModel> updateModel = new UpdateDataModel<Sys07_UsrRoleModel>(); 
 		updateModel.deleteModel(sqlSession, request.getList(), mapperName, result);
 	}
 }

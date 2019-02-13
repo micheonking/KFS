@@ -21,12 +21,12 @@ import myApp.client.service.TreeGridUpdate;
 import myApp.client.utils.GridDataModel;
 import myApp.client.utils.InterfaceCallbackResult;
 import myApp.client.vi.LoginUser;
-import myApp.client.vi.sys.model.Sys06_MenuModel;
-import myApp.client.vi.sys.model.Sys06_MenuModelProperties;
+import myApp.client.vi.sys.model.Sys03_MenuModel;
+import myApp.client.vi.sys.model.Sys03_MenuModelProperties;
 
 public class Sys07_Tree_RoleMenu extends ContentPanel implements InterfaceServiceCall {
 	
-	private TreeGrid<Sys06_MenuModel> treeGrid = this.buildTreeGrid();
+	private TreeGrid<Sys03_MenuModel> treeGrid = this.buildTreeGrid();
 	private Long roleId;
 
 	public Sys07_Tree_RoleMenu(){
@@ -76,18 +76,18 @@ public class Sys07_Tree_RoleMenu extends ContentPanel implements InterfaceServic
 		this.setButtonAlign(BoxLayoutPack.CENTER);
 	}
 
-	public TreeGrid<Sys06_MenuModel> buildTreeGrid(){
+	public TreeGrid<Sys03_MenuModel> buildTreeGrid(){
 		
-		Sys06_MenuModelProperties properties = GWT.create(Sys06_MenuModelProperties.class);
-		final GridBuilder<Sys06_MenuModel> gridBuilder = new GridBuilder<Sys06_MenuModel>(properties.keyId());  
+		Sys03_MenuModelProperties properties = GWT.create(Sys03_MenuModelProperties.class);
+		final GridBuilder<Sys03_MenuModel> gridBuilder = new GridBuilder<Sys03_MenuModel>(properties.keyId());  
 
 		gridBuilder.addText(properties.menuName(), 300, "메뉴명"); //, new TextField());
-		gridBuilder.addBoolean(properties.roleMenuYn(), 40, "권한") ;
-		gridBuilder.addText(properties.seq(), 80, "조회순서"); //, new TextField()) ;
-		gridBuilder.addText(properties.note(),500, "상세설명"); //, new TextField());
+//		gridBuilder.addBoolean(properties.roleMenuYn(), 40, "권한") ;
+		gridBuilder.addLong(properties.seq(), 80, "조회순서"); //, new TextField()) ;
+		gridBuilder.addText(properties.rmk(),500, "상세설명"); //, new TextField());
 	
 		// sort setting 
-		gridBuilder.setSortInfo(properties.seq(), SortDir.ASC);
+//		gridBuilder.setSortInfo(properties.seq(), SortDir.ASC);
 		
 		return gridBuilder.getTreeGrid(1);  
 	}
@@ -102,20 +102,20 @@ public class Sys07_Tree_RoleMenu extends ContentPanel implements InterfaceServic
 		
 		// 서버에서 전체 트리를 한번에 가져온다.  
 		ServiceRequest request = new ServiceRequest("sys.Sys06_Menu.selectByRoleId");
-		request.putLongParam("companyId", LoginUser.getCompanyId());
+//		request.putLongParam("companyId", LoginUser.getCompanyId());
 		request.putLongParam("roleId", roleId);
 		ServiceCall service = new ServiceCall();
 		service.execute(request, this);
 	}
 
-	private void setChildItem(Sys06_MenuModel parentMenu) {
+	private void setChildItem(Sys03_MenuModel parentMenu) {
 
 		if(parentMenu.getChildList() != null){
 
 			List<GridDataModel> childList = parentMenu.getChildList();
 			
 			for(GridDataModel dataModel : childList){
-				Sys06_MenuModel childMenu = (Sys06_MenuModel)dataModel;
+				Sys03_MenuModel childMenu = (Sys03_MenuModel)dataModel;
 				this.treeGrid.getTreeStore().add(parentMenu, childMenu);
 				this.setChildItem(childMenu);
 			}
@@ -123,15 +123,15 @@ public class Sys07_Tree_RoleMenu extends ContentPanel implements InterfaceServic
 	}
 	
 	private void update(){
-		TreeGridUpdate<Sys06_MenuModel> service = new TreeGridUpdate<Sys06_MenuModel>();
+		TreeGridUpdate<Sys03_MenuModel> service = new TreeGridUpdate<Sys03_MenuModel>();
 		service.addParam("roleId", this.roleId);
-		service.update(treeGrid.getTreeStore(), "sys.Sys06_Menu.updateRoleMenu", new InterfaceCallbackResult() {
+		service.update(treeGrid.getTreeStore(), "sys.Sys03_Menu.updateRoleMenu", new InterfaceCallbackResult() {
 			@Override
 			public void execute(Object result) {
 				@SuppressWarnings("unchecked")
 				List<GridDataModel> list = (List<GridDataModel>)result; 
 				for(GridDataModel data : list) {
-					Sys06_MenuModel updateData = (Sys06_MenuModel)data;
+					Sys03_MenuModel updateData = (Sys03_MenuModel)data;
 					
 					/* TreeGrid의 자기 아이템을 찾아서 다시 넣는다. 
 					 * 이유는 알수 없다. 
@@ -154,7 +154,7 @@ public class Sys07_Tree_RoleMenu extends ContentPanel implements InterfaceServic
 			
 			for (GridDataModel model: result.getResult()) {
 				// 서버에서 전체 트리를 한번에 가져온 후 트리를 구성한다.  
-				Sys06_MenuModel roleObject = (Sys06_MenuModel)model;
+				Sys03_MenuModel roleObject = (Sys03_MenuModel)model;
 				this.treeGrid.getTreeStore().add(roleObject);
 				this.setChildItem(roleObject); // child menu & object setting  
 			}

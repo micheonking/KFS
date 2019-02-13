@@ -18,13 +18,13 @@ import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import myApp.client.resource.ResourceIcon;
-import myApp.client.vi.sys.model.Sys06_MenuModel;
+import myApp.client.vi.sys.model.Sys03_MenuModel;
 
-public class Sys06_Edit_Menu2 extends Window implements Editor<Sys06_MenuModel> {
+public class Sys06_Edit_Menu2 extends Window implements Editor<Sys03_MenuModel> {
 
-	interface EditDriver extends SimpleBeanEditorDriver<Sys06_MenuModel, Sys06_Edit_Menu2> {}
+	interface EditDriver extends SimpleBeanEditorDriver<Sys03_MenuModel, Sys06_Edit_Menu2> {}
 	EditDriver editDriver = GWT.create(EditDriver.class);
-	Sys06_MenuModel menuModel;
+	Sys03_MenuModel menuModel;
 	
 	Sys06_Tab_Menu tabMenu; 
 	
@@ -35,10 +35,10 @@ public class Sys06_Edit_Menu2 extends Window implements Editor<Sys06_MenuModel> 
 //	TextField hiddenYn 	= new TextField(); // 메뉴감추기 텍스트
 	TextArea note 		= new TextArea(); // 비고 
 	
-	public void editMenu(Sys06_MenuModel menuModel) {
+	public void editMenu(Sys03_MenuModel menuModel) {
 
 		if(menuModel == null) {
-			this.menuModel = new Sys06_MenuModel(); 
+			this.menuModel = new Sys03_MenuModel(); 
 		}
 		else { 
 			this.menuModel = menuModel; 

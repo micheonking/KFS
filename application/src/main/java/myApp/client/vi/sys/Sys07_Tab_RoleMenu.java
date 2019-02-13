@@ -14,13 +14,13 @@ import myApp.client.grid.InterfaceGridOperate;
 import myApp.client.grid.SearchBarBuilder;
 import myApp.client.service.GridRetrieveData;
 import myApp.client.vi.LoginUser;
-import myApp.client.vi.sys.model.Sys04_RoleModel;
-import myApp.client.vi.sys.model.Sys04_RoleModelProperties;
+import myApp.client.vi.sys.model.Sys05_RoleModel;
+import myApp.client.vi.sys.model.Sys05_RoleModelProperties;
 
 public class Sys07_Tab_RoleMenu extends BorderLayoutContainer implements InterfaceGridOperate {
 	
 	private TextField roleName = new TextField();	
-	private Grid<Sys04_RoleModel> roleGrid = this.buildGrid();
+	private Grid<Sys05_RoleModel> roleGrid = this.buildGrid();
 	private Sys07_Tree_RoleMenu roleMenuTree = new Sys07_Tree_RoleMenu();
 	
 	public Sys07_Tab_RoleMenu() {
@@ -46,10 +46,10 @@ public class Sys07_Tab_RoleMenu extends BorderLayoutContainer implements Interfa
 		this.setWestWidget(this.roleGrid, westLayoutData);
 //		this.setWestWidget(roleContainer, westLayoutData);
 
-		this.roleGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Sys04_RoleModel>(){
+		this.roleGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Sys05_RoleModel>(){
 			@Override
-			public void onSelectionChanged(SelectionChangedEvent<Sys04_RoleModel> event) {
-				Sys04_RoleModel role = roleGrid.getSelectionModel().getSelectedItem();   
+			public void onSelectionChanged(SelectionChangedEvent<Sys05_RoleModel> event) {
+				Sys05_RoleModel role = roleGrid.getSelectionModel().getSelectedItem();   
 				roleMenuTree.retrieve(role.getRoleId());
 			} 
 		}); 
@@ -59,25 +59,25 @@ public class Sys07_Tab_RoleMenu extends BorderLayoutContainer implements Interfa
 		this.retrieve();
 	}
 	
-	public Grid<Sys04_RoleModel> buildGrid(){
+	public Grid<Sys05_RoleModel> buildGrid(){
 		
-		Sys04_RoleModelProperties properties = GWT.create(Sys04_RoleModelProperties.class);	
-		GridBuilder<Sys04_RoleModel> gridBuilder = new GridBuilder<Sys04_RoleModel>(properties.keyId());  
+		Sys05_RoleModelProperties properties = GWT.create(Sys05_RoleModelProperties.class);	
+		GridBuilder<Sys05_RoleModel> gridBuilder = new GridBuilder<Sys05_RoleModel>(properties.keyId());  
 		
 		gridBuilder.setChecked(SelectionMode.SINGLE);
 		gridBuilder.addText(properties.roleName(), 150, "권한명"); //, new TextField());
-		gridBuilder.addText(properties.seq(), 40, "순서"); //, new TextField()) ;
-		gridBuilder.addText(properties.note(), 500, "상세설명"); //, new TextField());
+		gridBuilder.addLong(properties.seq(), 40, "순서"); //, new TextField()) ;
+		gridBuilder.addText(properties.rmk(), 500, "상세설명"); //, new TextField());
 		return gridBuilder.getGrid(); 
 	}
 	
 	@Override
 	public void retrieve() {
-		GridRetrieveData<Sys04_RoleModel> service = new GridRetrieveData<Sys04_RoleModel>(roleGrid.getStore());
+		GridRetrieveData<Sys05_RoleModel> service = new GridRetrieveData<Sys05_RoleModel>(roleGrid.getStore());
 		String name = this.roleName.getText();  
 		service.addParam("roleName", "%" + name + "%");
-		service.addParam("companyId", LoginUser.getCompanyId());
-		service.retrieve("sys.Sys04_Role.selectByName");
+//		service.addParam("companyId", LoginUser.getCompanyId());
+		service.retrieve("sys.Sys05_Role.selectByName");
 	}
 
 	@Override

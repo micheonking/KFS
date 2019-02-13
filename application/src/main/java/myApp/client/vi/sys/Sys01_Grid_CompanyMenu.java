@@ -12,14 +12,14 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 import myApp.client.grid.GridBuilder;
 import myApp.client.service.GridRetrieveData;
 import myApp.client.service.GridUpdate;
-import myApp.client.vi.sys.model.Sys01_CompanyModel;
-import myApp.client.vi.sys.model.Sys01_CompanyModelProperties;
+import myApp.client.vi.sys.model.Sys01_CmpInfoModel;
+import myApp.client.vi.sys.model.Sys01_CmpInfoModelProperties;
 
 public class Sys01_Grid_CompanyMenu extends ContentPanel {
 
 	private Long menuId; 
-	private Sys01_CompanyModelProperties properties = GWT.create(Sys01_CompanyModelProperties.class);
-	private Grid<Sys01_CompanyModel> grid = this.buildGrid();
+	private Sys01_CmpInfoModelProperties properties = GWT.create(Sys01_CmpInfoModelProperties.class);
+	private Grid<Sys01_CmpInfoModel> grid = this.buildGrid();
 		
 	public Sys01_Grid_CompanyMenu(){
 
@@ -31,8 +31,8 @@ public class Sys01_Grid_CompanyMenu extends ContentPanel {
 		selectAllButton.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
-				for(Sys01_CompanyModel data : grid.getStore().getAll()) {
-					grid.getStore().getRecord(data).addChange(properties.menuYnChecked(), true);	
+				for(Sys01_CmpInfoModel data : grid.getStore().getAll()) {
+//					grid.getStore().getRecord(data).addChange(properties.menuYnChecked(), true);	
 				}
 			}
 		}); 
@@ -43,8 +43,8 @@ public class Sys01_Grid_CompanyMenu extends ContentPanel {
 		deSelectAllButton.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
-				for(Sys01_CompanyModel data : grid.getStore().getAll()) {
-					grid.getStore().getRecord(data).addChange(properties.menuYnChecked(), false);	
+				for(Sys01_CmpInfoModel data : grid.getStore().getAll()) {
+//					grid.getStore().getRecord(data).addChange(properties.menuYnChecked(), false);	
 				}
 			}
 		}); 
@@ -62,31 +62,30 @@ public class Sys01_Grid_CompanyMenu extends ContentPanel {
 		this.setButtonAlign(BoxLayoutPack.CENTER);
 	}
 	
-	private Grid<Sys01_CompanyModel> buildGrid(){
+	private Grid<Sys01_CmpInfoModel> buildGrid(){
 		
-		
-		GridBuilder<Sys01_CompanyModel> gridBuilder = new GridBuilder<Sys01_CompanyModel>(properties.keyId());  
+		GridBuilder<Sys01_CmpInfoModel> gridBuilder = new GridBuilder<Sys01_CmpInfoModel>(properties.keyId());  
 		gridBuilder.setChecked(SelectionMode.SINGLE);
 		
-		gridBuilder.addText(properties.companyName(), 200, "고객명", new TextField());
-		gridBuilder.addBoolean(properties.menuYnChecked(), 60, "등록");
+		gridBuilder.addText(properties.cmpName(), 200, "고객명", new TextField());
+//		gridBuilder.addBoolean(properties.menuYnChecked(), 60, "등록");
 		gridBuilder.addText(properties.bizNo(), 100, "사업자번호", new TextField());
-		gridBuilder.addText(properties.telNo01(), 100, "대표전화", new TextField());
-		gridBuilder.addText(properties.note(), 400, "상세설명", new TextField());;
+		gridBuilder.addText(properties.telNo(), 100, "대표전화", new TextField());
+		gridBuilder.addText(properties.rmk(), 400, "상세설명", new TextField());;
 	
 		return gridBuilder.getGrid(); 
 	}
 
 	public void retrieve(Long menuId){
 		this.menuId = menuId; 
-		GridRetrieveData<Sys01_CompanyModel> service = new GridRetrieveData<Sys01_CompanyModel>(grid.getStore()); 
+		GridRetrieveData<Sys01_CmpInfoModel> service = new GridRetrieveData<Sys01_CmpInfoModel>(grid.getStore()); 
 		service.addParam("menuId", this.menuId);
 		service.retrieve("sys.Sys01_Company.selectByMenuId");
 	}
 	
 	private void update() {
 		// 메뉴 사용여부를 Update한다. 
-		GridUpdate<Sys01_CompanyModel> service = new GridUpdate<Sys01_CompanyModel>();
+		GridUpdate<Sys01_CmpInfoModel> service = new GridUpdate<Sys01_CmpInfoModel>();
 		service.addParam("menuId", this.menuId);
 		service.update(this.grid.getStore(), "sys.Sys01_Company.updateByMenuYn"); 
 	}

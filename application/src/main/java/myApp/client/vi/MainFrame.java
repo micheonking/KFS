@@ -32,7 +32,6 @@ import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 
 import myApp.client.kfsEntryPoint;
 import myApp.client.resource.ResourceIcon;
-import myApp.client.vi.cst.Cst01_Tab_BaseInfo;
 
 public class MainFrame extends BorderLayoutContainer {
 
@@ -83,14 +82,14 @@ public class MainFrame extends BorderLayoutContainer {
 
 //		tabPanel.add(new TabBackGround(), ""); // my page setting
 //		tabPanel.add(new TabBorder(), "스케쥴"); // my page setting
-		switch (""+LoginUser.getCompanyId()) {
-		case "2062721" :
-			tabPanel.add(new Cst01_Tab_BaseInfo(), "기본정보");
-			break;
-		default :
+//		switch (""+LoginUser.getCompanyId()) {
+//		case "2062721" :
+//			tabPanel.add(new Cst01_Tab_BaseInfo(), "기본정보");
+//			break;
+//		default :
 			tabPanel.add(new TabBorder(), "스케쥴");
-			break;
-		}
+//			break;
+//		}
 
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer(); 
 		vlc.add(tabPanel, new VerticalLayoutData(1, 1, new Margins(2))); //, 2, 2, 2)));
@@ -119,7 +118,7 @@ public class MainFrame extends BorderLayoutContainer {
 		
 		header.add(new Label(), boxLayoutData);
 		 
-		String userInfo = LoginUser.getOrgKorName() + " " + LoginUser.getUserName() + " 님" ; ;
+		String userInfo = LoginUser.getUsrInfoModel().getDptInfoModel().getDptName() + " " + LoginUser.getUsrInfoModel().getUsrName() + " 님" ;
 		userInfo = "<p style='color:#666666; font-size:14px; font-weight:bold'>" +  userInfo + "</p>" ;  
 		
 		SafeHtml safeEscapedHtml = SafeHtmlUtils.fromTrustedString(userInfo);

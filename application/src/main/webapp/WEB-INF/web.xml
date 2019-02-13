@@ -8,78 +8,54 @@
     <servlet-name>serviceBroker</servlet-name>
     <url-pattern>/kfs/serviceBroker</url-pattern>
   </servlet-mapping>
-  <servlet>
-    <servlet-name>HTMLCeo</servlet-name>
-    <servlet-class>myApp.server.hom.HTMLCeo</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>HTMLCeo</servlet-name>
-    <url-pattern>/HTMLCeo</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>HTMLOutline</servlet-name>
-    <servlet-class>myApp.server.hom.HTMLOutline</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>HTMLOutline</servlet-name>
-    <url-pattern>/HTMLOutline</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>HTMLOperating</servlet-name>
-    <servlet-class>myApp.server.hom.HTMLOperating</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>HTMLOperating</servlet-name>
-    <url-pattern>/HTMLOperating</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>HTMLYourWay</servlet-name>
-    <servlet-class>myApp.server.hom.HTMLYourWay</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>HTMLYourWay</servlet-name>
-    <url-pattern>/HTMLYourWay</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>HTMLEntrustInvestment</servlet-name>
-    <servlet-class>myApp.server.hom.HTMLEntrustInvestment</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>HTMLEntrustInvestment</servlet-name>
-    <url-pattern>/HTMLEntrustInvestment</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>FundUpload</servlet-name>
-    <servlet-class>myApp.server.utils.file.FundUpload</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>FundUpload</servlet-name>
-    <url-pattern>/FundUpload</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>BizCodeUpload</servlet-name>
-    <servlet-class>myApp.server.utils.file.BizCodeUpload</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>BizCodeUpload</servlet-name>
-    <url-pattern>/BizCodeUpload</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>OfficeWorkUpload</servlet-name>
-    <servlet-class>myApp.server.utils.file.OfficeWorkUpload</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>OfficeWorkUpload</servlet-name>
-    <url-pattern>/OfficeWorkUpload</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>IssuingEntityUpload</servlet-name>
-    <servlet-class>myApp.server.utils.file.IssuingEntityUpload</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>IssuingEntityUpload</servlet-name>
-    <url-pattern>/IssuingEntityUpload</url-pattern>
-  </servlet-mapping>
+<!--   <servlet> -->
+<!--     <servlet-name>HTMLCeo</servlet-name> -->
+<!--     <servlet-class>myApp.server.hom.HTMLCeo</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>HTMLCeo</servlet-name> -->
+<!--     <url-pattern>/HTMLCeo</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>HTMLOutline</servlet-name> -->
+<!--     <servlet-class>myApp.server.hom.HTMLOutline</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>HTMLOutline</servlet-name> -->
+<!--     <url-pattern>/HTMLOutline</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>HTMLOperating</servlet-name> -->
+<!--     <servlet-class>myApp.server.hom.HTMLOperating</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>HTMLOperating</servlet-name> -->
+<!--     <url-pattern>/HTMLOperating</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>HTMLYourWay</servlet-name> -->
+<!--     <servlet-class>myApp.server.hom.HTMLYourWay</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>HTMLYourWay</servlet-name> -->
+<!--     <url-pattern>/HTMLYourWay</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>HTMLEntrustInvestment</servlet-name> -->
+<!--     <servlet-class>myApp.server.hom.HTMLEntrustInvestment</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>HTMLEntrustInvestment</servlet-name> -->
+<!--     <url-pattern>/HTMLEntrustInvestment</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>FundUpload</servlet-name> -->
+<!--     <servlet-class>myApp.server.utils.file.FundUpload</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>FundUpload</servlet-name> -->
+<!--     <url-pattern>/FundUpload</url-pattern> -->
+<!--   </servlet-mapping> -->
   <servlet>
     <servlet-name>FileUpload</servlet-name>
     <servlet-class>myApp.server.utils.file.FileUpload</servlet-class>
@@ -104,22 +80,22 @@
     <servlet-name>FileDelete</servlet-name>
     <url-pattern>/FileDelete</url-pattern>
   </servlet-mapping>
-  <servlet>
-    <servlet-name>PDFLoader</servlet-name>
-    <servlet-class>myApp.server.utils.pdf.PDFLoader</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>PDFLoader</servlet-name>
-    <url-pattern>/PDFLoader</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>Calendar</servlet-name>
-    <servlet-class>myApp.server.frm.Calendar</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Calendar</servlet-name>
-    <url-pattern>/Calendar</url-pattern>
-  </servlet-mapping>
+<!--   <servlet> -->
+<!--     <servlet-name>PDFLoader</servlet-name> -->
+<!--     <servlet-class>myApp.server.utils.pdf.PDFLoader</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>PDFLoader</servlet-name> -->
+<!--     <url-pattern>/PDFLoader</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>Calendar</servlet-name> -->
+<!--     <servlet-class>myApp.server.frm.Calendar</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>Calendar</servlet-name> -->
+<!--     <url-pattern>/Calendar</url-pattern> -->
+<!--   </servlet-mapping> -->
   <welcome-file-list>
     <welcome-file>KFS.html</welcome-file>
   </welcome-file-list>

@@ -3,7 +3,6 @@ package myApp.client.vi.sys.model;
 import java.util.Date;
 
 import myApp.client.utils.GridDataModel;
-import myApp.client.vi.emp.model.Emp09_MgrRuleModel;
 
 public class Sys09_CodeModel implements GridDataModel {
 	private Long codeId;
@@ -19,8 +18,6 @@ public class Sys09_CodeModel implements GridDataModel {
 
 	private String seq;
 	private String note;
-
-	private Emp09_MgrRuleModel mgrRuleModel = new Emp09_MgrRuleModel();
 
 	@Override
 	public void setKeyId(Long id) {
@@ -115,14 +112,6 @@ public class Sys09_CodeModel implements GridDataModel {
 
 	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
-	}
-
-	public Emp09_MgrRuleModel getMgrRuleModel() {
-		return mgrRuleModel;
-	}
-
-	public void setMgrRuleModel(Emp09_MgrRuleModel mgrRuleModel) {
-		this.mgrRuleModel = mgrRuleModel;
 	}
 
 }
