@@ -32,8 +32,9 @@ public class File {
 	}
 	
 	public void update(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
+		String usrNo = request.getStringParam("usrNo");
 		UpdateDataModel<Sys01_CmpInfoModel> updateModel = new UpdateDataModel<Sys01_CmpInfoModel>(); 
-		updateModel.updateModel(sqlSession, request.getList(), mapperName, result);
+		updateModel.updateModel(sqlSession, request.getList(), mapperName, usrNo, result);
 	}
 
 	public void delete(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {

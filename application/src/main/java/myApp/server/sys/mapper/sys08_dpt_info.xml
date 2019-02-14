@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys08_dpt_info">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys08_DptInfoModel" >
+		<id     column="sys08_dpt_info_id"  property="dptInfoId"/>
+		<result column="sys08_cmp_cd"       property="cmpCode"/>
+		<result column="sys08_dpt_cd"       property="dptCode"/>
+		<result column="sys08_dpt_nm"       property="dptName"/>
+		<result column="sys08_use_yn"       property="useYn"/>
+		<result column="sys08_rmk"          property="rmk"/>
+		<result column="sys08_ins_usr_no"   property="insUsrNo"/>
+		<result column="sys08_ins_dt"       property="insDate"/>
+		<result column="sys08_upd_usr_no"   property="updUsrNo"/>
+		<result column="sys08_upd_dt"       property="updDate"/>
+	</resultMap>
+
+	<select id="selectById" resultMap="mapper" parameterType="Long" > 
+		select 	*
+		from 	sys08_dpt_info
+		where 	sys08_dpt_info_id = #{dptInfoid}
+	</select>
+ 
+</mapper>

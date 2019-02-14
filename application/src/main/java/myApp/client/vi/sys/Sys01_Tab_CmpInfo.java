@@ -9,6 +9,7 @@ import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
@@ -20,6 +21,7 @@ import myApp.client.service.GridInsertRow;
 import myApp.client.service.GridRetrieveData;
 import myApp.client.service.GridUpdate;
 import myApp.client.utils.InterfaceCallbackResult;
+import myApp.client.vi.LoginUser;
 import myApp.client.vi.sys.model.Sys01_CmpInfoModel;
 import myApp.client.vi.sys.model.Sys01_CmpInfoModelProperties;
 
@@ -48,6 +50,7 @@ public class Sys01_Tab_CmpInfo extends BorderLayoutContainer implements Interfac
 		Sys01_CmpInfoModelProperties properties = GWT.create(Sys01_CmpInfoModelProperties.class);
 		GridBuilder<Sys01_CmpInfoModel> gridBuilder = new GridBuilder<Sys01_CmpInfoModel>(properties.keyId());  
 		gridBuilder.setChecked(SelectionMode.SINGLE);
+		gridBuilder.addText(properties.cmpCode(), 100, "회사코드", new TextField());
 		gridBuilder.addText(properties.cmpName(), 150, "회사명", new TextField());
 		gridBuilder.addText(properties.bizNo(), 120, "사업자번호", new TextField());
 		gridBuilder.addText(properties.telNo(), 100, "전화", new TextField());
@@ -66,8 +69,9 @@ public class Sys01_Tab_CmpInfo extends BorderLayoutContainer implements Interfac
 
 	@Override
 	public void update(){
-		GridUpdate<Sys01_CmpInfoModel> service = new GridUpdate<Sys01_CmpInfoModel>(); 
-		service.update(grid.getStore(), "sys.Sys01_Company.update"); 
+		GridUpdate<Sys01_CmpInfoModel> service = new GridUpdate<Sys01_CmpInfoModel>();
+		service.addParam("usrNo", LoginUser.getUsrNo());
+		service.update(grid.getStore(), "sys.Sys01_CmpInfo.update"); 
 	}
 	
 	@Override
@@ -80,6 +84,6 @@ public class Sys01_Tab_CmpInfo extends BorderLayoutContainer implements Interfac
 	public void deleteRow(){
 		GridDeleteData<Sys01_CmpInfoModel> service = new GridDeleteData<Sys01_CmpInfoModel>();
 		List<Sys01_CmpInfoModel> checkedList = grid.getSelectionModel().getSelectedItems() ; 
-		service.delete(grid.getStore(), checkedList, "sys.Sys01_Company.delete");
+		service.delete(grid.getStore(), checkedList, "sys.Sys01_CmpInfo.delete");
 	}
 }

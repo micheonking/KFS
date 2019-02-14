@@ -38,7 +38,29 @@ public class LoginUser {
  			return null; 
  		}
 	}
-	
+
+ 	public static String getUsrNo() {
+ 		if(isAdmin) {
+ 			return "ADMIN" ;  
+ 		} 
+ 		else {
+ 			return usrModel.getUsrNo(); 
+ 		}
+ 		// 		return usrModel.getUsrNo(); 
+	}
+
+ 	public static String getUsrName() {
+ 		return usrModel.getUsrName(); 
+	}
+
+ 	public static String getDptCode() {
+ 		return usrModel.getDptInfoModel().getDptCode(); 
+	}
+
+ 	public static String getDptName() {
+ 		return usrModel.getDptInfoModel().getDptName(); 
+	}
+
 	public static String getYear(){
 		return DateTimeFormat.getFormat( "yyyy" ).format( new Date()) ; 
 	}

@@ -56,30 +56,30 @@
 <!--     <servlet-name>FundUpload</servlet-name> -->
 <!--     <url-pattern>/FundUpload</url-pattern> -->
 <!--   </servlet-mapping> -->
-  <servlet>
-    <servlet-name>FileUpload</servlet-name>
-    <servlet-class>myApp.server.utils.file.FileUpload</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>FileUpload</servlet-name>
-    <url-pattern>/FileUpload</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>FileDownload</servlet-name>
-    <servlet-class>myApp.server.utils.file.FileDownload</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>FileDownload</servlet-name>
-    <url-pattern>/FileDownload</url-pattern>
-  </servlet-mapping>
-  <servlet>
-    <servlet-name>FileDelete</servlet-name>
-    <servlet-class>myApp.server.utils.file.FileDelete</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>FileDelete</servlet-name>
-    <url-pattern>/FileDelete</url-pattern>
-  </servlet-mapping>
+<!--   <servlet> -->
+<!--     <servlet-name>FileUpload</servlet-name> -->
+<!--     <servlet-class>myApp.server.utils.file.FileUpload</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>FileUpload</servlet-name> -->
+<!--     <url-pattern>/FileUpload</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>FileDownload</servlet-name> -->
+<!--     <servlet-class>myApp.server.utils.file.FileDownload</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>FileDownload</servlet-name> -->
+<!--     <url-pattern>/FileDownload</url-pattern> -->
+<!--   </servlet-mapping> -->
+<!--   <servlet> -->
+<!--     <servlet-name>FileDelete</servlet-name> -->
+<!--     <servlet-class>myApp.server.utils.file.FileDelete</servlet-class> -->
+<!--   </servlet> -->
+<!--   <servlet-mapping> -->
+<!--     <servlet-name>FileDelete</servlet-name> -->
+<!--     <url-pattern>/FileDelete</url-pattern> -->
+<!--   </servlet-mapping> -->
 <!--   <servlet> -->
 <!--     <servlet-name>PDFLoader</servlet-name> -->
 <!--     <servlet-class>myApp.server.utils.pdf.PDFLoader</servlet-class> -->

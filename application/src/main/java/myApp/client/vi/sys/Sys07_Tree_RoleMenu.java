@@ -26,138 +26,138 @@ import myApp.client.vi.sys.model.Sys03_MenuModelProperties;
 
 public class Sys07_Tree_RoleMenu extends ContentPanel implements InterfaceServiceCall {
 	
-	private TreeGrid<Sys03_MenuModel> treeGrid = this.buildTreeGrid();
-	private Long roleId;
+//	private TreeGrid<Sys03_MenuModel> treeGrid = this.buildTreeGrid();
+//	private Long roleId;
 
 	public Sys07_Tree_RoleMenu(){
 
-		this.setHeaderVisible(false);
-		this.add(this.treeGrid);
-		
-		TextButton refreshButton = new TextButton("조회");
-		refreshButton.setWidth(60);
-		refreshButton.addSelectHandler(new SelectHandler(){
-			@Override
-			public void onSelect(SelectEvent event) {
-				 refresh(); 
-			}
-		}); 
-		this.getButtonBar().add(refreshButton);
-		
-		TextButton expandAll = new TextButton("펼치기"); 
-		expandAll.setWidth(60);
-		expandAll.addSelectHandler(new SelectHandler(){
-			@Override
-			public void onSelect(SelectEvent event) {
-				treeGrid.expandAll();
-			}
-		}); 
-		this.getButtonBar().add(expandAll);
-		
-		TextButton collapseAll = new TextButton("감추기");
-		collapseAll.setWidth(60);
-		collapseAll.addSelectHandler(new SelectHandler(){
-			@Override
-			public void onSelect(SelectEvent event) {
-				treeGrid.collapseAll();
-			}
-		}); 
-		this.getButtonBar().add(collapseAll);
-		
-		TextButton updateButton = new TextButton("저장");
-		updateButton.setWidth(60);
-		updateButton.addSelectHandler(new SelectHandler(){
-			@Override
-			public void onSelect(SelectEvent event) {
-				update();  
-			}
-		}); 
-		this.getButtonBar().add(updateButton);
-		this.setButtonAlign(BoxLayoutPack.CENTER);
+//		this.setHeaderVisible(false);
+//		this.add(this.treeGrid);
+//		
+//		TextButton refreshButton = new TextButton("조회");
+//		refreshButton.setWidth(60);
+//		refreshButton.addSelectHandler(new SelectHandler(){
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				 refresh(); 
+//			}
+//		}); 
+//		this.getButtonBar().add(refreshButton);
+//		
+//		TextButton expandAll = new TextButton("펼치기"); 
+//		expandAll.setWidth(60);
+//		expandAll.addSelectHandler(new SelectHandler(){
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				treeGrid.expandAll();
+//			}
+//		}); 
+//		this.getButtonBar().add(expandAll);
+//		
+//		TextButton collapseAll = new TextButton("감추기");
+//		collapseAll.setWidth(60);
+//		collapseAll.addSelectHandler(new SelectHandler(){
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				treeGrid.collapseAll();
+//			}
+//		}); 
+//		this.getButtonBar().add(collapseAll);
+//		
+//		TextButton updateButton = new TextButton("저장");
+//		updateButton.setWidth(60);
+//		updateButton.addSelectHandler(new SelectHandler(){
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				update();  
+//			}
+//		}); 
+//		this.getButtonBar().add(updateButton);
+//		this.setButtonAlign(BoxLayoutPack.CENTER);
 	}
 
-	public TreeGrid<Sys03_MenuModel> buildTreeGrid(){
+//	public TreeGrid<Sys03_MenuModel> buildTreeGrid(){
 		
-		Sys03_MenuModelProperties properties = GWT.create(Sys03_MenuModelProperties.class);
-		final GridBuilder<Sys03_MenuModel> gridBuilder = new GridBuilder<Sys03_MenuModel>(properties.keyId());  
-
-		gridBuilder.addText(properties.menuName(), 300, "메뉴명"); //, new TextField());
-//		gridBuilder.addBoolean(properties.roleMenuYn(), 40, "권한") ;
-		gridBuilder.addLong(properties.seq(), 80, "조회순서"); //, new TextField()) ;
-		gridBuilder.addText(properties.rmk(),500, "상세설명"); //, new TextField());
-	
-		// sort setting 
-//		gridBuilder.setSortInfo(properties.seq(), SortDir.ASC);
+//		Sys03_MenuModelProperties properties = GWT.create(Sys03_MenuModelProperties.class);
+//		final GridBuilder<Sys03_MenuModel> gridBuilder = new GridBuilder<Sys03_MenuModel>(properties.keyId());  
+//
+//		gridBuilder.addText(properties.menuName(), 300, "메뉴명"); //, new TextField());
+////		gridBuilder.addBoolean(properties.roleMenuYn(), 40, "권한") ;
+//		gridBuilder.addLong(properties.seq(), 80, "조회순서"); //, new TextField()) ;
+//		gridBuilder.addText(properties.rmk(),500, "상세설명"); //, new TextField());
+//	
+//		// sort setting 
+////		gridBuilder.setSortInfo(properties.seq(), SortDir.ASC);
 		
-		return gridBuilder.getTreeGrid(1);  
-	}
+//		return gridBuilder.getTreeGrid(1);  
+//	}
 	public void refresh(){
-		if(this.roleId != null){
-			retrieve(this.roleId);
-		}
+//		if(this.roleId != null){
+//			retrieve(this.roleId);
+//		}
 	}
 	
 	public void retrieve(Long roleId){
-		this.roleId = roleId;
-		
-		// 서버에서 전체 트리를 한번에 가져온다.  
-		ServiceRequest request = new ServiceRequest("sys.Sys06_Menu.selectByRoleId");
-//		request.putLongParam("companyId", LoginUser.getCompanyId());
-		request.putLongParam("roleId", roleId);
-		ServiceCall service = new ServiceCall();
-		service.execute(request, this);
+//		this.roleId = roleId;
+//		
+//		// 서버에서 전체 트리를 한번에 가져온다.  
+//		ServiceRequest request = new ServiceRequest("sys.Sys06_Menu.selectByRoleId");
+////		request.putLongParam("companyId", LoginUser.getCompanyId());
+//		request.putLongParam("roleId", roleId);
+//		ServiceCall service = new ServiceCall();
+//		service.execute(request, this);
 	}
 
 	private void setChildItem(Sys03_MenuModel parentMenu) {
 
-		if(parentMenu.getChildList() != null){
-
-			List<GridDataModel> childList = parentMenu.getChildList();
-			
-			for(GridDataModel dataModel : childList){
-				Sys03_MenuModel childMenu = (Sys03_MenuModel)dataModel;
-				this.treeGrid.getTreeStore().add(parentMenu, childMenu);
-				this.setChildItem(childMenu);
-			}
-		}
+//		if(parentMenu.getChildList() != null){
+//
+//			List<GridDataModel> childList = parentMenu.getChildList();
+//			
+//			for(GridDataModel dataModel : childList){
+//				Sys03_MenuModel childMenu = (Sys03_MenuModel)dataModel;
+//				this.treeGrid.getTreeStore().add(parentMenu, childMenu);
+//				this.setChildItem(childMenu);
+//			}
+//		}
 	}
 	
 	private void update(){
-		TreeGridUpdate<Sys03_MenuModel> service = new TreeGridUpdate<Sys03_MenuModel>();
-		service.addParam("roleId", this.roleId);
-		service.update(treeGrid.getTreeStore(), "sys.Sys03_Menu.updateRoleMenu", new InterfaceCallbackResult() {
-			@Override
-			public void execute(Object result) {
-				@SuppressWarnings("unchecked")
-				List<GridDataModel> list = (List<GridDataModel>)result; 
-				for(GridDataModel data : list) {
-					Sys03_MenuModel updateData = (Sys03_MenuModel)data;
-					
-					/* TreeGrid의 자기 아이템을 찾아서 다시 넣는다. 
-					 * 이유는 알수 없다. 
-					 * 안그러면 expand 안되는 오류가 발생함. 
-					 */
-					
-					treeGrid.getTreeStore().update(treeGrid.getTreeStore().findModel(updateData));
-				}
-			}
-		});
+//		TreeGridUpdate<Sys03_MenuModel> service = new TreeGridUpdate<Sys03_MenuModel>();
+//		service.addParam("roleId", this.roleId);
+//		service.update(treeGrid.getTreeStore(), "sys.Sys03_Menu.updateRoleMenu", new InterfaceCallbackResult() {
+//			@Override
+//			public void execute(Object result) {
+//				@SuppressWarnings("unchecked")
+//				List<GridDataModel> list = (List<GridDataModel>)result; 
+//				for(GridDataModel data : list) {
+//					Sys03_MenuModel updateData = (Sys03_MenuModel)data;
+//					
+//					/* TreeGrid의 자기 아이템을 찾아서 다시 넣는다. 
+//					 * 이유는 알수 없다. 
+//					 * 안그러면 expand 안되는 오류가 발생함. 
+//					 */
+//					
+//					treeGrid.getTreeStore().update(treeGrid.getTreeStore().findModel(updateData));
+//				}
+//			}
+//		});
 	}
 
 	@Override
 	public void getServiceResult(ServiceResult result) {
-		if(result.getStatus() < 0){
-			Info.display("error", result.getMessage());
-		}
-		else { 
-			this.treeGrid.getTreeStore().clear(); // 깨끗이 비운다. 
-			
-			for (GridDataModel model: result.getResult()) {
-				// 서버에서 전체 트리를 한번에 가져온 후 트리를 구성한다.  
-				Sys03_MenuModel roleObject = (Sys03_MenuModel)model;
-				this.treeGrid.getTreeStore().add(roleObject);
-				this.setChildItem(roleObject); // child menu & object setting  
-			}
-		} 
+//		if(result.getStatus() < 0){
+//			Info.display("error", result.getMessage());
+//		}
+//		else { 
+//			this.treeGrid.getTreeStore().clear(); // 깨끗이 비운다. 
+//			
+//			for (GridDataModel model: result.getResult()) {
+//				// 서버에서 전체 트리를 한번에 가져온 후 트리를 구성한다.  
+//				Sys03_MenuModel roleObject = (Sys03_MenuModel)model;
+//				this.treeGrid.getTreeStore().add(roleObject);
+//				this.setChildItem(roleObject); // child menu & object setting  
+//			}
+//		} 
 	}
 }

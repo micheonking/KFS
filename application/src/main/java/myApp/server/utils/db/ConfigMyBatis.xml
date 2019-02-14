@@ -22,7 +22,7 @@
 
 		<!-- oracle -->
 			<property name="driver" value="oracle.jdbc.driver.OracleDriver" />
-			<property name="url" value="jdbc:oracle:thin:@172.20.200.252:1521:XE" />
+			<property name="url" value="jdbc:oracle:thin:@172.20.200.252:1521:orcl" />
 			<property name="username" value="sbi" />
 			<property name="password" value="sbi" />
 			<property name="defaultAutoCommit" value="false" />
@@ -55,11 +55,11 @@
 <mappers>
 	<!-- database 공통 처리 -->
 	<mapper resource="myApp/server/utils/db/mapper/DBConfig.xml"/>
-	<mapper resource="myApp/server/cst/mapper/cst99_user.xml"/> 
 	
 	<!-- 개별 업무단 처리  -->
-	<mapper resource="myApp/server/sys/mapper/sys01_cmpInfo.xml"/>
-	<mapper resource="myApp/server/sys/mapper/sys02_usrInfo.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys01_cmp_info.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys02_usr_info.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys08_dpt_info.xml"/>
 <!-- 	<mapper resource="myApp/server/sys/mapper/sys03_company_menu.xml"/> -->
 <!-- 	<mapper resource="myApp/server/sys/mapper/sys04_role.xml"/> -->
 <!-- 	<mapper resource="myApp/server/sys/mapper/sys05_user_role.xml"/> -->

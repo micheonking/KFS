@@ -41,6 +41,7 @@ public class LoginPage implements InterfaceServiceCall {
 	private CenterLayoutContainer container = new CenterLayoutContainer();
     Viewport viewport = new Viewport();
 
+    private TextField cmpCode = new TextField();
     private TextField loginId = new TextField();
 	private PasswordField otpNumber = new PasswordField();
 
@@ -53,10 +54,15 @@ public class LoginPage implements InterfaceServiceCall {
 //		HTML image = new HTML("<center><div><img src='img/KFIALogin.png' width='423' height='103'></center></div>"); 
 //		vlc.add(image, new VerticalLayoutData(300, -1, new Margins(0, 0, 30, 0)));
 
+		FieldLabel cmpFieldLabel = new FieldLabel(cmpCode, "회사");
+		cmpFieldLabel.setLabelWidth(60);
+		cmpFieldLabel.setWidth(264);
+		cmpCode.setText("00000");
+
 		FieldLabel loginFieldLabel = new FieldLabel(loginId, "아이디 ");
 		loginFieldLabel.setLabelWidth(60);
 		loginFieldLabel.setWidth(264);
-		loginId.setText("");
+		loginId.setText("ADMIN");
 		loginId.addKeyPressHandler(new KeyPressHandler() {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
@@ -69,6 +75,7 @@ public class LoginPage implements InterfaceServiceCall {
 		FieldLabel otpNumberFieldLabel = new FieldLabel(otpNumber, "OTP번호 ");
 		otpNumberFieldLabel.setLabelWidth(60);
 		otpNumberFieldLabel.setWidth(264);
+		otpNumber.setText("11");
 		otpNumber.addKeyPressHandler(new KeyPressHandler() {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
@@ -78,12 +85,9 @@ public class LoginPage implements InterfaceServiceCall {
 			}
 		});
 
-		SafeHtml okButtonHtml = SafeHtmlUtils.fromTrustedString("<div style='background-color: #ffffff;'><font color='#dddddd' style='font-size:16px; '>확인</font></div>" );
-//		SafeHtml cancelButtonHtml = SafeHtmlUtils.fromTrustedString("<div style='background-color: #1d7bbb;'><font color='#dddddd' style='font-size:16px; '>Cancel</font></div>" );
 		TextButton okButton = new TextButton("확인"); 
-		okButton.setHTML(okButtonHtml);
-		okButton.setWidth(65);
-		okButton.setHeight(80);
+		okButton.setWidth(85);
+		okButton.setHeight(110);
 		okButton.setBorders(true);
 		okButton.addSelectHandler(new SelectHandler() {
 			@Override
@@ -92,11 +96,12 @@ public class LoginPage implements InterfaceServiceCall {
 			}
 		});
 
+		vBoxLayout.add(cmpFieldLabel, new BoxLayoutData(new Margins(1, 0, 0, 0)));
 		vBoxLayout.add(loginFieldLabel, new BoxLayoutData(new Margins(1, 0, 0, 0)));
 		vBoxLayout.add(otpNumberFieldLabel, new BoxLayoutData(new Margins(1, 0, 0, 0)));
 		
-		hBoxLayout.add(vBoxLayout, new BoxLayoutData(new Margins(0, 0, 0, 6)));
-		hBoxLayout.add(okButton, new BoxLayoutData(new Margins(0, 0, 0, 6)));
+		hBoxLayout.add(vBoxLayout, new BoxLayoutData(new Margins(0, 0, 0, 0)));
+		hBoxLayout.add(okButton, new BoxLayoutData(new Margins(0, 0, 0, 3)));
 
 		vlc.add(hBoxLayout, new VerticalLayoutData(700, -1, new Margins(0, 0, 0, 15)));
 
@@ -157,48 +162,34 @@ public class LoginPage implements InterfaceServiceCall {
 			new SimpleMessage("확인", "로그인ID를 입력하여 주십시오.");
 			return;
 		}
-		if (otpNumber.getValue() == null) {
+		if (otpNumber.getText() == null) {
 			new SimpleMessage("확인", "OTP인증번호를 입력하여 주십시오.");
 			return;
 		}
 
-		// 로그인 정보를 찾는다.
-		if("admin".equals(loginId.getText())) {
+		if("ADMIN".equals(loginId.getText())) {
 			LoginUser.setIsAdmin(true);
-			ServiceRequest request = new ServiceRequest("sys.Sys02_UsrInfo.getLoginAdminInfo");
-			request.putStringParam("cmpCode", "00000");	//00000:한국펀드서비스
-			request.putStringParam("otpNumber", otpNumber.getValue());
-			ServiceCall service = new ServiceCall(); 
-			service.execute(request, this);
 		} else {
 			LoginUser.setIsAdmin(false);
-			ServiceRequest request = new ServiceRequest("sys.Sys02_UsrInfo.getLoginInfo");
-			request.putStringParam("loginId", loginId.getText());
-			request.putStringParam("otpNumber", otpNumber.getValue());
-			ServiceCall service = new ServiceCall(); 
-			service.execute(request, this);
 		}
+		ServiceRequest request = new ServiceRequest("sys.Sys02_UsrInfo.getLoginInfo");
+		request.putStringParam("cmpCode", cmpCode.getText());
+		request.putStringParam("usrNo", loginId.getText());
+		request.putStringParam("otpNumber", otpNumber.getText());
+		ServiceCall service = new ServiceCall(); 
+		service.execute(request, this);
 	}
 	
 	@Override
 	public void getServiceResult(ServiceResult result) {
-		if (LoginUser.getIsAdmin()) {
-			if(result.getStatus() > 0 ) {
-				openFrame();
-			} else {
-				new SimpleMessage("로그인 정보 확인", result.getMessage());
-			}
-			return;
+		if(result.getStatus() > 0 ) {
+			Sys02_UsrInfoModel usrModel = (Sys02_UsrInfoModel) result.getResult(0);
+			LoginUser.setUsrInfoModel(usrModel);
+			openFrame();
 		} else {
-			if(result.getStatus() > 0 ) {
-				Sys02_UsrInfoModel usrModel = (Sys02_UsrInfoModel) result.getResult(0);
-				LoginUser.setUsrInfoModel(usrModel);
-				openFrame();
-			} else {
-				// 로그인 정보를 찾을 수 없다.  
-				new SimpleMessage("로그인 정보 확인", result.getMessage());
-				return ; 
-			}
+			// 로그인 정보를 찾을 수 없다.  
+			new SimpleMessage("로그인 정보 확인", result.getMessage());
+			return ; 
 		}
 	}
 	

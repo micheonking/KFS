@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys04_cmp_menu">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys04_CmpMenuModel" >
+		<id     column="sys04_cmp_menu_id"  property="cmpMenuId"/>
+		<result column="sys04_cmp_cd"       property="cmpCode"/>
+		<result column="sys04_menu_id"      property="menuId"/>
+		<result column="sys04_use_yn"       property="useYn"/>
+		<result column="sys04_rmk"          property="rmk"/>
+		<result column="sys04_ins_usr_no"   property="insUsrNo"/>
+		<result column="sys04_ins_dt"       property="insDate"/>
+		<result column="sys04_upd_usr_no"   property="updUsrNo"/>
+		<result column="sys04_upd_dt"       property="updDate"/>
+	</resultMap>
+
+	<select id="selectById" resultMap="mapper" parameterType="Long" > 
+		select 	*
+		from 	sys04_cmp_menu
+		where 	sys04_cmp_menu_id = #{cmpMenuId}
+	</select>
+ 
+</mapper>

@@ -1,5 +1,7 @@
 package myApp.client.vi.sys.model;
 
+import java.util.Date;
+
 import myApp.client.utils.GridDataModel;
 
 public class Sys08_CodeKindModel implements GridDataModel {
@@ -59,6 +61,24 @@ public class Sys08_CodeKindModel implements GridDataModel {
 		this.sysYnFlag = sysYnFlag;
 		this.sysYn = sysYnFlag.toString(); 
 	}
-	
 
+	@Override
+	public void setInsDate(Date date) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void setUpdDate(Date date) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void setInsUsrNo(String usrNo) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setUpdUsrNo(String usrNo) {
+		// TODO Auto-generated method stub
+		
+	}
 }

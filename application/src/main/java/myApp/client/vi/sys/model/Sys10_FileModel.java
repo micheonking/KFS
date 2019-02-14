@@ -135,4 +135,28 @@ public class Sys10_FileModel implements GridDataModel {
 		this.deleteCell = deleteCell;
 	}
 
+	@Override
+	public void setInsDate(Date date) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setUpdDate(Date date) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setInsUsrNo(String usrNo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setUpdUsrNo(String usrNo) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

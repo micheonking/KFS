@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
 
-<mapper namespace="sys02_usrInfo">
+<mapper namespace="sys02_usr_info">
 
 	<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys02_UsrInfoModel" >
 		<id     column="sys02_usr_info_id"  property="usrInfoId"/>
@@ -18,13 +18,13 @@
 		<result column="sys02_upd_usr_no"   property="updUsrNo"/>
 		<result column="sys02_upd_dt"       property="updDate"/>
 		
-		<association property="cmpModel" 
+		<association property="cmpInfoModel" 
 			javaType="myApp.client.vi.sys.model.Sys01_CmpInfoModel" 
-			resultMap="sys01_cmpInfo.mapper"
+			resultMap="sys01_cmp_info.mapper"
 		/>
-		<association property="dptModel" 
+		<association property="dptInfoModel" 
 			javaType="myApp.client.vi.sys.model.Sys08_DptInfoModel" 
-			resultMap="sys08_dptInfo.mapper"
+			resultMap="sys08_dpt_info.mapper"
 		/>
 
 	</resultMap>

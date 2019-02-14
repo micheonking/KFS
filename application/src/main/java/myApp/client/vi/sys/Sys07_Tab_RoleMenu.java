@@ -19,65 +19,65 @@ import myApp.client.vi.sys.model.Sys05_RoleModelProperties;
 
 public class Sys07_Tab_RoleMenu extends BorderLayoutContainer implements InterfaceGridOperate {
 	
-	private TextField roleName = new TextField();	
-	private Grid<Sys05_RoleModel> roleGrid = this.buildGrid();
-	private Sys07_Tree_RoleMenu roleMenuTree = new Sys07_Tree_RoleMenu();
+//	private TextField roleName = new TextField();	
+//	private Grid<Sys05_RoleModel> roleGrid = this.buildGrid();
+//	private Sys07_Tree_RoleMenu roleMenuTree = new Sys07_Tree_RoleMenu();
 	
 	public Sys07_Tab_RoleMenu() {
 		
-		this.setBorders(false);
-		
-		// 조회조건 
-		SearchBarBuilder searchBarBuilder = new SearchBarBuilder(this);
-		searchBarBuilder.addTextField(roleName, "권한명", 150, 50, true); 
-		searchBarBuilder.addRetrieveButton(); 
-		
-		// 조회조건 
-		BorderLayoutData northLayoutData = new BorderLayoutData(50); // default size is 49 
-		northLayoutData.setMargins(new Margins(0,0,0,0));
-		this.setNorthWidget(searchBarBuilder.getSearchBar(), northLayoutData); 
-
-		BorderLayoutData westLayoutData = new BorderLayoutData(0.4); // default size is 49 
-		westLayoutData.setSplit(true);
-		westLayoutData.setMargins(new Margins(0,3,0,0));
-		westLayoutData.setMaxSize(1000); // TODO: BorderLayoutContainer set max size
-		
-		// Role 조회 
-		this.setWestWidget(this.roleGrid, westLayoutData);
-//		this.setWestWidget(roleContainer, westLayoutData);
-
-		this.roleGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Sys05_RoleModel>(){
-			@Override
-			public void onSelectionChanged(SelectionChangedEvent<Sys05_RoleModel> event) {
-				Sys05_RoleModel role = roleGrid.getSelectionModel().getSelectedItem();   
-				roleMenuTree.retrieve(role.getRoleId());
-			} 
-		}); 
-		
-		// 트리메뉴
-		this.setCenterWidget(roleMenuTree); 
-		this.retrieve();
+//		this.setBorders(false);
+//		
+//		// 조회조건 
+//		SearchBarBuilder searchBarBuilder = new SearchBarBuilder(this);
+//		searchBarBuilder.addTextField(roleName, "권한명", 150, 50, true); 
+//		searchBarBuilder.addRetrieveButton(); 
+//		
+//		// 조회조건 
+//		BorderLayoutData northLayoutData = new BorderLayoutData(50); // default size is 49 
+//		northLayoutData.setMargins(new Margins(0,0,0,0));
+//		this.setNorthWidget(searchBarBuilder.getSearchBar(), northLayoutData); 
+//
+//		BorderLayoutData westLayoutData = new BorderLayoutData(0.4); // default size is 49 
+//		westLayoutData.setSplit(true);
+//		westLayoutData.setMargins(new Margins(0,3,0,0));
+//		westLayoutData.setMaxSize(1000); // TODO: BorderLayoutContainer set max size
+//		
+//		// Role 조회 
+//		this.setWestWidget(this.roleGrid, westLayoutData);
+////		this.setWestWidget(roleContainer, westLayoutData);
+//
+//		this.roleGrid.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Sys05_RoleModel>(){
+//			@Override
+//			public void onSelectionChanged(SelectionChangedEvent<Sys05_RoleModel> event) {
+//				Sys05_RoleModel role = roleGrid.getSelectionModel().getSelectedItem();   
+//				roleMenuTree.retrieve(role.getRoleId());
+//			} 
+//		}); 
+//		
+//		// 트리메뉴
+//		this.setCenterWidget(roleMenuTree); 
+//		this.retrieve();
 	}
 	
-	public Grid<Sys05_RoleModel> buildGrid(){
+//	public Grid<Sys05_RoleModel> buildGrid(){
 		
-		Sys05_RoleModelProperties properties = GWT.create(Sys05_RoleModelProperties.class);	
-		GridBuilder<Sys05_RoleModel> gridBuilder = new GridBuilder<Sys05_RoleModel>(properties.keyId());  
-		
-		gridBuilder.setChecked(SelectionMode.SINGLE);
-		gridBuilder.addText(properties.roleName(), 150, "권한명"); //, new TextField());
-		gridBuilder.addLong(properties.seq(), 40, "순서"); //, new TextField()) ;
-		gridBuilder.addText(properties.rmk(), 500, "상세설명"); //, new TextField());
-		return gridBuilder.getGrid(); 
-	}
+//		Sys05_RoleModelProperties properties = GWT.create(Sys05_RoleModelProperties.class);	
+//		GridBuilder<Sys05_RoleModel> gridBuilder = new GridBuilder<Sys05_RoleModel>(properties.keyId());  
+//		
+//		gridBuilder.setChecked(SelectionMode.SINGLE);
+//		gridBuilder.addText(properties.roleName(), 150, "권한명"); //, new TextField());
+//		gridBuilder.addLong(properties.seq(), 40, "순서"); //, new TextField()) ;
+//		gridBuilder.addText(properties.rmk(), 500, "상세설명"); //, new TextField());
+//		return gridBuilder.getGrid(); 
+//	}
 	
 	@Override
 	public void retrieve() {
-		GridRetrieveData<Sys05_RoleModel> service = new GridRetrieveData<Sys05_RoleModel>(roleGrid.getStore());
-		String name = this.roleName.getText();  
-		service.addParam("roleName", "%" + name + "%");
-//		service.addParam("companyId", LoginUser.getCompanyId());
-		service.retrieve("sys.Sys05_Role.selectByName");
+//		GridRetrieveData<Sys05_RoleModel> service = new GridRetrieveData<Sys05_RoleModel>(roleGrid.getStore());
+//		String name = this.roleName.getText();  
+//		service.addParam("roleName", "%" + name + "%");
+////		service.addParam("companyId", LoginUser.getCompanyId());
+//		service.retrieve("sys.Sys05_Role.selectByName");
 	}
 
 	@Override

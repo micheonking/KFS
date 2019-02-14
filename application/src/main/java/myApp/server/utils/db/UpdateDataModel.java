@@ -16,6 +16,7 @@ import org.apache.ibatis.session.SqlSession;
 
 import myApp.client.service.ServiceResult;
 import myApp.client.utils.GridDataModel;
+import myApp.client.vi.LoginUser;
 
 public class UpdateDataModel<T extends GridDataModel> {
 	
@@ -40,10 +41,10 @@ public class UpdateDataModel<T extends GridDataModel> {
 	}
 	
 	// MSSQL column info 
-	public void updateModel(SqlSession sqlSession, List<GridDataModel> list, String tableName, ServiceResult result ) {
+	public void updateModel(SqlSession sqlSession, List<GridDataModel> list, String tableName, String usrNo, ServiceResult result ) {
 
 		Map<String, String> resultMap = new HashMap<String, String>();
-
+		
 		// BD마다 스키마가 다르다. 
 		// 오라클, MS-SQL, Tibero 등. 
 		List<ColumnModel> columnList = sqlSession.selectList("dbConfig.getColumnListTibero", tableName.toUpperCase());
@@ -58,13 +59,17 @@ public class UpdateDataModel<T extends GridDataModel> {
 		for(GridDataModel dataModel: list){
 			IsNewData isNewData = new IsNewData(); // 신규 입력인지 변경인지를 확인한다. 
 			try {  
-				if(isNewData.isNewData(sqlSession, tableName, dataModel.getKeyId())) { 
+				if(isNewData.isNewData(sqlSession, tableName, dataModel.getKeyId())) {
+					dataModel.setInsUsrNo(usrNo);
+					dataModel.setInsDate(new Date());
 					String insertSql = getInsertSql(dataModel, tableName, resultMap, columnList);
 					System.out.println(insertSql);
 					SqlRunner runner = new SqlRunner(sqlSession.getConnection());
 					runner.insert(insertSql);
 				}
 				else {
+					dataModel.setUpdUsrNo(usrNo);
+					dataModel.setUpdDate(new Date());
 					String updateSql = getUpdateSql(dataModel, tableName, resultMap, columnList); 
 					System.out.println(updateSql);
 					SqlRunner runner = new SqlRunner(sqlSession.getConnection());
