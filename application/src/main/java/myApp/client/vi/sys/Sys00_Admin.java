@@ -16,11 +16,11 @@ public class Sys00_Admin extends ContentPanel {
 		Sys01_Tab_CmpInfo tabCmpInfo = new Sys01_Tab_CmpInfo();
 		tabPanel.add(tabCmpInfo, "회사정보");
 
-		Sys06_Tab_Menu tabMenu = new Sys06_Tab_Menu();
+		Sys03_Tab_Menu tabMenu = new Sys03_Tab_Menu();
 		tabPanel.add(tabMenu, "메뉴구성");
-		
-		Sys08_CodeKind tabCode = new Sys08_CodeKind();
-		tabPanel.add(tabCode, "공통코드");
+
+		Sys50_Tab_TermsDict tabCode = new Sys50_Tab_TermsDict();
+		tabPanel.add(tabCode, "용어사전");
 		
 		this.add(tabPanel, new MarginData(3));
 	}

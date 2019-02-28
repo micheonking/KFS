@@ -11,17 +11,16 @@ public class Sys03_MenuModel implements GridDataModel {
 	private String  menuName ;
 	private Long    seq ;
 	private Long    prntId ;
-	private String  useYn ;
 	private String  rmk ;
 	private String  className ;
 	private String  insUsrNo ;
 	private Date    insDate ;
 	private String  updUsrNo ;
 	private Date    updDate ;
-
-	private boolean roleMenuYn;
+	
+	private String	seqStr;
+	
 	private List<GridDataModel> childList;
-	private Sys06_RoleMenuModel roleMenuModel = new Sys06_RoleMenuModel(); 
 
 	@Override
 	public void setKeyId(Long id) {
@@ -63,14 +62,6 @@ public class Sys03_MenuModel implements GridDataModel {
 
 	public void setPrntId(Long prntId) {
 		this.prntId = prntId;
-	}
-
-	public String getUseYn() {
-		return useYn;
-	}
-
-	public void setUseYn(String useYn) {
-		this.useYn = useYn;
 	}
 
 	public String getRmk() {
@@ -129,33 +120,12 @@ public class Sys03_MenuModel implements GridDataModel {
 		this.childList = childList;
 	}
 
-	public Sys06_RoleMenuModel getRoleMenuModel() {
-		return roleMenuModel;
+	public String getSeqStr() {
+		return ""+getSeq();
 	}
 
-	public void setRoleMenuModel(Sys06_RoleMenuModel roleMenuModel) {
-		this.roleMenuModel = roleMenuModel;
-	}
-	
-	public Boolean getUseYnFlag() {
-		return "Y".equals(useYn) ; 
-	} 
-
-	public void setUseYnFlag(Boolean useYnFlag) {
-		String useYn;
-		if (useYnFlag) {
-			this.useYn = "Y" ;
-		} else {
-			this.useYn = "N" ;
-		}
-	}
-
-	public boolean getRoleMenuYn() {
-		return roleMenuYn;
-	}
-
-	public void setRoleMenuYn(boolean roleMenuYn) {
-		this.roleMenuYn = roleMenuYn;
+	public void setSeqStr(String seqStr) {
+		this.seq = Long.parseLong(seqStr);
 	}
 
 }

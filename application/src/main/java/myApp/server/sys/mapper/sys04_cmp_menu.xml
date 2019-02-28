@@ -7,18 +7,62 @@
 		<id     column="sys04_cmp_menu_id"  property="cmpMenuId"/>
 		<result column="sys04_cmp_cd"       property="cmpCode"/>
 		<result column="sys04_menu_id"      property="menuId"/>
+		<result column="sys04_menu_nm"      property="menuName"/>
+		<result column="sys04_prnt_id"      property="prntId"/>
+		<result column="sys04_seq"      	property="seq"/>
 		<result column="sys04_use_yn"       property="useYn"/>
 		<result column="sys04_rmk"          property="rmk"/>
 		<result column="sys04_ins_usr_no"   property="insUsrNo"/>
 		<result column="sys04_ins_dt"       property="insDate"/>
 		<result column="sys04_upd_usr_no"   property="updUsrNo"/>
 		<result column="sys04_upd_dt"       property="updDate"/>
+
+		<association property="menuModel" 
+			javaType="myApp.client.vi.sys.model.Sys03_MenuModel" 
+			resultMap="sys03_menu.mapper"
+		/>
 	</resultMap>
 
 	<select id="selectById" resultMap="mapper" parameterType="Long" > 
 		select 	*
-		from 	sys04_cmp_menu
+		  from 	sys04_cmp_menu
+		      , sys03_menu
 		where 	sys04_cmp_menu_id = #{cmpMenuId}
+		  and   sys04_menu_id = sys03_menu_id(+)
 	</select>
- 
+
+	<select id="selectByParentId" resultMap="mapper" parameterType="HashMap" > 
+		select 	*
+		  from 	sys04_cmp_menu
+		     ,  sys03_menu
+		 where 	sys04_prnt_id = #{prntId}
+		   and  sys04_cmp_cd  = #{cmpCode}
+		   and  sys04_menu_id = sys03_menu_id(+)
+	 	 order by sys04_seq
+	</select>
+
+	<select id="countCmpMenu" resultType="Long" parameterType="String" > 
+		select 	count(*)
+		from 	sys04_cmp_menu
+		where 	sys04_cmp_cd = #{cmpCode}
+	</select>
+	
+	<insert id="insertInitMenu" parameterType="String" >
+		insert
+		  into sys04_cmp_menu
+		select sys03_menu_id
+		     , #{cmpCode}
+		     , sys03_menu_id
+		     , sys03_menu_nm
+		     , sys03_prnt_id
+		     , sys03_seq
+		     , 'Y'
+		     , null
+		     , 'ADMIN'
+		     , SYSDATE
+		     , null
+		     , null
+		  from sys03_menu 
+	</insert>
+
 </mapper>

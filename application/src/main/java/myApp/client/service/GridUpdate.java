@@ -51,7 +51,6 @@ public class GridUpdate<T> implements InterfaceServiceCall{
 				}
 				updateList.add((GridDataModel)updateModel); // 형을 상위로 변경해도 되는가? 
 			}
-
 			request = new ServiceRequest(serviceName);
 			request.setList(updateList);
 			request.setParam(param);

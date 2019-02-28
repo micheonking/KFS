@@ -11,38 +11,42 @@ import myApp.client.service.ServiceRequest;
 import myApp.client.service.ServiceResult;
 import myApp.client.utils.GridDataModel;
 import myApp.client.vi.sys.model.Sys03_MenuModel;
-import myApp.client.vi.sys.model.Sys06_RoleMenuModel;
 import myApp.server.utils.db.UpdateDataModel;
 
 public class Sys03_Menu { 
 	
-//	String mapperName = "sys06_menu"; 
-//	
-//	public void selectByAll(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-//		
-//		List<GridDataModel> menuList 
-//			= sqlSession.selectList(mapperName + ".selectByParentId", Long.parseLong("0"));
-//
-//		for(GridDataModel child : menuList){
-//			Sys03_MenuModel menuModel = (Sys03_MenuModel)child;
-//			List<GridDataModel> childList = getChildByParentId(sqlSession, menuModel.getMenuId());  
-//			menuModel.setChildList(childList); 	
-//		}
-//		result.setRetrieveResult(menuList.size(), "sys06_menu.selectByParentId", menuList);
-//	}
-//
-//	private List<GridDataModel> getChildByParentId(SqlSession sqlSession, Long parentId){
-//		
-//		List<GridDataModel> menuList = sqlSession.selectList(mapperName + ".selectByParentId", parentId);
-//
-//		for(GridDataModel child : menuList){
-//			Sys03_MenuModel menuModel = (Sys03_MenuModel)child;
-//			List<GridDataModel> childList = getChildByParentId(sqlSession, menuModel.getMenuId());  
-//			menuModel.setChildList(childList); 	
-//		}
-//		return menuList ; 
-//	}
-//
+	public void selectByAll(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
+		
+		List<GridDataModel> menuList = sqlSession.selectList("sys03_menu.selectByParentId", Long.parseLong("0"));
+
+		for(GridDataModel child : menuList){
+			Sys03_MenuModel menuModel = (Sys03_MenuModel)child;
+			List<GridDataModel> childList = getChildByParentId(sqlSession, menuModel.getMenuId());  
+			menuModel.setChildList(childList); 	
+		}
+		System.out.println("menuList.size()" + menuList.size());
+		result.setRetrieveResult(menuList.size(), "sys03_menu.selectByParentId", menuList);
+	}
+
+	private List<GridDataModel> getChildByParentId(SqlSession sqlSession, Long parentId){
+		
+		System.out.println("parentId : " + parentId);
+		
+		List<GridDataModel> menuList = sqlSession.selectList("sys03_menu.selectByParentId", parentId);
+
+		for(GridDataModel child : menuList){
+			Sys03_MenuModel menuModel = (Sys03_MenuModel)child;
+			List<GridDataModel> childList = getChildByParentId(sqlSession, menuModel.getMenuId());  
+			menuModel.setChildList(childList); 	
+		}
+		return menuList ; 
+	}
+
+	public void selectByMenuNm(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
+		List<GridDataModel> list = sqlSession.selectList("sys03_menu.selectByMenuNm", request.getParam());
+		result.setRetrieveResult(1, "select ok", list);
+	}
+
 //	public void selectByCompanyId(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
 //		
 //		String sqlId = this.mapperName + ".selectByCompanyId";
@@ -223,15 +227,16 @@ public class Sys03_Menu {
 //		// 다시 조회하면 트리가 깨진다. 
 //		result.setResult(request.getList());
 //	}
-//	
-//	
-//	public void update(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-//		UpdateDataModel<GridDataModel> updateModel = new UpdateDataModel<GridDataModel>(); 
-//		updateModel.updateModel(sqlSession, request.getList(), mapperName, result);
-//	}
-//
-//	public void delete(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
-//		UpdateDataModel<GridDataModel> updateModel = new UpdateDataModel<GridDataModel>(); 
-//		updateModel.deleteModel(sqlSession, request.getList(), mapperName, result);
-//	}
+	
+	
+	public void update(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
+		String usrNo = request.getStringParam("usrNo");
+		UpdateDataModel<GridDataModel> updateModel = new UpdateDataModel<GridDataModel>(); 
+		updateModel.updateModel(sqlSession, request.getList(), "sys03_menu", usrNo, result);
+	}
+
+	public void delete(SqlSession sqlSession, ServiceRequest request, ServiceResult result) {
+		UpdateDataModel<GridDataModel> updateModel = new UpdateDataModel<GridDataModel>(); 
+		updateModel.deleteModel(sqlSession, request.getList(), "sys03_menu", result);
+	}
 }

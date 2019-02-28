@@ -14,7 +14,6 @@ public interface Sys03_MenuModelProperties extends PropertyAccess<Sys03_MenuMode
 	ValueProvider<Sys03_MenuModel, String> menuName() ;
 	ValueProvider<Sys03_MenuModel, Long  > seq() ;
 	ValueProvider<Sys03_MenuModel, Long  > prntId() ;
-	ValueProvider<Sys03_MenuModel, String> useYn() ;
 	ValueProvider<Sys03_MenuModel, String> rmk() ;
 	ValueProvider<Sys03_MenuModel, String> className() ;
 	ValueProvider<Sys03_MenuModel, String> insUsrNo() ;
@@ -22,8 +21,7 @@ public interface Sys03_MenuModelProperties extends PropertyAccess<Sys03_MenuMode
 	ValueProvider<Sys03_MenuModel, String> updUsrNo() ;
 	ValueProvider<Sys03_MenuModel, Date  > updDate() ;
 	
-	ValueProvider<Sys03_MenuModel, Boolean> useYnFlag();
-	ValueProvider<Sys03_MenuModel, Boolean> roleMenuYn();
+	ValueProvider<Sys03_MenuModel, String>  seqStr() ;
 	ValueProvider<Sys03_MenuModel, String> 	editCell();
 	ValueProvider<Sys03_MenuModel, String> 	moveCell();
 }

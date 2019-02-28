@@ -23,9 +23,9 @@ import myApp.client.service.ServiceResult;
 import myApp.client.service.TreeGridUpdate;
 import myApp.client.utils.GridDataModel;
 import myApp.client.utils.InterfaceCallbackResult;
-import myApp.client.vi.sys.model.Sys03_MenuModel;
+import myApp.client.vi.sys.model.Sys04_CmpMenuModel;
 
-public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
+public class Sys04_Lookup_MoveMenu extends Window implements InterfaceServiceCall {
 	
 //	private TreeGrid<Sys03_MenuModel> treeGrid ; 
 //	private Sys03_MenuModel menuModel, deleteModel; 
@@ -72,7 +72,7 @@ public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 //		return tree; 
 //	}
 
-	public void open(TreeGrid<Sys03_MenuModel> treeGrid, Sys03_MenuModel menuModel) {
+	public void open(TreeGrid<Sys04_CmpMenuModel> treeGrid, Sys04_CmpMenuModel menuModel) {
 
 //		this.treeGrid = treeGrid; 
 //		this.menuModel = menuModel; 
@@ -151,7 +151,7 @@ public class Sys06_Select_Menu extends Window implements InterfaceServiceCall {
 //		}
 	}
 	
-	private void addChild(Sys03_MenuModel parentMenu) {
+	private void addChild(Sys04_CmpMenuModel parentMenu) {
 //		if(parentMenu.getChildList() != null){
 //			List<GridDataModel> childList = parentMenu.getChildList(); 
 //			for(GridDataModel child : childList){

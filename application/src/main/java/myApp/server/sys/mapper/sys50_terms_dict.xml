@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+
+<mapper namespace="sys50_terms_dict">
+
+	<resultMap 	id="mapper" type="myApp.client.vi.sys.model.Sys50_TermsDictModel" >
+		<id     column="sys50_terms_dict_id" property="termsDictId"/>
+		<result column="sys50_sht_nm"        property="shtName"/>
+		<result column="sys50_full_nm"       property="fullName"/>
+		<result column="sys50_kor_nm"        property="korName"/>
+		<result column="sys50_rmk"           property="rmk"/>
+		<result column="sys50_ins_usr_no"    property="insUsrNo"/>
+		<result column="sys50_ins_dt"        property="insDate"/>
+		<result column="sys50_upd_usr_no"    property="updUsrNo"/>
+		<result column="sys50_upd_dt"        property="updDate"/>
+	</resultMap>
+
+	<select id="selectById" resultMap="mapper" parameterType="long" > 
+		select 	*
+		from 	sys50_terms_dict 
+		where	sys50_terms_dict_id = #{cmpId}
+	</select>
+
+	<select id="selectBySearchText" resultMap="mapper" parameterType="String" > 
+		select 	*
+		from 	sys50_terms_dict 
+		where	sys50_kor_nm||sys50_sht_nm||sys50_full_nm like #{searchText}
+	</select>
+
+</mapper>

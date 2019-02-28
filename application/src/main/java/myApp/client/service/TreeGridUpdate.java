@@ -19,7 +19,7 @@ public class TreeGridUpdate<T> implements InterfaceServiceCall{
 	
 	TreeStore<T> treeStore ; 
 	List<GridDataModel> updateList = new ArrayList<GridDataModel>();
-	InterfaceCallbackResult callback ; 
+	InterfaceCallbackResult callback ;
 	
 	private Map<String, Object> param = new HashMap<String, Object>();
 	

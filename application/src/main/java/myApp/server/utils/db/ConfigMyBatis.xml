@@ -57,9 +57,14 @@
 	<mapper resource="myApp/server/utils/db/mapper/DBConfig.xml"/>
 	
 	<!-- 개별 업무단 처리  -->
+	<mapper resource="myApp/server/sys/mapper/sys00_common.xml"/>
 	<mapper resource="myApp/server/sys/mapper/sys01_cmp_info.xml"/>
 	<mapper resource="myApp/server/sys/mapper/sys02_usr_info.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys03_menu.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys04_cmp_menu.xml"/>
 	<mapper resource="myApp/server/sys/mapper/sys08_dpt_info.xml"/>
+	<mapper resource="myApp/server/sys/mapper/sys50_terms_dict.xml"/>
+	
 <!-- 	<mapper resource="myApp/server/sys/mapper/sys03_company_menu.xml"/> -->
 <!-- 	<mapper resource="myApp/server/sys/mapper/sys04_role.xml"/> -->
 <!-- 	<mapper resource="myApp/server/sys/mapper/sys05_user_role.xml"/> -->

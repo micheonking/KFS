@@ -15,7 +15,7 @@ public class MenuOpener {
 		}
 
 		if ("Sys06_Tab_Menu.class".equals(className)) {
-			return (Widget) GWT.create(myApp.client.vi.sys.Sys06_Tab_Menu.class);
+			return (Widget) GWT.create(myApp.client.vi.sys.Sys03_Tab_Menu.class);
 		}
 
 		if ("Sys07_Tab_RoleMenu.class".equals(className)) {

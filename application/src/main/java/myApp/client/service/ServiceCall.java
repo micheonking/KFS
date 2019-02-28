@@ -19,7 +19,7 @@ public class ServiceCall implements IsSerializable {
 			new AsyncCallback<ServiceResult>() {
 			
 				@Override // TODO : override 치는게 맞는지? 
-				public void onFailure(Throwable caught) {
+				public void onFailure(Throwable caught) { 
 //					new SimpleMessage("network async fail : " + request.getServiceName());
 					new SimpleMessage("network async fail : " + caught.getMessage());
 				}
