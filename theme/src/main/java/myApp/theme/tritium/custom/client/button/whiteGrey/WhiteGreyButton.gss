@@ -1,21 +1,21 @@
 /* https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=9C27B0 */
-@def GRADIENT #ffffff;
-@def BACKGROUND_COLOR #ffffff;
-@def BORDER_COLOR #ffffff;
+@def GRADIENT transparent;
+@def BACKGROUND_COLOR transparent;
+@def BORDER_COLOR transparent;
 
 /* Over Color */
-@def OVER_BACKGROUND_COLOR #ffffff;
-@def PRESSED_BACKGROUND_COLOR #ffffff;
+@def OVER_BACKGROUND_COLOR transparent;
+@def PRESSED_BACKGROUND_COLOR transparent;
 
 
 /* Pressed Color */
-@def PRESSED_BACKGROUND_COLOR #ececec;
-@def PRESSED_GRADIENT #ececec;
+@def PRESSED_BACKGROUND_COLOR #4d82b8;
+@def PRESSED_GRADIENT #4d82b8;
 
 
 /* Focused Color */
-@def OVER_BACKGROUND_COLOR #f0f0f0;
-@def OVER_GRADIENT #f0f0f0;
+@def OVER_BACKGROUND_COLOR #2b579a;
+@def OVER_GRADIENT #2b579a;
 
 
 .button {

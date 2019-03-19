@@ -1,6 +1,5 @@
 package myApp.client.vi.sys;
 
-import java.awt.BorderLayout;
 import java.util.List;
 
 import com.google.gwt.cell.client.ActionCell;
@@ -11,20 +10,18 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.widget.core.client.button.ButtonBar;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
-import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.event.RowClickEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
-import com.sencha.gxt.widget.core.client.form.TextField;
-import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
 import myApp.client.grid.GridBuilder;
+import myApp.client.resource.ResourceIcon;
 import myApp.client.service.DBUtil;
-import myApp.client.service.GridRetrieveData;
 import myApp.client.service.InterfaceCallback;
 import myApp.client.service.InterfaceServiceCall;
 import myApp.client.service.ServiceCall;
@@ -32,8 +29,6 @@ import myApp.client.service.ServiceRequest;
 import myApp.client.service.ServiceResult;
 import myApp.client.utils.GridDataModel;
 import myApp.client.utils.SimpleMessage;
-import myApp.client.vi.sys.model.Sys01_CompanyModel;
-import myApp.client.vi.sys.model.Sys01_CompanyModelProperties;
 import myApp.client.vi.sys.model.Sys06_MenuModel;
 import myApp.client.vi.sys.model.Sys06_MenuModelProperties;
 
@@ -46,8 +41,9 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 
 		ButtonBar buttonBar = new ButtonBar();
 
-		TextButton retrieveButton = new TextButton("메뉴 조회"); 
-		retrieveButton.setWidth(70);
+		TextButton retrieveButton = new TextButton("메뉴조회"); 
+		retrieveButton.setIcon(ResourceIcon.INSTANCE.search16Button());
+//		retrieveButton.setWidth(70);
 		retrieveButton.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -57,7 +53,8 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 		buttonBar.add(retrieveButton);
 
 		TextButton createRoot = new TextButton("루트메뉴 등록"); 
-		createRoot.setWidth(100);
+		createRoot.setIcon(ResourceIcon.INSTANCE.insert16Button());
+//		createRoot.setWidth(100);
 		createRoot.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -68,7 +65,8 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 		buttonBar.add(createRoot);
 
 		TextButton addSubMenu = new TextButton("하위메뉴 등록");
-		addSubMenu.setWidth(100);
+		addSubMenu.setIcon(ResourceIcon.INSTANCE.insert16Button());
+//		addSubMenu.setWidth(100);
 		addSubMenu.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -76,12 +74,13 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 			}
 		}); 
 		buttonBar.add(addSubMenu);
-		this.setNorthWidget(buttonBar, new BorderLayoutData(50));
+		BorderLayoutData northLayoutData = new BorderLayoutData(50);
+		northLayoutData.setMargins(new Margins(0,0,4,0));
+		this.setNorthWidget(buttonBar, northLayoutData);
 
-		
 		BorderLayoutData westLayoutData = new BorderLayoutData(0.5);
 		westLayoutData.setSplit(true);
-		westLayoutData.setMargins(new Margins(0,4,0,0));
+		westLayoutData.setMargins(new Margins(4,4,8,4));
 		westLayoutData.setMaxSize(1000);
 		this.setWestWidget(this.treeGrid, westLayoutData);
 		this.treeGrid.getTreeStore().setAutoCommit(true);
@@ -95,7 +94,7 @@ public class Sys06_Tab_Menu extends BorderLayoutContainer implements InterfaceSe
 			}
 		}); 
 		
-		this.setCenterWidget(this.grid);
+		this.setCenterWidget(this.grid,westLayoutData);
 		retrieve();
 	}
 	

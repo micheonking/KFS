@@ -9,7 +9,10 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.info.Info;
+
 import myApp.client.grid.GridBuilder;
+import myApp.client.resource.ResourceIcon;
 import myApp.client.service.GridRetrieveData;
 import myApp.client.service.GridUpdate;
 import myApp.client.vi.sys.model.Sys01_CompanyModel;
@@ -27,7 +30,8 @@ public class Sys01_Grid_CompanyMenu extends ContentPanel {
 		this.add(grid);
 
 		TextButton selectAllButton = new TextButton("전체선택"); 
-		selectAllButton.setWidth(70);
+		selectAllButton.setIcon(ResourceIcon.INSTANCE.selected16Button());
+//		selectAllButton.setWidth(70);
 		selectAllButton.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -39,7 +43,8 @@ public class Sys01_Grid_CompanyMenu extends ContentPanel {
 		this.buttonBar.add(selectAllButton);
 
 		TextButton deSelectAllButton = new TextButton("전체취소"); 
-		deSelectAllButton.setWidth(70);
+		deSelectAllButton.setIcon(ResourceIcon.INSTANCE.cancel16Button());
+//		deSelectAllButton.setWidth(70);
 		deSelectAllButton.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -51,7 +56,8 @@ public class Sys01_Grid_CompanyMenu extends ContentPanel {
 		this.buttonBar.add(deSelectAllButton);
 
 		TextButton updateButton = new TextButton("저장");
-		updateButton.setWidth(70);
+//		updateButton.setWidth(70);
+		updateButton.setIcon(ResourceIcon.INSTANCE.save16Button());
 		updateButton.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -81,6 +87,7 @@ public class Sys01_Grid_CompanyMenu extends ContentPanel {
 		this.menuId = menuId; 
 		GridRetrieveData<Sys01_CompanyModel> service = new GridRetrieveData<Sys01_CompanyModel>(grid.getStore()); 
 		service.addParam("menuId", this.menuId);
+		Info.display("", ""+this.menuId);
 		service.retrieve("sys.Sys01_Company.selectByMenuId");
 	}
 	

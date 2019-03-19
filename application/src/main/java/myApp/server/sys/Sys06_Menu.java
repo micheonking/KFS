@@ -49,6 +49,8 @@ public class Sys06_Menu {
 		
 		Long companyId = request.getLongParam("companyId"); 
 		
+		System.out.println(""+companyId);
+		
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("companyId", companyId); 
 		param.put("parentId", Long.parseLong("0"));
@@ -142,6 +144,10 @@ public class Sys06_Menu {
 		param.put("userId", userId); 
 		param.put("companyId", companyId);
 		param.put("parentId", Long.parseLong("0"));
+		
+		System.out.println("userId : "+userId);
+		System.out.println("companyId : "+companyId);
+		System.out.println("parentId : "+Long.parseLong("0"));
 		
 		List<GridDataModel> rootMenuList = sqlSession.selectList(mapperName + ".selectByUserId", param);
 

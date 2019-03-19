@@ -20,9 +20,6 @@ import myApp.client.service.GridInsertRow;
 import myApp.client.service.GridRetrieveData;
 import myApp.client.service.GridUpdate;
 import myApp.client.utils.InterfaceCallbackResult;
-import myApp.client.vi.opr.Opr02_Lookup_Fund;
-import myApp.client.vi.pln.Pln03_Lookup_ResrchDetail;
-import myApp.client.vi.pln.model.Pln03_ResrchModel;
 import myApp.client.vi.sys.model.Sys01_CompanyModel;
 import myApp.client.vi.sys.model.Sys01_CompanyModelProperties;
 

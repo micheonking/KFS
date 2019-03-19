@@ -34,32 +34,32 @@ public class TabBorder extends BorderLayoutContainer implements InterfaceGridOpe
 		BorderLayoutData westLayoutData = new BorderLayoutData();
 		westLayoutData.setSplit(true);
 		westLayoutData.setMargins(new Margins(0,0,0,0));
-		westLayoutData.setSize(950);
+		westLayoutData.setSize(1200);
 		carlendar = new Calendar(toDoGrid, outstandingGrid, apprGird);
 		this.setWestWidget(this.carlendar, westLayoutData);
 
-		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
-		vlc.add(this.toDoGrid       , new VerticalLayoutData(1,0.3, new Margins(55,20,0,0)));
-		vlc.add(this.outstandingGrid, new VerticalLayoutData(1,0.3, new Margins(30,20,0,0)));
-		vlc.add(this.apprGird       , new VerticalLayoutData(1,0.3, new Margins(30,20,0,0)));
-
-		BorderLayoutData centerLayoutData = new BorderLayoutData();
-		centerLayoutData.setSplit(true);
-		centerLayoutData.setMargins(new Margins(0));
-		
-		ContentPanel cp = new ContentPanel();
-		cp.setHeaderVisible(false);
-		cp.add(vlc);
-		
-		this.setCenterWidget(cp, centerLayoutData);
+//		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
+//		vlc.add(this.toDoGrid       , new VerticalLayoutData(1,0.3, new Margins(55,20,0,0)));
+//		vlc.add(this.outstandingGrid, new VerticalLayoutData(1,0.3, new Margins(30,20,0,0)));
+//		vlc.add(this.apprGird       , new VerticalLayoutData(1,0.3, new Margins(30,20,0,0)));
+//
+//		BorderLayoutData centerLayoutData = new BorderLayoutData();
+//		centerLayoutData.setSplit(true);
+//		centerLayoutData.setMargins(new Margins(0));
+//		
+//		ContentPanel cp = new ContentPanel();
+//		cp.setHeaderVisible(false);
+//		cp.add(vlc);
+//		
+//		this.setCenterWidget(cp, centerLayoutData);
 	}
 
 	@Override
 	public void retrieve() {
 		carlendar.retrieve();		//달력 조회
-		outstandingGrid.retrieve();	//미결함 조회
-		apprGird.retrieve();		//결재요청함 조회
-		toDoGrid.retrieve();		//To-Do List 조회
+//		outstandingGrid.retrieve();	//미결함 조회
+//		apprGird.retrieve();		//결재요청함 조회
+//		toDoGrid.retrieve();		//To-Do List 조회
 	}
 
 	@Override

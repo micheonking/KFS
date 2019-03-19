@@ -15,6 +15,7 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.LabelAlign;
 
 import myApp.client.field.LookupTriggerField;
+import myApp.client.resource.ResourceIcon;
 
 import com.sencha.gxt.widget.core.client.form.TextField;
 
@@ -28,7 +29,7 @@ public class SearchBarBuilder {
 	}
 	
 	public ButtonBar getSearchBar(){
-		this.searchBar.setPadding(new Padding(5, 0, 0, 0));
+		this.searchBar.setPadding(new Padding(1, 1, 1, 1));
 		return this.searchBar; 
 	}
 	
@@ -125,7 +126,8 @@ public class SearchBarBuilder {
 	
 	public TextButton addRetrieveButton(){
 		TextButton button = new TextButton("조회");
-		button.setWidth(50);
+		button.setIcon(ResourceIcon.INSTANCE.search16Button());
+//		button.setWidth(50);
 		button.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {
@@ -135,24 +137,25 @@ public class SearchBarBuilder {
 		searchBar.add(button);
 		return button; 
 	}
-	
+
 	public TextButton addUpdateButton(){
-//		TextButton button = new TextButton("저장");
-//		button.setWidth(50);
-//		button.addSelectHandler(new SelectHandler(){
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				target.update();
-//			}
-//		}); 
-//		searchBar.add(button);
-//		return button; 
+		TextButton button = new TextButton("저장");
+		button.setIcon(ResourceIcon.INSTANCE.save16Button());
+		button.addSelectHandler(new SelectHandler(){
+			@Override
+			public void onSelect(SelectEvent event) {
+				target.update();
+			}
+		}); 
+		searchBar.add(button);
+		return button; 
 		
-		return addUpdateButton("저장", 50);
+//		return addUpdateButton("저장", 50);
 	}
 
 	public TextButton addUpdateButton(String buttonName, int buttonSize){
 		TextButton button = new TextButton(buttonName);
+		button.setIcon(ResourceIcon.INSTANCE.update16Button());
 		button.setWidth(buttonSize);
 		button.addSelectHandler(new SelectHandler(){
 			@Override
@@ -165,22 +168,24 @@ public class SearchBarBuilder {
 	}
 
 	public TextButton addInsertButton(){
-//		TextButton button = new TextButton("입력");
+		TextButton button = new TextButton("입력");
+		button.setIcon(ResourceIcon.INSTANCE.insert16Button());
 //		button.setWidth(50);
-//		button.addSelectHandler(new SelectHandler(){
-//			@Override
-//			public void onSelect(SelectEvent event) {
-//				target.insertRow();
-//			}
-//		}); 
-//		searchBar.add(button);
-//		
-//		return button; 
-		return addInsertButton("입력", 50);
+		button.addSelectHandler(new SelectHandler(){
+			@Override
+			public void onSelect(SelectEvent event) {
+				target.insertRow();
+			}
+		}); 
+		searchBar.add(button);
+		
+		return button; 
+//		return addInsertButton("입력", 50);
 	}
 
 	public TextButton addInsertButton(String buttonName, int buttonSize){
 		TextButton button = new TextButton(buttonName);
+		button.setIcon(ResourceIcon.INSTANCE.insert16Button());
 		button.setWidth(buttonSize);
 		button.addSelectHandler(new SelectHandler(){
 			@Override
@@ -195,7 +200,10 @@ public class SearchBarBuilder {
 
 	public TextButton addDeleteButton(){
 		TextButton button = new TextButton("삭제");
-		button.setWidth(50);
+//		button.setIcon(ResourceIcon.INSTANCE.delete16Button());
+		button.setIcon(ResourceIcon.INSTANCE.eraser16Button());
+//		button.setIcon(ResourceIcon.INSTANCE.trash16Button());
+//		button.setWidth(50);
 		button.addSelectHandler(new SelectHandler(){
 			@Override
 			public void onSelect(SelectEvent event) {

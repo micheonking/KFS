@@ -54,7 +54,7 @@ public class Cst01_Tab_BaseInfo extends BorderLayoutContainer implements Interfa
 		this.setBorders(false);
 
 		BorderLayoutData northLayoutData = new BorderLayoutData(50);
-		northLayoutData.setMargins(new Margins(0, 8, 0, 0));
+		northLayoutData.setMargins(new Margins(0, 0, 0, 0));
 //		northLayoutData.setSplit(true);
 		northLayoutData.setMaxSize(1000);
 		this.setNorthWidget(searchBarBuilder.getSearchBar(), northLayoutData);
@@ -62,7 +62,7 @@ public class Cst01_Tab_BaseInfo extends BorderLayoutContainer implements Interfa
 		BorderLayoutData centerLayoutData = new BorderLayoutData();
 		centerLayoutData.setSplit(true);
 		centerLayoutData.setMaxSize(1000);
-		centerLayoutData.setMargins(new Margins(8, 10, 10, 0));
+		centerLayoutData.setMargins(new Margins(8, 0, 4, 0));
 		this.setCenterWidget(rdLayoutContainer,centerLayoutData);
 
 		retrieve();

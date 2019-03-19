@@ -49,12 +49,12 @@
       headerGradient = "#2b579a 0%, #2b579a 100%" // "#5fa2dd 0%, #5fa2dd 100%"
       headerLineHeight = "18px"
       border {
-        bottom = 0 // 5
-        color = "#ececec"
-        left = 0
-        right = 0 // 8 // 5
+        bottom = 2 // 5
+        color = "#e0e0ec"
+        left = 2
+        right = 2 // 8 // 5
         style = "solid"
-        top = 0
+        top = 2
       }
       font {
         color = "#f6f6f6"

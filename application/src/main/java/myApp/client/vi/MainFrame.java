@@ -28,6 +28,7 @@ import com.sencha.gxt.widget.core.client.container.HBoxLayoutContainer.HBoxLayou
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.FocusEvent;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.toolbar.LabelToolItem;
 
 import myApp.client.kfsEntryPoint;
@@ -43,25 +44,24 @@ public class MainFrame extends BorderLayoutContainer {
 	private MainFrameSouthLayout mainFrameSouthLayout = new MainFrameSouthLayout();
 
 	public MainFrame getMainWindow() {
-		
 		// 상단 Bar 등록  
 		BorderLayoutData northLayoutData = new BorderLayoutData(60);
-		northLayoutData.setMargins(new Margins(0,0,3,0));
+		northLayoutData.setMargins(new Margins(0,0,0,0));
 		this.setNorthWidget(mainFrameNorthLayout, northLayoutData); 
 		
 		// West Layout setting 
 		BorderLayoutData westLayoutData = new BorderLayoutData(250);
-		westLayoutData.setMargins(new Margins(0, 1, 0, 0)); // 앞쪽에 보이는 가로 줄을 없애준다
+		westLayoutData.setMargins(new Margins(2, 2, 2, 2)); // 앞쪽에 보이는 가로 줄을 없애준다
 		westLayoutData.setCollapsible(true);
 		westLayoutData.setCollapseHeaderVisible(true);
 		westLayoutData.setSplit(true);
 		
 		//westLayoutData.setCollapseMini(true);
-		this.setWestWidget(this.getWestLayout(), westLayoutData);
+		this.setWestWidget(this.getWestLayout2(), westLayoutData);
 		//this.setWestWidget(treeMenu.getMenuTree()); 
 				
 		BorderLayoutData southLayoutData = new BorderLayoutData(25);
-		southLayoutData.setMargins(new Margins(0, 0, 0, 0)); // 앞쪽에 보이는 가로 줄을 없애준다
+		southLayoutData.setMargins(new Margins(4, 2, 2, 2)); // 앞쪽에 보이는 가로 줄을 없애준다
 		this.setSouthWidget(mainFrameSouthLayout, southLayoutData);
 
 //		tabPanel.setTabScroll(true);
@@ -70,11 +70,10 @@ public class MainFrame extends BorderLayoutContainer {
 		tabPanel.getElement().getStyle().clearMarginLeft();
 		//.setLeft(7);
 		//.getElement().get.getStyle().set("color", "#666666"); // font color 변경
-		tabPanel.setTabMargin(8);
+//		tabPanel.setTabMargin(8);
 		tabPanel.setTabScroll(true);
 //		tabPanel.setBorders(true);
         tabPanel.setAnimScroll(true);
-        tabPanel.setTabScroll(true);
         tabPanel.setCloseContextMenu(true);
 //        
 //        Widget item = t.getSelectedItem();
@@ -93,7 +92,7 @@ public class MainFrame extends BorderLayoutContainer {
 		}
 
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer(); 
-		vlc.add(tabPanel, new VerticalLayoutData(1, 1, new Margins(2))); //, 2, 2, 2)));
+		vlc.add(tabPanel, new VerticalLayoutData(1, 1, new Margins(4,4,0,4)));
 		
 		this.setCenterWidget(vlc);
 		return this; 
@@ -180,18 +179,18 @@ public class MainFrame extends BorderLayoutContainer {
 		
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer(); 
 		vlc.add(accordianContainer, new VerticalLayoutData(1, 1, new Margins(3, 2, 2, 2)));
-		
+
 		return vlc ; 
 		
 	}
 	
-//	private ContentPanel getWestLayout2(){
-//		
-//		AccordionLayoutAppearance accordianLayout = GWT.create(AccordionLayoutAppearance.class); 
-//		ContentPanel treeAccordianPanel = new ContentPanel(accordianLayout); 
-//		treeAccordianPanel.setHeading("Menu Navigation");	
-//		treeAccordianPanel.add(this.treeMenu.getMenuTree()); // tree menu setting 
-//		treeAccordianPanel.getHeader().setHeight(18);
+	private ContentPanel getWestLayout2(){
+		
+		AccordionLayoutAppearance accordianLayout = GWT.create(AccordionLayoutAppearance.class); 
+		ContentPanel treeAccordianPanel = new ContentPanel(accordianLayout); 
+		treeAccordianPanel.setHeading("Menu Navigation");	
+		treeAccordianPanel.add(this.treeMenu.getMenuTree()); // tree menu setting 
+		treeAccordianPanel.getHeader().setHeight(18);
 //		AccordionLayoutContainer accordianContainer = new AccordionLayoutContainer();
 //		
 //		accordianContainer.setExpandMode(ExpandMode.SINGLE_FILL);
@@ -200,11 +199,11 @@ public class MainFrame extends BorderLayoutContainer {
 //		
 //		accordianContainer.add(treeAccordianPanel);
 //		accordianContainer.setActiveWidget(treeAccordianPanel);
-//		
+		
 //		VerticalLayoutContainer vlc = new VerticalLayoutContainer(); 
 //		vlc.add(accordianContainer, new VerticalLayoutData(1, 1, new Margins(3, 2, 2, 2)));
-//		
-//		return treeAccordianPanel; 
-//		
-//	}
+		
+		return treeAccordianPanel; 
+		
+	}
 }

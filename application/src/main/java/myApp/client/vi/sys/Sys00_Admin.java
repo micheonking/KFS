@@ -1,7 +1,7 @@
 package myApp.client.vi.sys;
 
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.PlainTabPanel;
+import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 
 public class Sys00_Admin extends ContentPanel {
@@ -10,9 +10,10 @@ public class Sys00_Admin extends ContentPanel {
 
 		this.setHeading("시스템 관리자");
 		this.setBorders(true);
+		this.setHeaderVisible(false);
 		
 		
-		PlainTabPanel tabPanel = new PlainTabPanel();
+		TabPanel tabPanel = new TabPanel();
 		
 		Sys01_Tab_Company tabCompany = new Sys01_Tab_Company();
 		tabPanel.add(tabCompany, "고객정보");

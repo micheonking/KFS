@@ -58,7 +58,7 @@ public class LoginPage implements InterfaceServiceCall {
 		HBoxLayoutContainer hBoxLayout = new HBoxLayoutContainer();
 		VBoxLayoutContainer vBoxLayout = new VBoxLayoutContainer();
 
-		HTML image = new HTML("<center><div><img src='img/KFIALogin.png' width='423' height='103'></center></div>"); 
+		HTML image = new HTML("<center><div><img src='img/_KFSLogin.png' width='500' height='66'></center></div>"); 
 		vlc.add(image, new VerticalLayoutData(300, -1, new Margins(0, 0, 30, 0)));
 
 		FieldLabel loginFieldLabel = new FieldLabel(firstName, "로그인ID");
@@ -314,7 +314,6 @@ public class LoginPage implements InterfaceServiceCall {
 		// 일반 사용자이다. 회사 선택없이 로드인한다. 
 		this.viewport.remove(container);
 		MainFrame window = new MainFrame();
-//		viewport.setBorders(true);
 		viewport.add(window.getMainWindow());
 		RootPanel.get().add(viewport);
 	}

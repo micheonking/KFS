@@ -15,11 +15,8 @@ public interface ResourceIcon extends ClientBundle {
 
 	public static final ResourceIcon INSTANCE = GWT.create(ResourceIcon.class);
 	  
-	  @Source("files/KFIALogo.png")
+	  @Source("files/Logo.png")
 	  ImageResource getLogo();
-
-	  @Source("files/KFSLogo.png")
-	  ImageResource getKFSLogo();
 
 	  @Source("files/logout.png")
 	  ImageResource getLogout();
@@ -126,11 +123,17 @@ public interface ResourceIcon extends ClientBundle {
 	  @Source("files/close24Btn.png")
 	  ImageResource close24Button();
 
+	  @Source("files/reload32Btn.png")
+	  ImageResource reload32Button();
+
 	  @Source("files/tabs24Btn.png")
 	  ImageResource tabs24Button();
 
 	  @Source("files/select16Btn.png")
 	  ImageResource select16Button();
+
+	  @Source("files/selected16Btn.png")
+	  ImageResource selected16Button();
 
 	  @Source("files/cancel16Btn.png")
 	  ImageResource cancel16Button();
